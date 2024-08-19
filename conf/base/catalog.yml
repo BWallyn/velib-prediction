@@ -1,0 +1,12 @@
+df_raw:
+  type: pandas.ParquetDataset
+  filepath: data/01_raw/velib-disponibilite-en-temps-reel.parquet
+  load_args:
+    engine: pyarrow
+    encoding: latin-1
+    columns: [
+      'stationcode', 'name', 'is_installed', 'capacity', 'numdocksavailable',
+      'numbikesavailable', 'mechanical', 'ebike', 'is_renting',
+      'is_returning', 'duedate',
+      'nom_arrondissement_communes', 'code_insee_commune'
+    ]
