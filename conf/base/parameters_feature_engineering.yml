@@ -3,3 +3,7 @@
 #
 # Documentation for this file format can be found in "Parameters"
 # Link: https://docs.kedro.org/en/0.19.7/configuration/parameters.html
+
+feature_engineering.cols_to_remove: ["name", "nom_arrondissement_communes"]
+
+feature_engineering.boolean_columns: ["is_installed", "is_renting", "is_returning"]
