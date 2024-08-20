@@ -1,0 +1,22 @@
+# Pipeline feature engineering
+df_raw:
+  type: pandas.ParquetDataset
+  filepath: data/01_raw/velib-disponibilite-en-temps-reel.parquet
+  load_args:
+    engine: pyarrow
+    columns: [
+      'stationcode', 'name', 'is_installed', 'capacity', 'numdocksavailable',
+      'numbikesavailable', 'mechanical', 'ebike', 'is_renting',
+      'is_returning', 'duedate',
+      'nom_arrondissement_communes', 'code_insee_commune'
+    ]
+
+
+df_with_bool_cols_upd:
+  type: pandas.ParquetDataset
+  filepath: data/02_intermediate/df_feature_engineered.parquet
+  load_args:
+    engine: pyarrow
+    use_nullable_dtypes: True
+  save_args:
+    engine: pyarrow
