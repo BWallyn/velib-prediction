@@ -61,6 +61,37 @@ def get_holidays() -> pd.DataFrame:
     return df_holidays
 
 
+def add_holidays_period(df: pd.DataFrame, df_holidays: pd.DataFrame, feat_date: str, zone: str="Zone A") -> pd.DataFrame:
+    """Add the holidays periods to the dataset
+
+    Args:
+        df (pd.DataFrame): Input dataframe
+        df_holidays (pd.DataFrame): Holidays dataframe
+        feat_date (str): Name of the date feature
+    Returns:
+        df_final (pd.DataFrame): DataFrame with the holidays indicator
+    """
+    # Options
+    zone_name = zone.replace(" ", "")
+    # Set zone
+    df_holidays_zone = df_holidays[df_holidays["Zones"] == zone]
+    # Merge closest holiday date
+    merged_df = pd.merge_asof(
+        df, df_holidays_zone[["date_begin", "date_end", "Description"]], left_on=feat_date, right_on='date_begin', direction='backward'
+    )
+    # Set the right index as they are lost during merge asof
+    merged_df.index = df.index
+    # Filter out rows where the Date is before the begining or after the 'end' date
+    merged_df = merged_df[(merged_df[feat_date] >= merged_df['date_begin']) & (merged_df[feat_date] <= merged_df['date_end'])]
+    merged_df.drop(columns=["date_begin", "date_end"], inplace=True)
+    merged_df.rename(columns={"Description": f"Description_{zone_name}"}, inplace=True)
+    # Select rows without holidays
+    df_no_holidays = df.drop(index=merged_df.index)
+    df_no_holidays.loc[:, f"Description_{zone_name}"] = "None"
+    df_final = pd.concat([df_no_holidays, merged_df]).sort_values(by=feat_date)
+    return df_final
+
+
 def get_weekend(df: pd.DataFrame, feat_date: str) -> pd.DataFrame:
     """Get if the day is weekend or not
     - 0 if the day is a weekday
@@ -73,7 +104,7 @@ def get_weekend(df: pd.DataFrame, feat_date: str) -> pd.DataFrame:
         df: dataset with the feature weekend or not
     """
     df.loc[:, f"{feat_date}_weekend"] = 0
-    df.loc[df[f"{feat_date}_weekday"] >= 5, f"{feat_date}_weekend"] = 1
+    df.loc[df[f"{feat_date}_weekday"] >= 5, f"{feat_date}_weekend"] = 1  # noqa: PLR2004
     return df
 
 
