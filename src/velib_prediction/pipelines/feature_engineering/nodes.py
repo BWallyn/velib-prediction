@@ -127,7 +127,7 @@ def extract_date_features(df: pd.DataFrame, feat_date: str) -> pd.DataFrame:
     return df
 
 
-def add_lags_sma(
+def add_lags_sma(  # noqa: PLR0913
     df: pd.DataFrame, list_lags: list[int], feat_id: str, feat_date: str, feat_target: str, shift_days: int,
 ) -> pd.DataFrame:
     """Add different lags to the dataset with a shift of shift_days.
