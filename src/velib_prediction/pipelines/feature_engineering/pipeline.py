@@ -78,5 +78,6 @@ def create_pipeline(**kwargs) -> Pipeline:
             ),
         ],
         inputs=["df_with_bool_cols_upd"],
+        outputs=["df_train_w_holidays_c", "df_test_w_holidays_c"],
         namespace="feature_engineering"
     )
