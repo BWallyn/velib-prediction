@@ -7,3 +7,9 @@
 feature_engineering.feat_date: "duedate"
 
 feature_engineering.delta_days: 2
+
+feature_engineering.zone_a: "Zone A"
+
+feature_engineering.zone_b: "Zone B"
+
+feature_engineering.zone_c: "Zone C"
