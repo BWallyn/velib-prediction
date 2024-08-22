@@ -1,4 +1,4 @@
-# Pipeline feature engineering
+# Pipeline data engineering
 df_raw:
   type: pandas.ParquetDataset
   filepath: data/01_raw/velib-disponibilite-en-temps-reel.parquet
@@ -11,10 +11,29 @@ df_raw:
       'nom_arrondissement_communes', 'code_insee_commune'
     ]
 
-
 df_with_bool_cols_upd:
   type: pandas.ParquetDataset
-  filepath: data/02_intermediate/df_feature_engineered.parquet
+  filepath: data/02_intermediate/df_data_engineered.parquet
+  load_args:
+    engine: pyarrow
+    use_nullable_dtypes: True
+  save_args:
+    engine: pyarrow
+
+
+# Pipeline feature engineering
+df_train_w_holidays_c:
+  type: pandas.ParquetDataset
+  filepath: data/04_feature/df_feat_train.parquet
+  load_args:
+    engine: pyarrow
+    use_nullable_dtypes: True
+  save_args:
+    engine: pyarrow
+
+df_test_w_holidays_c:
+  type: pandas.ParquetDataset
+  filepath: data/04_feature/df_feat_test.parquet
   load_args:
     engine: pyarrow
     use_nullable_dtypes: True
