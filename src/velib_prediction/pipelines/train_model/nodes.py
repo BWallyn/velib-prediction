@@ -6,7 +6,9 @@ generated using Kedro 0.19.7
 # ==== IMPORTS ====
 # =================
 
+import mlflow
 import pandas as pd
+from catboost import CatBoostRegressor
 from sklearn.model_selection import TimeSeriesSplit
 
 # ===================
@@ -54,3 +56,29 @@ def get_split_train_val_cv(
     for train_index, valid_index in tscv.split(df):
         list_train_valid.append((df.loc[train_index], df.loc[valid_index]))
     return list_train_valid
+
+
+def mlflow_log_parameters(model: CatBoostRegressor) -> None:
+    """Log the parameters of the Catboost regressor model to MLflow
+
+    Args:
+        model (CatBoostRegressor): Catboost regressor model trained
+    """
+    all_params = model.get_all_params()
+    mlflow.log_param('depth', all_params['depth'])
+    mlflow.log_param('iterations', all_params['iterations'])
+    mlflow.log_param('loss_function', all_params['loss_function'])
+    mlflow.log_param('learning_rate', all_params['learning_rate'])
+    mlflow.log_param('l2_leaf_reg', all_params['l2_leaf_reg'])
+    mlflow.log_param('random_strength', all_params['random_strength'])
+    mlflow.log_param('border_count', all_params['border_count'])
+
+
+def mlflow_log_model(model: CatBoostRegressor) -> None:
+    """Log the Catboost regressor model to MLflow
+
+    Args:
+        model (CatBoostRegressor): Catboost regressor model trained
+    """
+    # model.save_model('../models/cb_classif')
+    mlflow.catboost.log_model(cb_model=model, artifact_path='model')
