@@ -36,17 +36,19 @@ def add_lags_sma(  # noqa: PLR0913
 
 
 def get_split_train_val_cv(
-    df: pd.DataFrame, target: pd.Series, n_splits: int
+    df: pd.DataFrame, n_splits: int
 ) -> list[tuple[pd.DataFrame, pd.DataFrame]]:
     """Split the time serie dataset for cross validation using expanding window
 
     Args:
         df (pd.DataFrame): Input dataframe
-        target (pd.Series): Target
         n_splits (int): Number of splits to create
     Returns:
         list_train_valid (list[tuple[pd.DataFrame, pd.DataFrame]]): Split dataframe using time series split
     """
+    # Reset index
+    df.reset_index(drop=True, inplace=True)
+    # Prepare
     list_train_valid = []
     tscv = TimeSeriesSplit(n_splits=n_splits)
     for train_index, valid_index in tscv.split(df):
