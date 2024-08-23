@@ -76,6 +76,8 @@ def add_holidays_period(df: pd.DataFrame, df_holidays: pd.DataFrame, feat_date: 
     df_holidays_zone = df_holidays[df_holidays["Zones"] == zone]
     # Set the right type
     df[feat_date] = pd.to_datetime(df[feat_date], format="%Y-%m-%d")
+    # Reset index
+    df = df.reset_index(drop=True)
     # Merge closest holiday date
     merged_df = pd.merge_asof(
         df, df_holidays_zone[["date_begin", "date_end", "Description"]], left_on=feat_date, right_on='date_begin', direction='backward'
@@ -88,7 +90,7 @@ def add_holidays_period(df: pd.DataFrame, df_holidays: pd.DataFrame, feat_date: 
     merged_df.rename(columns={"Description": f"Description_{zone_name}"}, inplace=True)
     # Select rows without holidays
     df_no_holidays = df.drop(index=merged_df.index)
-    df_no_holidays.loc[:, f"Description_{zone_name}"] = "None"
+    df_no_holidays[f"Description_{zone_name}"] = "None"
     df_final = pd.concat([df_no_holidays, merged_df]).sort_values(by=feat_date)
     return df_final
 
