@@ -50,6 +50,6 @@ def update_values_bool_columns(df: pd.DataFrame, list_bool_cols: list[str]) -> p
     Returns:
         df (pd.DataFrame): Output dataframe
     """
-    values_replace = {'OUI': True, 'NON': False}
+    values_replace = {'OUI': 1, 'NON': 0}
     dict_replace = {el: values_replace for el in list_bool_cols}
     return df.replace(dict_replace)
