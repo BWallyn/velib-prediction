@@ -35,6 +35,13 @@ def set_date_format(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
+def add_datetime_col(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    """
+    df['date'] = df["duedate"].dt.date
+    return df
+
+
 def update_values_bool_columns(df: pd.DataFrame, list_bool_cols: list[str]) -> pd.DataFrame:
     """Update the values for the boolean columns
 

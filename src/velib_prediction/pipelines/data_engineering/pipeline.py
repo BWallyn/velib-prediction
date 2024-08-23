@@ -5,7 +5,12 @@ generated using Kedro 0.19.7
 
 from kedro.pipeline import Pipeline, node, pipeline
 
-from .nodes import drop_unused_columns, set_date_format, update_values_bool_columns
+from .nodes import (
+    add_datetime_col,
+    drop_unused_columns,
+    set_date_format,
+    update_values_bool_columns,
+)
 
 
 def create_pipeline(**kwargs) -> Pipeline:
@@ -24,8 +29,14 @@ def create_pipeline(**kwargs) -> Pipeline:
                 name="set_date_format"
             ),
             node(
+                func=add_datetime_col,
+                inputs="df_date_set",
+                outputs="df_date_added",
+                name="add_date_column",
+            ),
+            node(
                 func=update_values_bool_columns,
-                inputs=["df_date_set", "params:boolean_columns"],
+                inputs=["df_date_added", "params:boolean_columns"],
                 outputs="df_with_bool_cols_upd",
                 name="reset_values_in_boolean_columns"
             )
