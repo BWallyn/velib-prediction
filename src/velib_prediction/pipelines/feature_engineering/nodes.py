@@ -28,8 +28,8 @@ def split_train_test(df: pd.DataFrame, feat_date: str, delta_days: int) -> tuple
     max_date = df[feat_date].max()
     train_cutoff = max_date - datetime.timedelta(days=delta_days)
     # Split
-    df_train = df[df["Date"] < train_cutoff]
-    df_test = df[df["Date"] >= train_cutoff]
+    df_train = df[df[feat_date] < train_cutoff]
+    df_test = df[df[feat_date] >= train_cutoff]
     return df_train, df_test
 
 
@@ -40,7 +40,6 @@ def get_holidays() -> pd.DataFrame:
     - Keep only the french metropolitan zones
     - Drop duplicates to keep just one row by zone and holiday period
     - Select only years 2020 and after
-    - Save the dataset processed
 
     Returns:
         df_holidays (pd.DataFrame): Dataframe of the holiday dates
@@ -75,6 +74,8 @@ def add_holidays_period(df: pd.DataFrame, df_holidays: pd.DataFrame, feat_date: 
     zone_name = zone.replace(" ", "")
     # Set zone
     df_holidays_zone = df_holidays[df_holidays["Zones"] == zone]
+    # Set the right type
+    df[feat_date] = pd.to_datetime(df[feat_date], format="%Y-%m-%d")
     # Merge closest holiday date
     merged_df = pd.merge_asof(
         df, df_holidays_zone[["date_begin", "date_end", "Description"]], left_on=feat_date, right_on='date_begin', direction='backward'

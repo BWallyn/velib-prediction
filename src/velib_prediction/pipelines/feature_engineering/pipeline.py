@@ -42,37 +42,37 @@ def create_pipeline(**kwargs) -> Pipeline:
             ),
             node(
                 func=add_holidays_period,
-                inputs=["df_train_w_date_feat", "df_holidays", "params:feat_date", "params:zone_a"],
+                inputs=["df_train_w_date_feat", "df_holidays", "params:feat_date_holidays", "params:zone_a"],
                 outputs="df_train_w_holidays",
                 name="add_holidays_zone_a_train"
             ),
             node(
                 func=add_holidays_period,
-                inputs=["df_train_w_holidays", "df_holidays", "params:feat_date", "params:zone_b"],
+                inputs=["df_train_w_holidays", "df_holidays", "params:feat_date_holidays", "params:zone_b"],
                 outputs="df_train_w_holidays_b",
                 name="add_holidays_zone_b_train"
             ),
             node(
                 func=add_holidays_period,
-                inputs=["df_train_w_holidays_b", "df_holidays", "params:feat_date", "params:zone_c"],
+                inputs=["df_train_w_holidays_b", "df_holidays", "params:feat_date_holidays", "params:zone_c"],
                 outputs="df_train_w_holidays_c",
                 name="add_holidays_zone_c_train"
             ),
             node(
                 func=add_holidays_period,
-                inputs=["df_test_w_date_feat", "df_holidays", "params:feat_date", "params:zone_a"],
+                inputs=["df_test_w_date_feat", "df_holidays", "params:feat_date_holidays", "params:zone_a"],
                 outputs="df_test_w_holidays",
                 name="add_holidays_zone_a_test"
             ),
             node(
                 func=add_holidays_period,
-                inputs=["df_test_w_holidays", "df_holidays", "params:feat_date", "params:zone_b"],
+                inputs=["df_test_w_holidays", "df_holidays", "params:feat_date_holidays", "params:zone_b"],
                 outputs="df_test_w_holidays_b",
                 name="add_holidays_zone_b_test"
             ),
             node(
                 func=add_holidays_period,
-                inputs=["df_test_w_holidays_b", "df_holidays", "params:feat_date", "params:zone_c"],
+                inputs=["df_test_w_holidays_b", "df_holidays", "params:feat_date_holidays", "params:zone_c"],
                 outputs="df_test_w_holidays_c",
                 name="add_holidays_zone_c_test"
             ),
