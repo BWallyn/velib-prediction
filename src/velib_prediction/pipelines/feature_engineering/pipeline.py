@@ -6,7 +6,7 @@ generated using Kedro 0.19.7
 from kedro.pipeline import Pipeline, node, pipeline
 
 from .nodes import (
-    add_holidays_period,
+    # add_holidays_period,
     extract_date_features,
     get_holidays,
     split_train_test,
