@@ -40,6 +40,7 @@ def create_pipeline(**kwargs) -> Pipeline:
                 outputs="df_test_w_date_feat",
                 name="Add_date_feat_test"
             ),
+            # TODO fix holidays merge
             # node(
             #     func=add_holidays_period,
             #     inputs=["df_train_w_date_feat", "df_holidays", "params:feat_date_holidays", "params:zone_a"],

@@ -77,6 +77,7 @@ def add_holidays_period(df: pd.DataFrame, df_holidays: pd.DataFrame, feat_date: 
     # Set the right type
     df[feat_date] = pd.to_datetime(df[feat_date], format="%Y-%m-%d")
     # Reset index
+    # TODO fix left index problem
     df = df.reset_index(drop=True)
     # Merge closest holiday date
     merged_df = pd.merge_asof(
