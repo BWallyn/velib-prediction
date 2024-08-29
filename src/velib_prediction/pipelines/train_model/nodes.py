@@ -131,7 +131,7 @@ def train_model(
     return model
 
 
-def train_model_cv_mlflow(
+def train_model_cv_mlflow(  # noqa: PLR0913
     list_train_valid: list[tuple[pd.DataFrame, pd.DataFrame]],
     feat_cat: list[str], plot_training: bool=False, verbose: int=0,
     shap_max_disp: int=10, path_reports: str='../reports',
