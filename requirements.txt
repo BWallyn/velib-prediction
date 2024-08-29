@@ -1,3 +1,4 @@
+catboost~=1.2.5
 geopandas~=1.0.1
 ipython>=8.10
 jupyterlab>=3.0
@@ -6,6 +7,7 @@ kedro-datasets>=3.0; python_version >= "3.9"
 kedro-datasets>=1.0; python_version < "3.9"
 kedro-viz>=6.7.0
 kedro[jupyter]
+mlflow~=2.15.1
 notebook
 pyarrow~=17.0.0
 pytest~=7.2
