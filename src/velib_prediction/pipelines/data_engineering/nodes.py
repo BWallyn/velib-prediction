@@ -53,3 +53,9 @@ def update_values_bool_columns(df: pd.DataFrame, list_bool_cols: list[str]) -> p
     values_replace = {'OUI': 1, 'NON': 0}
     dict_replace = {el: values_replace for el in list_bool_cols}
     return df.replace(dict_replace)
+
+
+def create_n_rides_per_hour(df: pd.DataFrame) -> pd.DataFrame:
+    """Create the number of rides per hour for each station
+    """
+    pass
