@@ -26,10 +26,10 @@ def generate_timestamp() -> str:
     return current_ts[:-4] + current_ts[-1:] # Don't keep microseconds
 
 
-def download_data() -> pd.DataFrame:
+def download_data(url: str) -> pd.DataFrame:
     """
     """
-    response = requests.get(URL).json()
+    response = requests.get(url).json()
     df = pd.DataFrame(response['results'])
     return df
 
