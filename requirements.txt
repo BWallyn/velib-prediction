@@ -9,7 +9,7 @@ kedro-viz>=6.7.0
 kedro[jupyter]
 mlflow~=2.15.1
 notebook
-pyarrow~=17.0.0
+pyarrow~=15.0.2
 pytest~=7.2
 pytest-cov~=3.0
 pytest-mock>=1.7.1, <2.0
