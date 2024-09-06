@@ -6,6 +6,8 @@ generated using Kedro 0.19.7
 # ==== IMPORTS ====
 # =================
 
+import logging
+import os
 from datetime import datetime, timezone
 
 import pandas as pd
@@ -29,12 +31,15 @@ def generate_timestamp() -> str:
 def download_data(url: str) -> pd.DataFrame:
     """
     """
-    response = requests.get(url).json()
-    df = pd.DataFrame(response['results'])
+    response = requests.get(url)
+    if response.status_code != 200:  # noqa: PLR2004
+        logging.error("Error retriving data")
+    df = pd.DataFrame(response.json()['results'])
     return df
 
 
-def save_data(df: pd.DataFrame) -> None:
+def save_data(df: pd.DataFrame, path_data: str) -> None:
     """
     """
-    pass
+    timestamp = generate_timestamp()
+    df.to_parquet(os.path.join(path_data, f"velib_{timestamp}.parquet"))
