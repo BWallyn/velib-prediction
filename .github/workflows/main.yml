@@ -15,4 +15,4 @@ jobs:
     - name: Fetch velib data
       run: ./download_data_auto/script.sh
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
