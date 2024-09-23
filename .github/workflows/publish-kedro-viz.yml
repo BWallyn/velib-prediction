@@ -1,6 +1,7 @@
 # Create workflow to deploy kedro viz on branches
 name: Kedro-Viz
 
+# Triggers
 on:
   pull_request:
     branches:
@@ -12,6 +13,7 @@ on:
       - dev
   workflow_dispatch:
 
+# Job
 jobs:
   deploy:
     runs-on: ubuntu-latest
