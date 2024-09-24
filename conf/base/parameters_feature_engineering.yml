@@ -4,6 +4,14 @@
 # Documentation for this file format can be found in "Parameters"
 # Link: https://docs.kedro.org/en/0.19.7/configuration/parameters.html
 
-feature_engineering.cols_to_remove: ["name", "nom_arrondissement_communes"]
+feature_engineering.feat_date: "duedate"
 
-feature_engineering.boolean_columns: ["is_installed", "is_renting", "is_returning"]
+feature_engineering.delta_days: 2
+
+feature_engineering.feat_date_holidays: "date"
+
+feature_engineering.zone_a: "Zone A"
+
+feature_engineering.zone_b: "Zone B"
+
+feature_engineering.zone_c: "Zone C"
