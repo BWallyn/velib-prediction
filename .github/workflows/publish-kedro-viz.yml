@@ -5,8 +5,8 @@ name: Kedro-Viz
 on:
   pull_request:
     branches:
-      - dev
       - main
+      - dev
   push:
     branches:
       - main
