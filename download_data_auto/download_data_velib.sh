@@ -2,6 +2,7 @@
 
 set -e
 
+# Path to the base
 base="https://api.github.com/repos/BWallyn/velib-prediction"
 
 urls=$(
