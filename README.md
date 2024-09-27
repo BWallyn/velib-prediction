@@ -1,22 +1,22 @@
-# Velib rides prediction
+# 🚲 Velib rides prediction
 
 The goal of this project is to predict the number of rides in Velib stations located in and around Paris.
 
 ![Velib](./reports/images/velib-velo-electrique.jpeg)
 
 
-## Data
+## 📡 Data
 
 Data are extracted from the [Open Data Paris website](https://opendata.paris.fr/explore/dataset/velib-disponibilite-en-temps-reel/information/?disjunctive.name&disjunctive.is_installed&disjunctive.is_renting&disjunctive.is_returning&disjunctive.nom_arrondissement_communes).
 
 
-## Feature engineering
+## 🧪 Feature engineering
 
 
-## Model
+## 🚀 Model
 
 
-## Results
+## 📈 Results
 
 
 
