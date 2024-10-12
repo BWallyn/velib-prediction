@@ -1,0 +1,8 @@
+{
+  "parameters": {
+    "data_engineering.cols_to_remove": [
+      "name",
+      "nom_arrondissement_communes"
+    ]
+  }
+}

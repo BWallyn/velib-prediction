@@ -1,0 +1,19 @@
+{
+  "code": "def update_values_bool_columns(df: pd.DataFrame, list_bool_cols: list[str]) -> pd.DataFrame:\n    \"\"\"Update the values for the boolean columns\n\n    Args:\n        df (pd.DataFrame): Input dataframe\n    Returns:\n        df (pd.DataFrame): Output dataframe\n    \"\"\"\n    values_replace = {'OUI': 1, 'NON': 0}\n    dict_replace = {el: values_replace for el in list_bool_cols}\n    return df.replace(dict_replace)\n",
+  "filepath": "velib-prediction/src/velib_prediction/pipelines/data_engineering/nodes.py",
+  "parameters": {
+    "data_engineering.boolean_columns": [
+      "is_installed",
+      "is_renting",
+      "is_returning"
+    ]
+  },
+  "run_command": "kedro run --to-nodes='data_engineering.reset_values_in_boolean_columns'",
+  "inputs": [
+    "data_engineering.df_date_added",
+    "params:data_engineering.boolean_columns"
+  ],
+  "outputs": [
+    "df_with_bool_cols_upd"
+  ]
+}
