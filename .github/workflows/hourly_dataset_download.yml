@@ -17,5 +17,8 @@ jobs:
           # Construct the download URL with filters
           url="https://opendata.paris.fr/api/explore/v2.1/catalog/datasets/velib-disponibilite-en-temps-reel/records?refine=nom_arrondissement_communes%3A%22Paris%22&refine=nom_arrondissement_communes%3A%22Levallois-Perret%22&refine=nom_arrondissement_communes%3A%22Puteaux%22&refine=nom_arrondissement_communes%3A%22Suresnes%22&refine=nom_arrondissement_communes%3A%22Boulogne-Billancourt%22&refine=nom_arrondissement_communes%3A%22Clichy%22"
 
-          # Download the data and append the datetime to the filename
-          curl -o "velib_availability_$datetime.json" "$url"
+          # Create the data folder if it doesn't exist
+          mkdir -p ../../data/01_raw
+
+          # Download the data and save to specific location with datetime
+          curl -o "../../data/01_raw/velib_availability_$datetime.json" "$url"
