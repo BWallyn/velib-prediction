@@ -1,0 +1,21 @@
+name: Hourly Velib Availability Download
+
+on:
+  schedule:
+    - cron: "0 * * * *"  # Run every hour
+
+jobs:
+  download-velib-data:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Download Velib Availability Data
+        run: |
+          # Get the current datetime in ISO 8601 format
+          datetime=$(date +"%Y-%m-%dT%H:%M:%S")
+
+          # Construct the download URL with filters
+          url="https://opendata.paris.fr/api/explore/v2.1/catalog/datasets/velib-disponibilite-en-temps-reel/records?refine=nom_arrondissement_communes%3A%22Paris%22&refine=nom_arrondissement_communes%3A%22Levallois-Perret%22&refine=nom_arrondissement_communes%3A%22Puteaux%22&refine=nom_arrondissement_communes%3A%22Suresnes%22&refine=nom_arrondissement_communes%3A%22Boulogne-Billancourt%22&refine=nom_arrondissement_communes%3A%22Clichy%22"
+
+          # Download the data and append the datetime to the filename
+          curl -o "velib_availability_$datetime.json" "$url"
