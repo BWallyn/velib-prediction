@@ -29,7 +29,12 @@ def generate_timestamp() -> str:
 
 
 def download_data(url: str) -> pd.DataFrame:
-    """
+    """Download data from a website
+
+    Args:
+        url (str): Path to the dataset
+    Returns:
+        df (pd.DataFrame): Dataset downloaded and saved as a pandas DataFrame
     """
     response = requests.get(url)
     if response.status_code != 200:  # noqa: PLR2004
@@ -39,7 +44,13 @@ def download_data(url: str) -> pd.DataFrame:
 
 
 def save_data(df: pd.DataFrame, path_data: str) -> None:
-    """
+    """Save dataset as a parquet file
+
+    Args:
+        df (pd.DataFrame): Input dataframe
+        path_data (str): Path to the folder to save file
+    Returns:
+        None
     """
     timestamp = generate_timestamp()
     df.to_parquet(os.path.join(path_data, f"velib_{timestamp}.parquet"))
