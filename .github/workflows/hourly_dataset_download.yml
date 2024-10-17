@@ -1,6 +1,10 @@
 name: Hourly Velib Availability Download
 
 on:
+  push:
+    branches:
+      - main
+      - dev
   schedule:
     - cron: "0 * * * *"  # Run every hour
 
@@ -8,17 +12,31 @@ jobs:
   download-velib-data:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Install Poetry
+        uses: pipx install poetry
+
+      - name: Setup Python & Install dependencies
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11.8'
+          cache: 'poetry'
+      - run: poetry install
+
       - name: Download Velib Availability Data
+        env:
+          BEARER_TOKEN: ${{ secrets.BEARER_TOKEN }}
+        run:
+          poetry run python nfl_tweets/get_tweets/get_tweets.py
+    
+      - name: Commit and push
+        env:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          # Get the current datetime in ISO 8601 format
-          datetime=$(date +"%Y-%m-%dT%H:%M:%S")
-
-          # Construct the download URL with filters
-          url="https://opendata.paris.fr/api/explore/v2.1/catalog/datasets/velib-disponibilite-en-temps-reel/records?refine=nom_arrondissement_communes%3A%22Paris%22&refine=nom_arrondissement_communes%3A%22Levallois-Perret%22&refine=nom_arrondissement_communes%3A%22Puteaux%22&refine=nom_arrondissement_communes%3A%22Suresnes%22&refine=nom_arrondissement_communes%3A%22Boulogne-Billancourt%22&refine=nom_arrondissement_communes%3A%22Clichy%22"
-
-          # Create the data folder if it doesn't exist
-          mkdir -p ../../data/01_raw
-
-          # Download the data and save to specific location with datetime
-          curl -o "../../data/01_raw/velib_availability_$datetime.json" "$url"
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add -A
+          git commit -m "Data updated" -a
+          git push
