@@ -2,8 +2,7 @@ name: Hourly Velib Availability Download
 
 on:
   pull_request:
-    types:
-      - opened
+    types: [opened, edited]
   schedule:
     - cron: "0 * * * *"  # Run every hour
 
