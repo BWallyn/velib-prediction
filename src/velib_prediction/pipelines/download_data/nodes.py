@@ -13,6 +13,9 @@ from datetime import datetime, timezone
 import pandas as pd
 import requests
 
+# Options
+logger = logging.getLogger(__name__)
+
 # ===================
 # ==== FUNCTIONS ====
 # ===================
@@ -34,7 +37,7 @@ def download_data(url: str) -> pd.DataFrame:
     """
     response = requests.get(url)
     if response.status_code != 200:  # noqa: PLR2004
-        logging.error("Error retriving data")
+        logger.error("Error retriving data")
     df = pd.DataFrame(response.json()['results'])
     return df
 
@@ -49,7 +52,9 @@ def save_data(df: pd.DataFrame, path_data: str) -> None:
         None
     """
     timestamp = generate_timestamp()
+    logger.info('Saving dataset...')
     df.to_parquet(os.path.join(path_data, f"velib_{timestamp}.parquet"))
+    logger.info('Dataset saved')
 
 
 def main(url: str, path_data: str) -> None:
