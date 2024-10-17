@@ -3,6 +3,9 @@ name: Hourly Velib Availability Download
 on:
   pull_request:
     types: [opened, edited]
+    branches:
+      - main
+      - dev
   schedule:
     - cron: "0 * * * *"  # Run every hour
 
