@@ -1,4 +1,4 @@
-name: Hourly Velib Availability Download
+name: Hourly velib availability download python script
 
 on:
   pull_request:
