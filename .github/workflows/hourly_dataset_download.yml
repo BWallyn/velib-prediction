@@ -1,4 +1,4 @@
-name: Hourly Velib Availability Download
+name: Hourly Velib Availability Download - Python Script
 
 on:
   schedule:
@@ -8,17 +8,26 @@ jobs:
   download-velib-data:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - name: Download Velib Availability Data
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      # Install Python dependencies (replace 'requirements.txt' with your actual file)
+      - name: Install dependencies
         run: |
-          # Get the current datetime in ISO 8601 format
-          datetime=$(date +"%Y-%m-%dT%H:%M:%S")
+          python -m pip install -r requirements.txt
 
-          # Construct the download URL with filters
-          url="https://opendata.paris.fr/api/explore/v2.1/catalog/datasets/velib-disponibilite-en-temps-reel/records?refine=nom_arrondissement_communes%3A%22Paris%22&refine=nom_arrondissement_communes%3A%22Levallois-Perret%22&refine=nom_arrondissement_communes%3A%22Puteaux%22&refine=nom_arrondissement_communes%3A%22Suresnes%22&refine=nom_arrondissement_communes%3A%22Boulogne-Billancourt%22&refine=nom_arrondissement_communes%3A%22Clichy%22"
+      - name: Download Velib Availability Data
+        env:
+          BEARER_TOKEN: ${{ secrets.BEARER_TOKEN }}
+        run: |
+          python src/velib_prediction/pipelines/download_data/download_data_run.py
 
-          # Create the data folder if it doesn't exist
-          mkdir -p ../../data/01_raw
-
-          # Download the data and save to specific location with datetime
-          curl -o "../../data/01_raw/velib_availability_$datetime.json" "$url"
+      - name: Commit and push
+        env:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add -A
+          git commit -m "Data updated" -a
+          git push
