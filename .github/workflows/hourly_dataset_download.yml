@@ -6,6 +6,9 @@ on:
     branches:
       - main
       - dev
+  push:
+    branches:
+      - fix/auto-download
   schedule:
     - cron: "0 * * * *"  # Run every hour
 
@@ -31,7 +34,7 @@ jobs:
         env:
           BEARER_TOKEN: ${{ secrets.BEARER_TOKEN }}
         run:
-          poetry run python velib_prediction/src/velib_prediction/pipelines/download_data/download_data_run.py
+          poetry run python src/velib_prediction/pipelines/download_data/download_data_run.py
     
       - name: Commit and push
         env:
