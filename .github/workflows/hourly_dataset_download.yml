@@ -1,14 +1,6 @@
 name: Hourly Velib Availability Download - Python Script
 
 on:
-  pull_request:
-    types: [opened, edited]
-    branches:
-      - main
-      - dev
-  push:
-    branches:
-      - fix/auto-download
   schedule:
     - cron: "0 * * * *"  # Run every hour
 
