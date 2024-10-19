@@ -1,4 +1,4 @@
-name: Hourly velib availability download python script
+name: Hourly Velib Availability Download - Python Script
 
 on:
   pull_request:
@@ -19,23 +19,17 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v3
 
-      - name: Install Poetry
+      # Install Python dependencies (replace 'requirements.txt' with your actual file)
+      - name: Install dependencies
         run: |
-          curl -sSL https://install.python-poetry.org | python3 -
-
-      - name: Setup Python & Install dependencies
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.11.8'
-          cache: 'poetry'
-      - run: poetry install
+          python -m pip install -r requirements.txt
 
       - name: Download Velib Availability Data
         env:
           BEARER_TOKEN: ${{ secrets.BEARER_TOKEN }}
-        run:
-          poetry run python src/velib_prediction/pipelines/download_data/download_data_run.py
-    
+        run: |
+          python src/velib_prediction/pipelines/download_data/download_data_run.py
+
       - name: Commit and push
         env:
           github_token: ${{ secrets.GITHUB_TOKEN }}
