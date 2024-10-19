@@ -2,7 +2,7 @@
 # ==== IMPORTS ====
 # =================
 
-from .nodes import download_data, save_data
+from nodes import download_data, save_data
 
 # ===================
 # ==== FUNCTIONS ====
