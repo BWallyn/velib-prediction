@@ -1,0 +1,12 @@
+{
+  "code": "def set_date_format(df: pd.DataFrame) -> pd.DataFrame:\n    \"\"\"Set the date format to the right type\n\n    Args:\n        df (pd.DataFrame): Input dataframe\n    Returns:\n        df (pd.DataFrame): Output dataframe\n    \"\"\"\n    df[\"duedate\"] = pd.to_datetime(df[\"duedate\"], format=\"%Y-%m-%d %H:%M:%S\")\n    return df\n",
+  "filepath": "velib-prediction/src/velib_prediction/pipelines/data_engineering/nodes.py",
+  "parameters": {},
+  "run_command": "kedro run --to-nodes='data_engineering.set_date_format'",
+  "inputs": [
+    "data_engineering.df_wtht_unused_cols"
+  ],
+  "outputs": [
+    "data_engineering.df_date_set"
+  ]
+}

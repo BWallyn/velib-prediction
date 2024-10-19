@@ -1,0 +1,10 @@
+{
+  "code": "def get_holidays() -> pd.DataFrame:\n    \"\"\"Get holidays dataset from data.education.gouv\n\n    - Download the info of the holidays from data.education.gouv\n    - Keep only the french metropolitan zones\n    - Drop duplicates to keep just one row by zone and holiday period\n    - Select only years 2020 and after\n\n    Returns:\n        df_holidays (pd.DataFrame): Dataframe of the holiday dates\n    \"\"\"\n    path_data = \"https://data.education.gouv.fr/api/explore/v2.1/catalog/datasets/fr-en-calendrier-scolaire/exports/csv?lang=fr&timezone=Europe%2FParis&use_labels=true&delimiter=%3B\"\n    df_holidays = pd.read_csv(path_data, sep=\";\").sort_values(by=\"Date de début\")\n    # Select only metropolitan France dates\n    df_holidays = df_holidays[df_holidays[\"Zones\"].isin([\"Zone A\", \"Zone B\", \"Zone C\"])]\n    # Drop duplicates between same zones and dates\n    df_holidays.drop_duplicates(subset=[\"Zones\", \"Date de début\"], inplace=True)\n    # Change types\n    df_holidays[\"Date de début\"] = pd.to_datetime(df_holidays[\"Date de début\"].str[:10], format=\"%Y-%m-%d\")\n    df_holidays[\"Date de fin\"] = pd.to_datetime(df_holidays[\"Date de fin\"].str[:10], format=\"%Y-%m-%d\")\n    df_holidays.rename(columns={\"Date de début\": \"date_begin\", \"Date de fin\": \"date_end\"}, inplace=True)\n    # df_holidays[\"Date de début\"] = df_holidays[\"Date de début\"].dt.date\n    # Select only after 2020\n    df_holidays = df_holidays[df_holidays[\"date_end\"] >= datetime.datetime(2020, 1, 1)]\n    return df_holidays\n",
+  "filepath": "velib-prediction/src/velib_prediction/pipelines/feature_engineering/nodes.py",
+  "parameters": {},
+  "run_command": "kedro run --to-nodes='feature_engineering.download_holiday_dates'",
+  "inputs": [],
+  "outputs": [
+    "feature_engineering.df_holidays"
+  ]
+}

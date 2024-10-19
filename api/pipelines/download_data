@@ -1,0 +1,38 @@
+{
+  "nodes": [],
+  "edges": [],
+  "layers": [],
+  "tags": [],
+  "pipelines": [
+    {
+      "id": "__default__",
+      "name": "__default__"
+    },
+    {
+      "id": "train_model",
+      "name": "train_model"
+    },
+    {
+      "id": "feature_engineering",
+      "name": "feature_engineering"
+    },
+    {
+      "id": "data_engineering",
+      "name": "data_engineering"
+    },
+    {
+      "id": "download_data",
+      "name": "download_data"
+    }
+  ],
+  "modular_pipelines": {
+    "__root__": {
+      "id": "__root__",
+      "name": "__root__",
+      "inputs": [],
+      "outputs": [],
+      "children": []
+    }
+  },
+  "selected_pipeline": "download_data"
+}

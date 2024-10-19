@@ -1,0 +1,18 @@
+{
+  "code": "def split_train_test(df: pd.DataFrame, feat_date: str, delta_days: int) -> tuple[pd.DataFrame, pd.DataFrame]:\n    \"\"\"Split the dataset into train and test sets.\n\n    Args:\n        df (pd.DataFrame): Input dataframe\n        feat_date (str): Name of the date column\n        delta_days (int): Number of days that will be kept for the test set\n    Returns:\n        df_train (pd.DataFrame): Train set\n        df_test (pd.DataFrame): Test set\n    \"\"\"\n    max_date = df[feat_date].max()\n    train_cutoff = max_date - datetime.timedelta(days=delta_days)\n    # Split\n    df_train = df[df[feat_date] < train_cutoff]\n    df_test = df[df[feat_date] >= train_cutoff]\n    return df_train, df_test\n",
+  "filepath": "velib-prediction/src/velib_prediction/pipelines/feature_engineering/nodes.py",
+  "parameters": {
+    "feature_engineering.feat_date": "duedate",
+    "feature_engineering.delta_days": 2
+  },
+  "run_command": "kedro run --to-nodes='feature_engineering.split_train_test'",
+  "inputs": [
+    "df_with_bool_cols_upd",
+    "params:feature_engineering.feat_date",
+    "params:feature_engineering.delta_days"
+  ],
+  "outputs": [
+    "feature_engineering.df_train",
+    "feature_engineering.df_test"
+  ]
+}
