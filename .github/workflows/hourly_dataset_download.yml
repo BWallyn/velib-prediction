@@ -1,4 +1,4 @@
-name: Hourly velib availability download python script
+name: Hourly Velib Availability Download - Python Script
 
 on:
   pull_request:
@@ -6,6 +6,9 @@ on:
     branches:
       - main
       - dev
+  push:
+    branches:
+      - fix/auto-download
   schedule:
     - cron: "0 * * * *"  # Run every hour
 
@@ -16,22 +19,17 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v3
 
-      - name: Install Poetry
-        uses: pbdr/poetry-action@v1.4.3
-
-      - name: Setup Python & Install dependencies
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.11.8'
-          cache: 'poetry'
-      - run: poetry install
+      # Install Python dependencies (replace 'requirements.txt' with your actual file)
+      - name: Install dependencies
+        run: |
+          python -m pip install -r requirements.txt
 
       - name: Download Velib Availability Data
         env:
           BEARER_TOKEN: ${{ secrets.BEARER_TOKEN }}
-        run:
-          poetry run python velib_prediction/src/velib_prediction/pipelines/download_data/download_data_run.py
-    
+        run: |
+          python src/velib_prediction/pipelines/download_data/download_data_run.py
+
       - name: Commit and push
         env:
           github_token: ${{ secrets.GITHUB_TOKEN }}
