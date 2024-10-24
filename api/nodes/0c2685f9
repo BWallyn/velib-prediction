@@ -1,0 +1,8 @@
+{
+  "type": "pandas.parquet_dataset.ParquetDataset",
+  "filepath": "/home/runner/work/velib-prediction/velib-prediction/data/01_raw/velib-disponibilite-en-temps-reel.parquet",
+  "run_command": null,
+  "preview": null,
+  "preview_type": null,
+  "stats": null
+}

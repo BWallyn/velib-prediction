@@ -1,0 +1,9 @@
+{
+  "parameters": {
+    "data_engineering.boolean_columns": [
+      "is_installed",
+      "is_renting",
+      "is_returning"
+    ]
+  }
+}

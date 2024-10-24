@@ -1,0 +1,12 @@
+{
+  "code": "def add_datetime_col(df: pd.DataFrame) -> pd.DataFrame:\n    \"\"\"\n    \"\"\"\n    df['date'] = df[\"duedate\"].dt.date\n    return df\n",
+  "filepath": "velib-prediction/src/velib_prediction/pipelines/data_engineering/nodes.py",
+  "parameters": {},
+  "run_command": "kedro run --to-nodes='data_engineering.add_date_column'",
+  "inputs": [
+    "data_engineering.df_date_set"
+  ],
+  "outputs": [
+    "data_engineering.df_date_added"
+  ]
+}
