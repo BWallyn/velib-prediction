@@ -6,11 +6,33 @@ generated using Kedro 0.19.7
 # ==== IMPORTS ====
 # =================
 
+import os
+
 import pandas as pd
 
 # ===================
 # ==== FUNCTIONS ====
 # ===================
+
+def list_parquet_files(path: str) -> list[str]:
+    """Lists all parquet files in a given directory.
+
+    Args:
+        path (str): The folder to search for parquet files.
+
+    Returns:
+        parquet_files (list[str]): A list of parquet file paths.
+    """
+
+    parquet_files = []
+    for root, _, files in os.walk(path):
+        for file in files:
+            # Check all the files in the folder
+            if file.endswith('.parquet'):
+                # Keep only the parquet files
+                parquet_files.append(os.path.join(root, file))
+    return parquet_files
+
 
 def drop_unused_columns(df: pd.DataFrame, list_cols_to_remove: list[str]) -> pd.DataFrame:
     """Drop the unnecessary columns for the model
