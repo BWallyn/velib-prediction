@@ -1,5 +1,6 @@
 catboost~=1.2.5
 geopandas~=1.0.1
+hopsworks>=3.7.0
 ipython>=8.10
 jupyterlab>=3.0
 kedro~=0.19.8
