@@ -8,6 +8,7 @@ generated using Kedro 0.19.7
 
 import os
 
+import numpy as np
 import pandas as pd
 
 # ===================
@@ -32,6 +33,38 @@ def list_parquet_files(path: str) -> list[str]:
                 # Keep only the parquet files
                 parquet_files.append(os.path.join(root, file))
     return parquet_files
+
+
+def create_idx(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    """
+    # Set column date to datetime
+    df["duedate"] = pd.to_datetime(df["duedate"])
+    # Define index
+    df.insert(0, "idx", df["stationcode"].astype(str) + (df["duedate"].values.astype(np.int64) // 10 ** 9).astype(str))
+    return df
+
+
+def create_feature_description() -> list[dict[str, str]]:
+    """
+    """
+    return [
+        {"name": "idx", "description": "Idx based on the station code and datetime as timestamp"},
+        {"name": "stationcode", "description": "Code of the velib station"},
+        {"name": "name", "description": "Name of the velib station"},
+        {"name": "is_installed", "description": "Is the velib station available"},
+        {"name": "capacity", "description": "Capacity of the velib station"},
+        {"name": "numdocksavailable", "description": "Number of docks available at the velib station"},
+        {"name": "numbikesavailable", "description": "Number of bikes available at the velib station"},
+        {"name": "mechanical", "description": "Number of mechanical bikes available at the station"},
+        {"name": "ebike", "description": "Number of ebikes available at the station"},
+        {"name": "is_renting", "description": "Bikes available for renting"},
+        {"name": "is_returning", "description": "Places available to return bikes"},
+        {"name": "duedate", "description": "Date of the data info"},
+        {"name": "coordonnees_geo", "description": "Geographical coordinates of the station"},
+        {"name": "nom_arrondissement_communes", "description": "Name of the city where the station is located"},
+        {"name": "code_insee_commune", "description": "Insee where the station is located"},
+    ]
 
 
 def drop_unused_columns(df: pd.DataFrame, list_cols_to_remove: list[str]) -> pd.DataFrame:
