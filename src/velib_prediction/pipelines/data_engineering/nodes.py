@@ -36,7 +36,12 @@ def list_parquet_files(path: str) -> list[str]:
 
 
 def create_idx(df: pd.DataFrame) -> pd.DataFrame:
-    """
+    """Create a specific index to each row based on the station code and the date of the data
+
+    Args:
+        df (pd.DataFrame): Input DataFrame
+    Returns:
+        df (pd.DataFrame): Output DataFrame with index column
     """
     # Set column date to datetime
     df["duedate"] = pd.to_datetime(df["duedate"])
@@ -46,7 +51,12 @@ def create_idx(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def create_feature_description() -> list[dict[str, str]]:
-    """
+    """Create feature description for the feature store
+
+    Args:
+        None
+    Returns:
+        (list[dict[str, str]]): List of the features names and descriptions
     """
     return [
         {"name": "idx", "description": "Idx based on the station code and datetime as timestamp"},
