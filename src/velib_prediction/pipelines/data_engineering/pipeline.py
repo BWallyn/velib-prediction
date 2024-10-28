@@ -7,7 +7,10 @@ from kedro.pipeline import Pipeline, node, pipeline
 
 from .nodes import (
     add_datetime_col,
+    create_idx,
     drop_unused_columns,
+    list_parquet_files,
+    merge_datasets,
     set_date_format,
     update_values_bool_columns,
 )
@@ -17,8 +20,26 @@ def create_pipeline(**kwargs) -> Pipeline:
     return pipeline(
         [
             node(
+                func=list_parquet_files,
+                inputs="params:path_data",
+                outputs="list_files",
+                name="list_dataset_files",
+            ),
+            node(
+                func=merge_datasets,
+                inputs="list_files",
+                outputs="df_raw",
+                name="merge_all_datasets",
+            ),
+            node(
+                func=create_idx,
+                inputs="df_raw",
+                outputs="df_w_idx",
+                name="add_index_to_dataset"
+            ),
+            node(
                 func=drop_unused_columns,
-                inputs=["df_raw", "params:cols_to_remove"],
+                inputs=["df_w_idx", "params:cols_to_remove"],
                 outputs="df_wtht_unused_cols",
                 name="remove_unused_cols"
             ),
@@ -41,7 +62,7 @@ def create_pipeline(**kwargs) -> Pipeline:
                 name="reset_values_in_boolean_columns"
             )
         ],
-        inputs="df_raw",
+        inputs=None,
         outputs="df_with_bool_cols_upd",
         namespace="data_engineering"
     )
