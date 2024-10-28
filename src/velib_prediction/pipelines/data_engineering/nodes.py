@@ -6,6 +6,7 @@ generated using Kedro 0.19.7
 # ==== IMPORTS ====
 # =================
 
+import gc
 import os
 
 import numpy as np
@@ -33,6 +34,24 @@ def list_parquet_files(path: str) -> list[str]:
                 # Keep only the parquet files
                 parquet_files.append(os.path.join(root, file))
     return parquet_files
+
+
+def merge_datasets(list_files: list[str]) -> pd.DataFrame:
+    """Merge all datasets into one
+
+    Args:
+        list_files (list[str]): List of paths to all datasets in parquet files.
+    Returns:
+        df_final (pd.DataFrame): Output dataframe
+    """
+    df_final = pd.DataFrame()
+    for file in list_files:
+        df = pd.read_parquet(file)
+        df_final = pd.concat([df_final, df])
+        # Free memory
+        del df
+        gc.collect()
+    return df_final
 
 
 def create_idx(df: pd.DataFrame) -> pd.DataFrame:
