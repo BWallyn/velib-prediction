@@ -6,10 +6,15 @@ generated using Kedro 0.19.7
 # ==== IMPORTS ====
 # =================
 
+import gc
+import logging
 import os
 
 import numpy as np
 import pandas as pd
+
+# Option
+logger = logging.getLogger("__name__")
 
 # ===================
 # ==== FUNCTIONS ====
@@ -32,11 +37,35 @@ def list_parquet_files(path: str) -> list[str]:
             if file.endswith('.parquet'):
                 # Keep only the parquet files
                 parquet_files.append(os.path.join(root, file))
+                logger.info("Dataset: {}".format(file))  # noqa: UP032
     return parquet_files
 
 
-def create_idx(df: pd.DataFrame) -> pd.DataFrame:
+def merge_datasets(list_files: list[str]) -> pd.DataFrame:
+    """Merge all datasets into one
+
+    Args:
+        list_files (list[str]): List of paths to all datasets in parquet files.
+    Returns:
+        df_final (pd.DataFrame): Output dataframe
     """
+    df_final = pd.DataFrame()
+    for file in list_files:
+        df = pd.read_parquet(file)
+        df_final = pd.concat([df_final, df])
+        # Free memory
+        del df
+        gc.collect()
+    return df_final
+
+
+def create_idx(df: pd.DataFrame) -> pd.DataFrame:
+    """Create a specific index to each row based on the station code and the date of the data
+
+    Args:
+        df (pd.DataFrame): Input DataFrame
+    Returns:
+        df (pd.DataFrame): Output DataFrame with index column
     """
     # Set column date to datetime
     df["duedate"] = pd.to_datetime(df["duedate"])
@@ -46,7 +75,12 @@ def create_idx(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def create_feature_description() -> list[dict[str, str]]:
-    """
+    """Create feature description for the feature store
+
+    Args:
+        None
+    Returns:
+        (list[dict[str, str]]): List of the features names and descriptions
     """
     return [
         {"name": "idx", "description": "Idx based on the station code and datetime as timestamp"},
