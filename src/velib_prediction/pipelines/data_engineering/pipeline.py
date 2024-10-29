@@ -5,7 +5,7 @@ generated using Kedro 0.19.7
 
 from kedro.pipeline import Pipeline, node, pipeline
 
-from .nodes import (
+from velib_prediction.pipelines.data_engineering.nodes import (
     add_datetime_col,
     create_idx,
     drop_unused_columns,
