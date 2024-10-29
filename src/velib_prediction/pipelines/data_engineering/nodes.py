@@ -7,10 +7,14 @@ generated using Kedro 0.19.7
 # =================
 
 import gc
+import logging
 import os
 
 import numpy as np
 import pandas as pd
+
+# Option
+logger = logging.getLogger("__name__")
 
 # ===================
 # ==== FUNCTIONS ====
@@ -33,6 +37,7 @@ def list_parquet_files(path: str) -> list[str]:
             if file.endswith('.parquet'):
                 # Keep only the parquet files
                 parquet_files.append(os.path.join(root, file))
+                logger.info("Dataset: {}".format(file))  # noqa: UP032
     return parquet_files
 
 
