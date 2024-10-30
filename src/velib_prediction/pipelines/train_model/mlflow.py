@@ -3,10 +3,10 @@
 # =================
 
 from datetime import datetime, timezone
+from typing import Any
 
 import mlflow
 import pandas as pd
-
 from catboost import CatBoostRegressor
 
 # Options
@@ -66,8 +66,14 @@ def _log_mlflow_model_catboost(
     )
 
 
-def _log_mlflow_metric(dict_metric: str, run_id: str) -> None:
+def _log_mlflow_metric(dict_metric: dict[str, Any], run_id: str) -> None:
     """Log metrics to MLflow
+
+    Args:
+        dict_metric (dict[str, Any]): Dict containing metrics
+        run_id (str): Id of the MLflow run
+    Returns:
+        None
     """
     for metric_name, metric_value in dict_metric.items():
         mlflow.log_metric(metric_name, metric_value, run_id=run_id)
