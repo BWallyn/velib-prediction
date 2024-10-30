@@ -14,7 +14,7 @@ import numpy as np
 import pandas as pd
 
 # Option
-logger = logging.getLogger("__name__")
+logger = logging.getLogger(__name__)
 
 # ===================
 # ==== FUNCTIONS ====
