@@ -5,6 +5,7 @@
 from datetime import datetime, timezone
 from typing import Any
 
+import matplotlib.pyplot as plt
 import mlflow
 import pandas as pd
 from catboost import CatBoostRegressor
@@ -66,14 +67,37 @@ def _log_mlflow_model_catboost(
     )
 
 
-def _log_mlflow_metric(dict_metric: dict[str, Any], run_id: str) -> None:
+def _log_mlflow_metric(dict_metrics: dict[str, Any], run_id: str) -> None:
     """Log metrics to MLflow
 
     Args:
-        dict_metric (dict[str, Any]): Dict containing metrics
+        dict_metrics (dict[str, Any]): Dict containing metrics
         run_id (str): Id of the MLflow run
     Returns:
         None
     """
-    for metric_name, metric_value in dict_metric.items():
+    for metric_name, metric_value in dict_metrics.items():
         mlflow.log_metric(metric_name, metric_value, run_id=run_id)
+
+
+def _log_mlflow_parameters(dict_params: dict[str, Any]) -> None:
+    """Log parameters to MLflow
+
+    Args:
+        dict_params (dict[str, Any]): Dict containing parameters of the model
+    Returns:
+        None
+    """
+    mlflow.log_params(dict_params)
+
+
+def _log_fig_in_artifacts(fig: plt.figure, figure_path: str) -> None:
+    """Log figures in artifacts to MLflow
+
+    Args:
+        fig (str): Figure to log to MLflow
+        figure_path (str): Path to the figure
+    Returns:
+        None
+    """
+    mlflow.log_figure(fig, figure_path)
