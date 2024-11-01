@@ -185,7 +185,7 @@ def train_model_cv_mlflow(
     # MLflow
     with mlflow.start_run(run_name=run_name, experiment_id=experiment_id) as parent_run:
         # Iterate over the different tuples of datasets
-        for i, df_train, df_valid in enumerate(list_train_valid):
+        for i, (df_train, df_valid) in enumerate(list_train_valid):
             _ = train_model_mlflow(
                 experiment_id=experiment_id,
                 parent_run_id=parent_run.info.run_id,
