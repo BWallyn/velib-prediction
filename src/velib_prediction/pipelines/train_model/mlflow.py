@@ -91,6 +91,22 @@ def _log_mlflow_parameters(dict_params: dict[str, Any]) -> None:
     mlflow.log_params(dict_params)
 
 
+def _log_mlflow_catboost_parameters(model: CatBoostRegressor) -> None:
+    """Log the parameters of the Catboost regressor model to MLflow
+
+    Args:
+        model (CatBoostRegressor): Catboost regressor model trained
+    """
+    all_params = model.get_all_params()
+    mlflow.log_param('depth', all_params['depth'])
+    mlflow.log_param('iterations', all_params['iterations'])
+    mlflow.log_param('loss_function', all_params['loss_function'])
+    mlflow.log_param('learning_rate', all_params['learning_rate'])
+    mlflow.log_param('l2_leaf_reg', all_params['l2_leaf_reg'])
+    mlflow.log_param('random_strength', all_params['random_strength'])
+    mlflow.log_param('border_count', all_params['border_count'])
+
+
 def _log_fig_in_artifacts(fig: plt.figure, figure_path: str) -> None:
     """Log figures in artifacts to MLflow
 
