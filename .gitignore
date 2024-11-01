@@ -150,6 +150,8 @@ venv.bak/
 # mypy
 .mypy_cache/
 
-
 # MLflow
 */mlruns/
+
+# Catboost
+*/catboost_info/
