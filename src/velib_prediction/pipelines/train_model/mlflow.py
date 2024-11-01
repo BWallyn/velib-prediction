@@ -3,6 +3,7 @@
 # =================
 
 from datetime import datetime, timezone
+from pathlib import Path
 from typing import Any
 
 import matplotlib.pyplot as plt
@@ -46,7 +47,7 @@ def create_mlflow_experiment(
     # Create MLflow experiment
     experiment_id = mlflow.create_experiment(
         name=f"{experiment_name}_{timestamp}",
-        artifact_location=experiment_folder_path,
+        artifact_location=Path.cwd().joinpath(experiment_folder_path).as_uri(),
     )
     return experiment_id
 
