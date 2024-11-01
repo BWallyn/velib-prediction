@@ -174,7 +174,7 @@ def train_model_cv_mlflow(
     Log parameters, model, metrics, shap and confusion matrix to MLflow
 
     Args:
-        run_name (str):
+        run_name (str): Name of the MLflow parent run
         experiment_id (str): Experiment id of the MLflow
         list_train_valid (list[tuple[pd.DataFrame, pd.DataFrame]]): Tuples of train and validation sets
         feat_cat (list[str]): List of the categorical features
