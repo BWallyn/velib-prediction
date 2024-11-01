@@ -7,10 +7,16 @@ generated using Kedro 0.19.7
 # =================
 
 import mlflow
-import numpy as np
 import pandas as pd
 from catboost import CatBoostRegressor, Pool
+from sklearn.metrics import root_mean_squared_error
 from sklearn.model_selection import TimeSeriesSplit
+
+from velib_prediction.pipelines.train_model.mlflow import (
+    _log_mlflow_catboost_parameters,
+    _log_mlflow_metric,
+    _log_mlflow_model_catboost,
+)
 
 # ===================
 # ==== FUNCTIONS ====
@@ -59,47 +65,6 @@ def get_split_train_val_cv(
     return list_train_valid
 
 
-def mlflow_log_parameters(model: CatBoostRegressor) -> None:
-    """Log the parameters of the Catboost regressor model to MLflow
-
-    Args:
-        model (CatBoostRegressor): Catboost regressor model trained
-    """
-    all_params = model.get_all_params()
-    mlflow.log_param('depth', all_params['depth'])
-    mlflow.log_param('iterations', all_params['iterations'])
-    mlflow.log_param('loss_function', all_params['loss_function'])
-    mlflow.log_param('learning_rate', all_params['learning_rate'])
-    mlflow.log_param('l2_leaf_reg', all_params['l2_leaf_reg'])
-    mlflow.log_param('random_strength', all_params['random_strength'])
-    mlflow.log_param('border_count', all_params['border_count'])
-
-
-def mlflow_log_model(model: CatBoostRegressor) -> None:
-    """Log the Catboost regressor model to MLflow
-
-    Args:
-        model (CatBoostRegressor): Catboost regressor model trained
-    """
-    # model.save_model('../models/cb_classif')
-    mlflow.catboost.log_model(cb_model=model, artifact_path='model')
-
-
-def mlflow_log_metrics_cv(
-    l_rmse_train: list[float], l_rmse_eval: list[float], best_iteration: int
-) -> None:
-    """Log metrics to MLflow
-
-    Args:
-        l_rmse_train (list[float]): Lkist of the RMSE for the train set
-        l_rmse_eval (list[float]): List of the RMSE for the evaluation set
-        best_iteration (int): Best iteration for Catboost model
-    """
-    mlflow.log_metric('rmse_mean_train', np.mean(l_rmse_train))
-    mlflow.log_metric('rmse_mean_eval', np.mean(l_rmse_eval))
-    mlflow.log_metric('best_iteration', best_iteration)
-
-
 def train_model(
     pool_train: Pool, pool_eval: Pool, plot_training: bool, verbose: int,
     **kwargs,
@@ -131,12 +96,73 @@ def train_model(
     return model
 
 
-def train_model_cv_mlflow(  # noqa: PLR0913
-    list_train_valid: list[tuple[pd.DataFrame, pd.DataFrame]],
-    feat_cat: list[str], plot_training: bool=False, verbose: int=0,
-    shap_max_disp: int=10, path_reports: str='../reports',
+def train_model_mlflow(  # noqa: PLR0913
+    experiment_id: str,
+    parent_run_id: str,
+    df_train: pd.DataFrame,
+    df_valid: pd.DataFrame,
+    feat_cat: list[str],
+    verbose: int=0,
     **kwargs
-) -> tuple[CatBoostRegressor, np.array, np.array]:
+):
+    """Train a Catboost regressor model and log the parameters, metrics, model and shap values to MLflow
+
+    - Define a Catboost regressor model
+    - Train the model on training set and use a validation set to keep the best model
+    - Predict on train and evaluation sets
+    Log parameters, model, metrics, shap and confusion matrix to MLflow
+
+    Args:
+        experiment_id (str): Id of the MLflow experiment
+        parent_run_id (str): Id of the MLflow parent run
+        df_train (pd.DataFrame): Train DataFrame
+        df_valid (pd.DataFrame): Validation DataFrame
+        verbose (int): verbose parameter while learning
+        **kwargs: hyperparameters of the Catboost regressor
+    Returns:
+        model: Catboost regressor model trained
+    """
+    # Select the target
+    y_train = df_train["target"]
+    y_valid = df_valid["target"]
+    df_train.drop(columns=["target"], inplace=True)
+    df_valid.drop(columns=["target"], inplace=True)
+    # Create pools for Catboost model
+    pool_train = Pool(data=df_train, label=y_train, cat_features=feat_cat)
+    pool_eval = Pool(data=df_valid, label=y_valid, cat_features=feat_cat)
+    # Create MLflow child run
+    with mlflow.start_run(
+        experiment_id=experiment_id,
+        nested=True,
+        tags={mlflow.utils.mlflow_tags.MLFLOW_PARENT_RUN_ID: parent_run_id}
+    ) as child_run:
+        model = train_model(pool_train, pool_eval, plot_training=False, verbose=verbose, **kwargs)
+        # Predict
+        pred_train = model.predict(pool_train)
+        pred_eval = model.predict(pool_eval)
+        # Log parameters to MLflow
+        _log_mlflow_catboost_parameters(model=model)
+        # Log metrics
+        dict_metrics = {
+            'rmse_train': root_mean_squared_error(y_true=y_train, y_pred=pred_train),
+            'rmse_valid': root_mean_squared_error(y_true=y_valid, y_pred=pred_eval),
+        }
+        _log_mlflow_metric(dict_metrics=dict_metrics, run_id=child_run.info.run_id)
+        # Log model
+        _log_mlflow_model_catboost(model=model, df=df_train)
+        # End MLflow run
+        mlflow.end_run()
+    return model
+
+
+def train_model_cv_mlflow(
+    run_name: str,
+    experiment_id: str,
+    list_train_valid: list[tuple[pd.DataFrame, pd.DataFrame]],
+    feat_cat: list[str],
+    verbose: int=0,
+    **kwargs
+) -> CatBoostRegressor:
     """Using cross validation, train a Catboost regressor model and log the parameters, metrics, model and shap values to MLflow
 
     Create a MLflow run
@@ -148,41 +174,25 @@ def train_model_cv_mlflow(  # noqa: PLR0913
     Log parameters, model, metrics, shap and confusion matrix to MLflow
 
     Args:
-        list_train_valid: list of the different splits of train and validation
-        feat_cat: list of categorical features
-        plot_training: whether to plot the leaning curves
-        verbose: verbose parameter while learning
-        shap_max_display: top features to display on the shap values
-        **kwargs: hyperparameters of the Catboost regressor
+        run_name (str):
+        experiment_id (str): Experiment id of the MLflow
+        list_train_valid (list[tuple[pd.DataFrame, pd.DataFrame]]): Tuples of train and validation sets
+        feat_cat (list[str]): List of the categorical features
+        verbose (int): Verbose of the catboost training
     Returns:
-        model: Catboost regressor model trained
-        pred_train: predictions on the train set
-        pred_valid: predictions on the validation set
+        model (CatBoostregressor): Model trained
     """
-    # Options
-    l_rmse_train = []
-    l_rmse_eval = []
     # MLflow
-    with mlflow.start_run():
-        # Run over the different folds
-        for i in range(len(list_train_valid)):
-            df_train_, df_eval_ = list_train_valid[i]
-            y_train_, y_eval_ = df_train_[""]
-            # Create Pools for catboost model
-            pool_train = Pool(df_train_, y_train_, feat_cat)
-            pool_eval = Pool(df_eval_, y_eval_, feat_cat)
-            # Train model
-            model = train_model(pool_train, pool_eval, plot_training, verbose, **kwargs)
-            # Predict
-            # Force predictions as integers as the number of newspapers has to be int
-            pred_train = model.predict(pool_train)
-            pred_eval = model.predict(pool_eval)
-        # Log parameters to mlflow
-        mlflow_log_metrics_cv(
-            l_rmse_train, l_rmse_eval, model.get_best_iteration()
-        )
-        # mlflow_log_shap(model, df_train_, shap_max_disp=shap_max_disp, path_reports=path_reports)
-        mlflow_log_model(model)
-        mlflow_log_parameters(model)
-        return model, pred_train, pred_eval
-
+    with mlflow.start_run(run_name=run_name, experiment_id=experiment_id) as parent_run:
+        # Iterate over the different tuples of datasets
+        for i, df_train, df_valid in enumerate(list_train_valid):
+            _ = train_model_mlflow(
+                experiment_id=experiment_id,
+                parent_run_id=parent_run.info.run_id,
+                df_train=df_train,
+                df_valid=df_valid,
+                feat_cat=feat_cat,
+                verbose=verbose,
+                **kwargs
+            )
+        mlflow.end_run()
