@@ -44,8 +44,10 @@ def create_mlflow_experiment(
     timestamp = generate_timestamp()
 
     # Create MLflow experiment
-    experiment_path = f"{experiment_folder_path}{experiment_name}_{timestamp}"
-    experiment_id = mlflow.create_experiment(experiment_path)
+    experiment_id = mlflow.create_experiment(
+        name=f"{experiment_name}_{timestamp}",
+        artifact_location=experiment_folder_path,
+    )
     return experiment_id
 
 
