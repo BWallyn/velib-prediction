@@ -80,10 +80,12 @@ def create_pipeline(**kwargs) -> Pipeline:
             # ),
             node(
                 func=drop_columns,
-                inputs=["df_train_w_date_feat", "params:cols_to_drop"]
+                inputs=["df_train_w_date_feat", "params:cols_to_drop"],
+                outputs="df_train_prepared",
+                name="Drop_unused_columns",
             ),
         ],
         inputs=["df_with_bool_cols_upd"],
-        outputs=["df_train_w_date_feat", "df_test_w_date_feat"],
+        outputs=["df_train_prepared", "df_test_w_date_feat"],
         namespace="feature_engineering"
     )
