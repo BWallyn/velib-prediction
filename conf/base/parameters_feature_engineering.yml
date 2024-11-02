@@ -15,3 +15,9 @@ feature_engineering.zone_a: "Zone A"
 feature_engineering.zone_b: "Zone B"
 
 feature_engineering.zone_c: "Zone C"
+
+feature_engineering.cols_to_drop: [
+  "duedate",
+  "coordonnees_geo",
+  "date",
+]
