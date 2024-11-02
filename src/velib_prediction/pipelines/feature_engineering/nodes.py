@@ -128,3 +128,15 @@ def extract_date_features(df: pd.DataFrame, feat_date: str) -> pd.DataFrame:
     df[f'{feat_date}_weekday'] = df[feat_date].dt.weekday
     df = get_weekend(df, feat_date=feat_date)
     return df
+
+
+def drop_columns(df: pd.DataFrame, cols_to_drop: list[str]) -> pd.DataFrame:
+    """Drop specific columns
+
+    Args:
+        df (pd.DataFrame): Input DataFrame
+        cols_to_drop (list[str]): List of columns to drop
+    Returns:
+        (pd.DataFrame): Output DataFrame
+    """
+    return df.drop(columns=cols_to_drop)
