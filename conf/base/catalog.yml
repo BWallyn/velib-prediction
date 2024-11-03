@@ -22,7 +22,7 @@ df_with_bool_cols_upd:
 
 
 # Pipeline feature engineering
-df_train_w_date_feat:
+df_train_prepared:
   type: pandas.ParquetDataset
   filepath: data/04_feature/df_feat_train.parquet
   load_args:
