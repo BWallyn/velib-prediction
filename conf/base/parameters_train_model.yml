@@ -3,3 +3,5 @@
 #
 # Documentation for this file format can be found in "Parameters"
 # Link: https://docs.kedro.org/en/0.19.7/configuration/parameters.html
+
+train_model.n_splits: 3
