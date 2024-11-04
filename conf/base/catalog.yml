@@ -57,14 +57,3 @@ df_test_w_date_feat:
 #     dtype_backend: numpy_nullable
 #   save_args:
 #     engine: pyarrow
-
-
-# Test
-feature_engineering.df_test_w_date_feat:
-  type: pandas.ParquetDataset
-  filepath: data/03_primary/df_test_w_date_feat.parquet
-  load_args:
-    engine: pyarrow
-    dtype_backend: numpy_nullable
-  save_args:
-    engine: pyarrow

@@ -18,6 +18,6 @@ def create_pipeline(**kwargs) -> Pipeline:
                 name="Create_split_expanding_windows"
             ),
         ],
-        inputs=["df_train_prepared", "df_test_w_date_feat"],
+        inputs="df_train_prepared",
         namespace="train_model"
     )
