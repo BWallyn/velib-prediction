@@ -1,15 +1,15 @@
 # Pipeline data engineering
-df_raw:
-  type: pandas.ParquetDataset
-  filepath: data/01_raw/velib-disponibilite-en-temps-reel.parquet
-  load_args:
-    engine: pyarrow
-    columns: [
-      'stationcode', 'name', 'is_installed', 'capacity', 'numdocksavailable',
-      'numbikesavailable', 'mechanical', 'ebike', 'is_renting',
-      'is_returning', 'duedate',
-      'nom_arrondissement_communes', 'code_insee_commune'
-    ]
+# df_raw:
+#   type: pandas.ParquetDataset
+#   filepath: data/01_raw/velib-disponibilite-en-temps-reel.parquet
+#   load_args:
+#     engine: pyarrow
+#     columns: [
+#       'stationcode', 'name', 'is_installed', 'capacity', 'numdocksavailable',
+#       'numbikesavailable', 'mechanical', 'ebike', 'is_renting',
+#       'is_returning', 'duedate',
+#       'nom_arrondissement_communes', 'code_insee_commune'
+#     ]
 
 df_with_bool_cols_upd:
   type: pandas.ParquetDataset
@@ -22,7 +22,7 @@ df_with_bool_cols_upd:
 
 
 # Pipeline feature engineering
-df_train_w_date_feat:
+df_train_prepared:
   type: pandas.ParquetDataset
   filepath: data/04_feature/df_feat_train.parquet
   load_args:
@@ -57,14 +57,3 @@ df_test_w_date_feat:
 #     dtype_backend: numpy_nullable
 #   save_args:
 #     engine: pyarrow
-
-
-# Test
-feature_engineering.df_test_w_date_feat:
-  type: pandas.ParquetDataset
-  filepath: data/03_primary/df_test_w_date_feat.parquet
-  load_args:
-    engine: pyarrow
-    dtype_backend: numpy_nullable
-  save_args:
-    engine: pyarrow

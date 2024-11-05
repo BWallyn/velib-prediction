@@ -4,6 +4,8 @@
 # Documentation for this file format can be found in "Parameters"
 # Link: https://docs.kedro.org/en/0.19.7/configuration/parameters.html
 
+data_engineering.path_data: "data/01_raw/"
+
 data_engineering.cols_to_remove: ["name", "nom_arrondissement_communes"]
 
 data_engineering.boolean_columns: ["is_installed", "is_renting", "is_returning"]

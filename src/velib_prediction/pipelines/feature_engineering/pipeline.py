@@ -5,8 +5,9 @@ generated using Kedro 0.19.7
 
 from kedro.pipeline import Pipeline, node, pipeline
 
-from .nodes import (
+from velib_prediction.pipelines.feature_engineering.nodes import (
     # add_holidays_period,
+    drop_columns,
     extract_date_features,
     get_holidays,
     split_train_test,
@@ -77,8 +78,14 @@ def create_pipeline(**kwargs) -> Pipeline:
             #     outputs="df_test_w_holidays_c",
             #     name="add_holidays_zone_c_test"
             # ),
+            node(
+                func=drop_columns,
+                inputs=["df_train_w_date_feat", "params:cols_to_drop"],
+                outputs="df_train_prepared",
+                name="Drop_unused_columns",
+            ),
         ],
         inputs=["df_with_bool_cols_upd"],
-        outputs=["df_train_w_date_feat", "df_test_w_date_feat"],
+        outputs=["df_train_prepared", "df_test_w_date_feat"],
         namespace="feature_engineering"
     )
