@@ -6,7 +6,8 @@ generated using Kedro 0.19.7
 # ==== IMPORTS ====
 # =================
 
-from typing import Any
+import logging
+from typing import Any, Optional
 
 import mlflow
 import pandas as pd
@@ -18,7 +19,11 @@ from velib_prediction.pipelines.train_model.mlflow import (
     _log_mlflow_catboost_parameters,
     _log_mlflow_metric,
     _log_mlflow_model_catboost,
+    create_mlflow_experiment,
 )
+
+# Options
+logger = logging.getLogger(__name__)
 
 # ===================
 # ==== FUNCTIONS ====
@@ -65,6 +70,21 @@ def get_split_train_val_cv(
     for train_index, valid_index in tscv.split(df):
         list_train_valid.append((df.loc[train_index], df.loc[valid_index]))
     return list_train_valid
+
+
+def create_mlflow_experiment_if_needed(
+    experiment_folder_path: Optional[str]=None, experiment_name: Optional[str]=None, experiment_id: Optional[str]=None
+) -> str:
+    """
+    """
+    if experiment_id is None:
+        logger.info("Creating MLflow experiment...")
+        experiment_id = create_mlflow_experiment(experiment_folder_path, experiment_name)
+        logger.info("MLflow {} experiment created".format(experiment_id))  # noqa: UP032
+    else:
+        logger.info("{} experiment used".format(experiment_id))  # noqa: UP032
+    return experiment_id
+
 
 
 def train_model(
