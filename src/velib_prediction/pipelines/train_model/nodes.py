@@ -8,6 +8,7 @@ generated using Kedro 0.19.7
 
 import mlflow
 import pandas as pd
+from typing import Any
 from catboost import CatBoostRegressor, Pool
 from sklearn.metrics import root_mean_squared_error
 from sklearn.model_selection import TimeSeriesSplit
@@ -160,8 +161,8 @@ def train_model_cv_mlflow(
     experiment_id: str,
     list_train_valid: list[tuple[pd.DataFrame, pd.DataFrame]],
     feat_cat: list[str],
+    catboost_params: dict[str, Any],
     verbose: int=0,
-    **kwargs
 ) -> CatBoostRegressor:
     """Using cross validation, train a Catboost regressor model and log the parameters, metrics, model and shap values to MLflow
 
@@ -193,6 +194,6 @@ def train_model_cv_mlflow(
                 df_valid=df_valid,
                 feat_cat=feat_cat,
                 verbose=verbose,
-                **kwargs
+                **catboost_params
             )
         mlflow.end_run()

@@ -60,8 +60,8 @@ def create_pipeline(**kwargs) -> Pipeline:
                     "params:experiment_id",
                     "list_train_valid",
                     "params:list_feat_cat",
-                    "params:verbose",
                     "params:catboost_parameters",
+                    "params:verbose",
                 ],
                 outputs="model",
                 name="Train_catboost_model_using_cross_validation"
