@@ -6,6 +6,8 @@ generated using Kedro 0.19.7
 # ==== IMPORTS ====
 # =================
 
+from typing import Any
+
 import mlflow
 import pandas as pd
 from catboost import CatBoostRegressor, Pool
@@ -155,13 +157,13 @@ def train_model_mlflow(  # noqa: PLR0913
     return model
 
 
-def train_model_cv_mlflow(
+def train_model_cv_mlflow(  # noqa: PLR0913
     run_name: str,
     experiment_id: str,
     list_train_valid: list[tuple[pd.DataFrame, pd.DataFrame]],
     feat_cat: list[str],
+    catboost_params: dict[str, Any],
     verbose: int=0,
-    **kwargs
 ) -> CatBoostRegressor:
     """Using cross validation, train a Catboost regressor model and log the parameters, metrics, model and shap values to MLflow
 
@@ -193,6 +195,6 @@ def train_model_cv_mlflow(
                 df_valid=df_valid,
                 feat_cat=feat_cat,
                 verbose=verbose,
-                **kwargs
+                **catboost_params
             )
         mlflow.end_run()

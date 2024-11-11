@@ -4,4 +4,35 @@
 # Documentation for this file format can be found in "Parameters"
 # Link: https://docs.kedro.org/en/0.19.7/configuration/parameters.html
 
+train_model.dict_rename_target: {"numbikesavailable": "target"}
+
+train_model.lags_to_try: [1]
+
+train_model.feat_id: "stationcode"
+
+train_model.feat_date: "due_date"
+
+train_model.feat_target: "target"
+
+train_model.n_shift: 5
+
 train_model.n_splits: 3
+
+train_model.run_name: "catbooost_model"
+
+train_model.experiment_id: "756205932993735470"
+
+train_model.list_feat_cat: [
+  "is_installed",
+  "is_renting",
+  "is_returning",
+  "code_insee_commune",
+  "duedate_weekend",
+]
+
+train_model.verbose: 10
+
+train_model.catboost_parameters: {
+  "iterations": 100,
+  "depth": 7,
+}
