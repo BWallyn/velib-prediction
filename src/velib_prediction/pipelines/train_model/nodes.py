@@ -6,9 +6,10 @@ generated using Kedro 0.19.7
 # ==== IMPORTS ====
 # =================
 
+from typing import Any
+
 import mlflow
 import pandas as pd
-from typing import Any
 from catboost import CatBoostRegressor, Pool
 from sklearn.metrics import root_mean_squared_error
 from sklearn.model_selection import TimeSeriesSplit
@@ -156,7 +157,7 @@ def train_model_mlflow(  # noqa: PLR0913
     return model
 
 
-def train_model_cv_mlflow(
+def train_model_cv_mlflow(  # noqa: PLR0913
     run_name: str,
     experiment_id: str,
     list_train_valid: list[tuple[pd.DataFrame, pd.DataFrame]],
