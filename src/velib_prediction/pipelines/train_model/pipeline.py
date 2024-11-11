@@ -7,6 +7,7 @@ from kedro.pipeline import Pipeline, node, pipeline
 
 from velib_prediction.pipelines.train_model.nodes import (
     add_lags_sma,
+    create_mlflow_experiment_if_needed,
     get_split_train_val_cv,
     train_model_cv_mlflow,
 )
@@ -54,16 +55,26 @@ def create_pipeline(**kwargs) -> Pipeline:
                 name="Create_split_expanding_windows"
             ),
             node(
+                func=create_mlflow_experiment_if_needed,
+                inputs=[
+                    "params:experiment_folder",
+                    "params:experiment_name",
+                    "params:experiment_id",
+                ],
+                outputs="experiment_id_created",
+                name="Create_MLflow_experiment_id_if_needed",
+            ),
+            node(
                 func=train_model_cv_mlflow,
                 inputs=[
                     "params:run_name",
-                    "params:experiment_id",
+                    "experiment_id_created",
                     "list_train_valid",
                     "params:list_feat_cat",
                     "params:catboost_parameters",
                     "params:verbose",
                 ],
-                outputs="model",
+                outputs=None,
                 name="Train_catboost_model_using_cross_validation"
             ),
         ],
