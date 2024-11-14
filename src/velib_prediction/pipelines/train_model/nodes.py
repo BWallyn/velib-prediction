@@ -7,9 +7,12 @@ generated using Kedro 0.19.7
 # =================
 
 import logging
+from functools import partial
 from typing import Any, Optional
 
 import mlflow
+import numpy as np
+import optuna
 import pandas as pd
 from catboost import CatBoostRegressor, Pool
 from sklearn.metrics import root_mean_squared_error
@@ -218,3 +221,35 @@ def train_model_cv_mlflow(  # noqa: PLR0913
                 **catboost_params
             )
         mlflow.end_run()
+
+
+def optimize_hyperparams(run_id: str) -> float:
+    """
+    """
+    pass
+
+
+def train_model_bayesian_opti(  # noqa: PLR0913
+    run_name: str,
+    experiment_id: str,
+    df_train: pd.DataFrame, y_train: np.array,
+    df_valid: pd.DataFrame, y_valid: np.array,
+    feat_cat: list[str],
+    n_trials: int,
+    verbose: int=0,
+):
+    """
+    """
+    # Start a MLflow run
+    with mlflow.start_run(run_name=run_name, experiment_id=experiment_id) as parent_run:
+        # Run Bayesian optimization using Optuna
+        study = optuna.create_study(study_name="", direction="maximize")
+
+        # Define objective function
+        objective = partial(
+            optimize_hyperparams,
+            run_id=parent_run.info.run_id,
+        )
+
+        # Optimize
+        study.optimize(objective, n_trial=n_trials, show_progress_bar=True)
