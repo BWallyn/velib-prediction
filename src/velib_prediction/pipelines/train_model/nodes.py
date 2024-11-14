@@ -229,7 +229,7 @@ def optimize_hyperparams(run_id: str) -> float:
     pass
 
 
-def train_model_bayesian_opti(
+def train_model_bayesian_opti(  # noqa: PLR0913
     run_name: str,
     experiment_id: str,
     df_train: pd.DataFrame, y_train: np.array,
