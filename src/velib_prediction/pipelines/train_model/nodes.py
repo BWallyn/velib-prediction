@@ -168,16 +168,16 @@ def train_model_mlflow(  # noqa: PLR0913
         # Log parameters to MLflow
         _log_mlflow_catboost_parameters(model=model)
         # Log metrics
+        rmse_train = root_mean_squared_error(y_true=y_train, y_pred=pred_train)
+        rmse_valid = root_mean_squared_error(y_true=y_valid, y_pred=pred_eval)
         dict_metrics = {
-            'rmse_train': root_mean_squared_error(y_true=y_train, y_pred=pred_train),
-            'rmse_valid': root_mean_squared_error(y_true=y_valid, y_pred=pred_eval),
+            'rmse_train': rmse_train,
+            'rmse_valid': rmse_valid,
         }
         _log_mlflow_metric(dict_metrics=dict_metrics, run_id=child_run.info.run_id)
         # Log model
         _log_mlflow_model_catboost(model=model, df=df_train)
-        # End MLflow run
-        mlflow.end_run()
-    return model
+    return model, rmse_train, rmse_valid
 
 
 def train_model_cv_mlflow(  # noqa: PLR0913
@@ -211,7 +211,7 @@ def train_model_cv_mlflow(  # noqa: PLR0913
     with mlflow.start_run(run_name=run_name, experiment_id=experiment_id) as parent_run:
         # Iterate over the different tuples of datasets
         for i, (df_train, df_valid) in enumerate(list_train_valid):
-            _ = train_model_mlflow(
+            _, _, _ = train_model_mlflow(
                 experiment_id=experiment_id,
                 parent_run_id=parent_run.info.run_id,
                 df_train=df_train,
@@ -220,20 +220,36 @@ def train_model_cv_mlflow(  # noqa: PLR0913
                 verbose=verbose,
                 **catboost_params
             )
-        mlflow.end_run()
 
 
-def optimize_hyperparams(run_id: str) -> float:
+def optimize_hyperparams(  # noqa: PLR0913
+    optimize_params: dict[str, Any],
+    experiment_id: str,
+    run_id: str,
+    df_train: pd.DataFrame,
+    df_valid: pd.DataFrame,
+    feat_cat: list[str],
+) -> float:
     """
     """
-    pass
+    _, _, rmse_valid = train_model_mlflow(
+        experiment_id=experiment_id,
+        parent_run_id=run_id,
+        df_train=df_train,
+        df_valid=df_valid,
+        feat_cat=feat_cat,
+        verbose=None,
+        **optimize_params
+    )
+    return rmse_valid
 
 
 def train_model_bayesian_opti(  # noqa: PLR0913
     run_name: str,
     experiment_id: str,
-    df_train: pd.DataFrame, y_train: np.array,
-    df_valid: pd.DataFrame, y_valid: np.array,
+    search_params: dict[str, Any],
+    df_train: pd.DataFrame,
+    df_valid: pd.DataFrame,
     feat_cat: list[str],
     n_trials: int,
     verbose: int=0,
@@ -248,7 +264,12 @@ def train_model_bayesian_opti(  # noqa: PLR0913
         # Define objective function
         objective = partial(
             optimize_hyperparams,
+            experiment_id=experiment_id,
             run_id=parent_run.info.run_id,
+            search_params=search_params,
+            df_train=df_train,
+            df_valid=df_valid,
+            feat_cat=feat_cat,
         )
 
         # Optimize
