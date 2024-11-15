@@ -11,7 +11,6 @@ from functools import partial
 from typing import Any, Optional
 
 import mlflow
-import numpy as np
 import optuna
 import pandas as pd
 from catboost import CatBoostRegressor, Pool
