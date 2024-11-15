@@ -6,7 +6,13 @@ generated using Kedro 0.19.7
 # ==== IMPORTS ====
 # =================
 
+import logging
+from functools import partial
+from typing import Any, Optional
+
 import mlflow
+import numpy as np
+import optuna
 import pandas as pd
 from catboost import CatBoostRegressor, Pool
 from sklearn.metrics import root_mean_squared_error
@@ -16,16 +22,20 @@ from velib_prediction.pipelines.train_model.mlflow import (
     _log_mlflow_catboost_parameters,
     _log_mlflow_metric,
     _log_mlflow_model_catboost,
+    create_mlflow_experiment,
 )
+
+# Options
+logger = logging.getLogger(__name__)
 
 # ===================
 # ==== FUNCTIONS ====
 # ===================
 
 def add_lags_sma(  # noqa: PLR0913
-    df: pd.DataFrame, list_lags: list[int], feat_id: str, feat_date: str, feat_target: str, shift_days: int,
+    df: pd.DataFrame, list_lags: list[int], feat_id: str, feat_date: str, feat_target: str, n_shift: int,
 ) -> pd.DataFrame:
-    """Add different lags to the dataset with a shift of shift_days.
+    """Add different lags to the dataset with a shift of n_shift
 
     Args:
         df (pd.DataFrame): Input dataframe
@@ -33,14 +43,14 @@ def add_lags_sma(  # noqa: PLR0913
         feat_id (str): Name of the id column of the velib stations
         feat_date (str): Name of the date column
         feat_target (str): Name of the target column
-        shift_days (int): Number of days to shift the results
+        n_shift (int): Number of rows to shift the results
     Returns:
         df (pd.DataFrame): Output dataframe with lags added
     """
     df = df.sort_values(by=[feat_date])
     for id in df[feat_id].unique():
         for lag in list_lags:
-            df.loc[df[feat_id] == id, f'sma_{lag}_lag'] = df.loc[df[feat_id] == id].rolling(lag)[feat_target].mean().shift(shift_days).values
+            df.loc[df[feat_id] == id, f'sma_{lag}_lag'] = df.loc[df[feat_id] == id].rolling(lag)[feat_target].mean().shift(n_shift).values
     return df
 
 
@@ -63,6 +73,21 @@ def get_split_train_val_cv(
     for train_index, valid_index in tscv.split(df):
         list_train_valid.append((df.loc[train_index], df.loc[valid_index]))
     return list_train_valid
+
+
+def create_mlflow_experiment_if_needed(
+    experiment_folder_path: Optional[str]=None, experiment_name: Optional[str]=None, experiment_id: Optional[str]=None
+) -> str:
+    """
+    """
+    if experiment_id is None:
+        logger.info("Creating MLflow experiment...")
+        experiment_id = create_mlflow_experiment(experiment_folder_path, experiment_name)
+        logger.info("MLflow {} experiment created".format(experiment_id))  # noqa: UP032
+    else:
+        logger.info("{} experiment used".format(experiment_id))  # noqa: UP032
+    return experiment_id
+
 
 
 def train_model(
@@ -155,13 +180,13 @@ def train_model_mlflow(  # noqa: PLR0913
     return model
 
 
-def train_model_cv_mlflow(
+def train_model_cv_mlflow(  # noqa: PLR0913
     run_name: str,
     experiment_id: str,
     list_train_valid: list[tuple[pd.DataFrame, pd.DataFrame]],
     feat_cat: list[str],
+    catboost_params: dict[str, Any],
     verbose: int=0,
-    **kwargs
 ) -> CatBoostRegressor:
     """Using cross validation, train a Catboost regressor model and log the parameters, metrics, model and shap values to MLflow
 
@@ -193,6 +218,38 @@ def train_model_cv_mlflow(
                 df_valid=df_valid,
                 feat_cat=feat_cat,
                 verbose=verbose,
-                **kwargs
+                **catboost_params
             )
         mlflow.end_run()
+
+
+def optimize_hyperparams(run_id: str) -> float:
+    """
+    """
+    pass
+
+
+def train_model_bayesian_opti(  # noqa: PLR0913
+    run_name: str,
+    experiment_id: str,
+    df_train: pd.DataFrame, y_train: np.array,
+    df_valid: pd.DataFrame, y_valid: np.array,
+    feat_cat: list[str],
+    n_trials: int,
+    verbose: int=0,
+):
+    """
+    """
+    # Start a MLflow run
+    with mlflow.start_run(run_name=run_name, experiment_id=experiment_id) as parent_run:
+        # Run Bayesian optimization using Optuna
+        study = optuna.create_study(study_name="", direction="maximize")
+
+        # Define objective function
+        objective = partial(
+            optimize_hyperparams,
+            run_id=parent_run.info.run_id,
+        )
+
+        # Optimize
+        study.optimize(objective, n_trial=n_trials, show_progress_bar=True)

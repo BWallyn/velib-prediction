@@ -9,6 +9,8 @@ The goal of this project is to predict the number of rides in Velib stations loc
 
 Data are extracted from the [Open Data Paris website](https://opendata.paris.fr/explore/dataset/velib-disponibilite-en-temps-reel/information/?disjunctive.name&disjunctive.is_installed&disjunctive.is_renting&disjunctive.is_returning&disjunctive.nom_arrondissement_communes).
 
+A Github action is running every hour to fetch data from the Open Data Paris website and save it in the main branch.
+
 
 ## 🧪 Feature engineering
 
