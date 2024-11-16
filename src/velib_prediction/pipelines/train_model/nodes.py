@@ -222,15 +222,33 @@ def train_model_cv_mlflow(  # noqa: PLR0913
 
 
 def optimize_hyperparams(  # noqa: PLR0913
-    optimize_params: dict[str, Any],
     experiment_id: str,
     run_id: str,
+    search_params: dict[str, Any],
     df_train: pd.DataFrame,
     df_valid: pd.DataFrame,
     feat_cat: list[str],
 ) -> float:
+    """Bayesian optimization function
+
+    Args:
+        experiment_id (str): Id of the MLflow experiment
+        run_id (str): Id of the MLflow run
+        search_params (dict[str, Any]): Search parameters for the hyperparameters
+        df_train (pd.DataFrame): Train DataFrame
+        df_valid (pd.DataFrame): Validation DataFrame
+        feat_cat (list[str]): List of categorical features
+    Returns:
+        rmse_valid (float): Root Mean Squared Error on the validation set
     """
-    """
+    optimize_params = {}
+    # Set the hyperparams
+    for param_name, sampling_params in search_params.items():
+        optimize_params[param_name] = eval(
+            f"trial.suggest_{sampling_params["sampling_type"]}('{param_name}', {sampling_params['min']}, {sampling_params['max']})"
+        )
+
+    # Train model mlflow
     _, _, rmse_valid = train_model_mlflow(
         experiment_id=experiment_id,
         parent_run_id=run_id,
@@ -251,9 +269,19 @@ def train_model_bayesian_opti(  # noqa: PLR0913
     df_valid: pd.DataFrame,
     feat_cat: list[str],
     n_trials: int,
-    verbose: int=0,
-):
-    """
+) -> dict[str, Any]:
+    """Use Bayesian optimization to find the best hyperparameters
+
+    Args:
+        run_name (str): Name of the run
+        experiment_id (str): Id of the MLflow experiment
+        search_params (dict[str, Any]): Hyperparameters space to search
+        df_train (pd.DataFrame): Train DataFrame
+        df_valid (pd.DataFrame): Validation DataFrame
+        feat_cat (list[str]): List of the categorical features
+        n_trials (int): Number of trials for the bayesian optimization
+    Returns:
+        (dict[str, Any]): Best hyperparameters of the model
     """
     # Start a MLflow run
     with mlflow.start_run(run_name=run_name, experiment_id=experiment_id) as parent_run:
@@ -273,3 +301,4 @@ def train_model_bayesian_opti(  # noqa: PLR0913
 
         # Optimize
         study.optimize(objective, n_trial=n_trials, show_progress_bar=True)
+    return study.best_params
