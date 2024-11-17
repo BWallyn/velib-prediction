@@ -245,7 +245,7 @@ def optimize_hyperparams(  # noqa: PLR0913
     # Set the hyperparams
     for param_name, sampling_params in search_params.items():
         optimize_params[param_name] = eval(
-            f"trial.suggest_{sampling_params["sampling_type"]}('{param_name}', {sampling_params['min']}, {sampling_params['max']})"
+            f"trial.suggest_{sampling_params['sampling_type']}('{param_name}', {sampling_params['min']}, {sampling_params['max']})"
         )
 
     # Train model mlflow
