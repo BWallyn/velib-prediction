@@ -300,5 +300,5 @@ def train_model_bayesian_opti(  # noqa: PLR0913
         )
 
         # Optimize
-        study.optimize(objective, n_trial=n_trials, show_progress_bar=True)
+        study.optimize(objective, n_trials=n_trials, show_progress_bar=True)
     return study.best_params
