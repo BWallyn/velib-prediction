@@ -249,6 +249,7 @@ def optimize_hyperparams(  # noqa: PLR0913
         )
 
     # Train model mlflow
+    logger.info(f"Train Catboost model using {optimize_params}")
     _, _, rmse_valid = train_model_mlflow(
         experiment_id=experiment_id,
         parent_run_id=run_id,
@@ -258,6 +259,7 @@ def optimize_hyperparams(  # noqa: PLR0913
         verbose=None,
         **optimize_params
     )
+    logger.info(f"Catboost model trained with RMSE: {rmse_valid}")
     return rmse_valid
 
 
@@ -301,4 +303,5 @@ def train_model_bayesian_opti(  # noqa: PLR0913
 
         # Optimize
         study.optimize(objective, n_trials=n_trials, show_progress_bar=True)
+        logger.info(f"Best parameters found: {study.best_params}")
     return study.best_params
