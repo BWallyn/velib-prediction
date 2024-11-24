@@ -77,7 +77,15 @@ def get_split_train_val_cv(
 def create_mlflow_experiment_if_needed(
     experiment_folder_path: Optional[str]=None, experiment_name: Optional[str]=None, experiment_id: Optional[str]=None
 ) -> str:
-    """
+    """Create a MLflow experiment if needed.
+    If experiment id is not None, then create a MLflow experiment using the folder path and the experiment name
+
+    Args:
+        experiment_folder_path (Optional[str]): Path to the folder to save the MLflow experiment
+        experiment_name (Optional[str]): Name of the MLflow experiment to create
+        experiment_id (Optional[str]): Id of the MLflow experiment if it exists
+    Returns:
+        experiment_id (str): Id of the MLflow experiment
     """
     if experiment_id is None:
         logger.info("Creating MLflow experiment...")
