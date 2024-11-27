@@ -136,7 +136,7 @@ def train_model_mlflow(  # noqa: PLR0913
     feat_cat: list[str],
     verbose: int=0,
     **kwargs
-):
+) -> tuple[CatBoostRegressor, float, float]:
     """Train a Catboost regressor model and log the parameters, metrics, model and shap values to MLflow
 
     - Define a Catboost regressor model
