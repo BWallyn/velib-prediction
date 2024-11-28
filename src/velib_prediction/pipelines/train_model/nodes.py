@@ -74,6 +74,31 @@ def get_split_train_val_cv(
     return list_train_valid
 
 
+def _filter_last_hours(group, n_hours: int=5):
+    """
+    """
+    last_hours = group["duedate"].max() - pd.Timedelta(hours=n_hours)
+    return group[group["duedate"] >= last_hours]
+
+
+def split_train_valid(df: pd.DataFrame, n_hours: int) -> tuple[pd.DataFrame, pd.DataFrame]:
+    """Split dataset into train and validation sets
+
+    Args:
+        df (pd.DataFrame): Input DataFrame
+        n_hours (int): Number of hours to keep for validation set
+    Returns:
+        df_train (pd.DataFrame): Train DataFrame
+        df_valid (pd.DataFrame): Valid DataFrame
+    """
+    # Order dataset by station and date
+    df = df.sort_values(["stationcode", "duedate"], ascending=[True, True])
+    df_valid_index = df.groupby('stationcode').apply(_filter_last_hours, n_hours=5).index
+    df_valid = df.loc[df_valid_index]
+    df_train = df.loc[~df_valid_index]
+    return df_train, df_valid
+
+
 def create_mlflow_experiment_if_needed(
     experiment_folder_path: Optional[str]=None, experiment_name: Optional[str]=None, experiment_id: Optional[str]=None
 ) -> str:
@@ -313,3 +338,26 @@ def train_model_bayesian_opti(  # noqa: PLR0913
         study.optimize(objective, n_trials=n_trials, show_progress_bar=True)
         logger.info(f"Best parameters found: {study.best_params}")
     return study.best_params
+
+
+def train_model_bayesian_opti_cv(
+    run_name: str,
+    experiment_id: str,
+    search_params: dict[str, Any],
+    list_train_valid: list[tuple[pd.DataFrame, pd.DataFrame]],
+    feat_cat: list[str],
+    n_trials: int
+) -> dict[str, Any]:
+    """Use Bayesian optimization to find the best hyperparameters using cross validation
+
+    Args:
+        run_name (str): Name of the run
+        experiment_id (str): Id of the MLflow experiment
+        search_params (dict[str, Any]): Hyperparameters space to search
+        list_train_valid (list[tuple[pd.DataFrame, pd.DataFrame]]): Tuples of train and validation sets
+        feat_cat (list[str]): List of the categorical features
+        n_trials (int): Number of trials for the bayesian optimization
+    Returns:
+        (dict[str, Any]): Best hyperparameters of the model
+    """
+    pass
