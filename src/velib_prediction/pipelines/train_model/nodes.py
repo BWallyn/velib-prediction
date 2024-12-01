@@ -352,7 +352,7 @@ def optimize_hyperparams_cv(
     pass
 
 
-def train_model_bayesian_opti_cv(
+def train_model_bayesian_opti_cv(  # noqa: PLR0913
     run_name: str,
     experiment_id: str,
     search_params: dict[str, Any],
