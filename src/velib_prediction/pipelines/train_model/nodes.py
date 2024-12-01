@@ -92,10 +92,10 @@ def split_train_valid(df: pd.DataFrame, n_hours: int) -> tuple[pd.DataFrame, pd.
         df_valid (pd.DataFrame): Valid DataFrame
     """
     # Order dataset by station and date
-    df = df.sort_values(["stationcode", "duedate"], ascending=[True, True])
-    df_valid_index = df.groupby('stationcode').apply(_filter_last_hours, n_hours=5).index
-    df_valid = df.loc[df_valid_index]
-    df_train = df.loc[~df_valid_index]
+    df_sel = df.sort_values(["stationcode", "duedate"], ascending=[True, True])
+    df_valid_index = df_sel.groupby('stationcode').apply(_filter_last_hours, n_hours=5).reset_index(drop=True)["idx"].values
+    df_valid = df.loc[df["idx"].isin(df_valid_index)]
+    df_train = df.loc[~df["idx"].isin(df_valid_index)]
     return df_train, df_valid
 
 
@@ -340,6 +340,18 @@ def train_model_bayesian_opti(  # noqa: PLR0913
     return study.best_params
 
 
+def optimize_hyperparams_cv(
+    experiment_id: str,
+    run_id: str,
+    search_params: dict[str, Any],
+    list_train_valid: list[tuple[pd.DataFrame, pd.DataFrame]],
+    feat_cat: list[str],
+):
+    """
+    """
+    pass
+
+
 def train_model_bayesian_opti_cv(
     run_name: str,
     experiment_id: str,
@@ -360,4 +372,22 @@ def train_model_bayesian_opti_cv(
     Returns:
         (dict[str, Any]): Best hyperparameters of the model
     """
+    # Start a MLflow run
+    with mlflow.start_run(run_name=run_name, experiment_id=experiment_id) as parent_run:
+        # Run Bayesian optimization using Optuna
+        study = optuna.create_study(study_name="", direction="maximize")
+
+        # Define objective function
+        objective = partial(
+            optimize_hyperparams_cv,
+            experiment_id=experiment_id,
+            run_id=parent_run.info.run_id,
+            search_params=search_params,
+            list_train_valid=list_train_valid,
+            feat_cat=feat_cat,
+        )
+
+        # Optimize
+        study.optimize(objective, n_trials=n_trials, show_progress_bar=True)
+        logger.info(f"Best parameters found: {study.best_params}")
     pass
