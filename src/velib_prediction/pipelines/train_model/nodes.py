@@ -81,7 +81,7 @@ def _filter_last_hours(group, n_hours: int=5):
     return group[group["duedate"] >= last_hours]
 
 
-def split_train_valid(df: pd.DataFrame, n_hours: int) -> tuple[pd.DataFrame, pd.DataFrame]:
+def split_train_valid_last_hours(df: pd.DataFrame, n_hours: int) -> tuple[pd.DataFrame, pd.DataFrame]:
     """Split dataset into train and validation sets
 
     Args:
