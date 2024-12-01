@@ -93,7 +93,7 @@ def split_train_valid_last_hours(df: pd.DataFrame, n_hours: int) -> tuple[pd.Dat
     """
     # Order dataset by station and date
     df_sel = df.sort_values(["stationcode", "duedate"], ascending=[True, True])
-    df_valid_index = df_sel.groupby('stationcode').apply(_filter_last_hours, n_hours=5).reset_index(drop=True)["idx"].values
+    df_valid_index = df_sel.groupby('stationcode').apply(_filter_last_hours, n_hours=n_hours).reset_index(drop=True)["idx"].values
     df_valid = df.loc[df["idx"].isin(df_valid_index)]
     df_train = df.loc[~df["idx"].isin(df_valid_index)]
     return df_train, df_valid
