@@ -255,9 +255,9 @@ def train_model_cv_mlflow(  # noqa: PLR0913
 
 
 def optimize_hyperparams(  # noqa: PLR0913
+    search_params: dict[str, Any],
     experiment_id: str,
     run_id: str,
-    search_params: dict[str, Any],
     df_train: pd.DataFrame,
     df_valid: pd.DataFrame,
     feat_cat: list[str],
