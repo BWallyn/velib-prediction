@@ -1,0 +1,11 @@
+{
+  "parameters": {
+    "train_model.list_feat_cat": [
+      "is_installed",
+      "is_renting",
+      "is_returning",
+      "code_insee_commune",
+      "duedate_weekend"
+    ]
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "code": "def sort_dataframe(df: pd.DataFrame, list_cols: list[str]) -> pd.DataFrame:\n    \"\"\"Sort dataset based on columns\n\n    Args:\n        df (pd.DataFrame): Input DataFrame\n        list_cols (list[str]): List of the columns used to sort DataFrame\n    Returns:\n        (pd.DataFrame): Output DataFrame sorted\n    \"\"\"\n    return df.sort_values(by=list_cols)\n",
+  "filepath": "velib-prediction/src/velib_prediction/utils/utils.py",
+  "parameters": {
+    "train_model.feat_date": "duedate"
+  },
+  "run_command": "kedro run --to-nodes='train_model.Sort_dataframe_by_date'",
+  "inputs": [
+    "train_model.df_train_w_lags",
+    "params:train_model.feat_date"
+  ],
+  "outputs": [
+    "train_model.df_sorted"
+  ]
+}

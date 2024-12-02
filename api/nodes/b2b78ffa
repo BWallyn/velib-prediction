@@ -1,0 +1,5 @@
+{
+  "parameters": {
+    "train_model.n_shift": 5
+  }
+}

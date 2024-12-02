@@ -1,0 +1,18 @@
+{
+  "code": "def drop_unused_columns(df: pd.DataFrame, list_cols_to_remove: list[str]) -> pd.DataFrame:\n    \"\"\"Drop the unnecessary columns for the model\n\n    Args:\n        df (pd.DataFrame): Input dataframe\n    Returns:\n        (pd.DataFrame): Output dataframe\n    \"\"\"\n    return df.drop(columns=list_cols_to_remove)\n",
+  "filepath": "velib-prediction/src/velib_prediction/pipelines/data_engineering/nodes.py",
+  "parameters": {
+    "data_engineering.cols_to_remove": [
+      "name",
+      "nom_arrondissement_communes"
+    ]
+  },
+  "run_command": "kedro run --to-nodes='data_engineering.remove_unused_cols'",
+  "inputs": [
+    "data_engineering.df_w_idx",
+    "params:data_engineering.cols_to_remove"
+  ],
+  "outputs": [
+    "data_engineering.df_wtht_unused_cols"
+  ]
+}

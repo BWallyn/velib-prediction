@@ -1,0 +1,18 @@
+{
+  "code": "def drop_columns(df: pd.DataFrame, cols_to_drop: list[str]) -> pd.DataFrame:\n    \"\"\"Drop specific columns\n\n    Args:\n        df (pd.DataFrame): Input DataFrame\n        cols_to_drop (list[str]): List of columns to drop\n    Returns:\n        (pd.DataFrame): Output DataFrame\n    \"\"\"\n    return df.drop(columns=cols_to_drop)\n",
+  "filepath": "velib-prediction/src/velib_prediction/pipelines/feature_engineering/nodes.py",
+  "parameters": {
+    "feature_engineering.cols_to_drop": [
+      "coordonnees_geo",
+      "date"
+    ]
+  },
+  "run_command": "kedro run --to-nodes='feature_engineering.Drop_unused_columns'",
+  "inputs": [
+    "feature_engineering.df_train_w_date_feat",
+    "params:feature_engineering.cols_to_drop"
+  ],
+  "outputs": [
+    "df_train_prepared"
+  ]
+}

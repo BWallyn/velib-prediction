@@ -1,0 +1,7 @@
+{
+  "parameters": {
+    "train_model.lags_to_try": [
+      1
+    ]
+  }
+}

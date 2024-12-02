@@ -1,0 +1,5 @@
+{
+  "parameters": {
+    "train_model.feat_target": "target"
+  }
+}

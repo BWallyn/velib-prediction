@@ -1,0 +1,5 @@
+{
+  "parameters": {
+    "data_engineering.path_data": "data/01_raw/"
+  }
+}

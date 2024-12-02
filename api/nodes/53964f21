@@ -1,0 +1,14 @@
+{
+  "code": "def list_parquet_files(path: str) -> list[str]:\n    \"\"\"Lists all parquet files in a given directory.\n\n    Args:\n        path (str): The folder to search for parquet files.\n\n    Returns:\n        parquet_files (list[str]): A list of parquet file paths.\n    \"\"\"\n\n    parquet_files = []\n    for root, _, files in os.walk(path):\n        for file in files:\n            # Check all the files in the folder\n            if file.endswith('.parquet'):\n                # Keep only the parquet files\n                parquet_files.append(os.path.join(root, file))\n                logger.info(\"Dataset: {}\".format(file))  # noqa: UP032\n    return parquet_files\n",
+  "filepath": "velib-prediction/src/velib_prediction/pipelines/data_engineering/nodes.py",
+  "parameters": {
+    "data_engineering.path_data": "data/01_raw/"
+  },
+  "run_command": "kedro run --to-nodes='data_engineering.list_dataset_files'",
+  "inputs": [
+    "params:data_engineering.path_data"
+  ],
+  "outputs": [
+    "data_engineering.list_files"
+  ]
+}

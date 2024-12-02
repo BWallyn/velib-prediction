@@ -1,0 +1,15 @@
+{
+  "code": "def extract_date_features(df: pd.DataFrame, feat_date: str) -> pd.DataFrame:\n    \"\"\"Create features from a datetime feature\n\n    Args:\n        df: dataset\n        feat_date: name of the date feature\n    Returns\n        df: dataset with features extracted from the date\n    \"\"\"\n    df[feat_date] = pd.to_datetime(df[feat_date], format='%Y%m%d')\n    df[f'{feat_date}_year'] = df[feat_date].dt.year\n    df[f'{feat_date}_month'] = df[feat_date].dt.month\n    df[f'{feat_date}_day'] = df[feat_date].dt.day\n    df[f'{feat_date}_weekday'] = df[feat_date].dt.weekday\n    df = get_weekend(df, feat_date=feat_date)\n    return df\n",
+  "filepath": "velib-prediction/src/velib_prediction/pipelines/feature_engineering/nodes.py",
+  "parameters": {
+    "feature_engineering.feat_date": "duedate"
+  },
+  "run_command": "kedro run --to-nodes='feature_engineering.Add_date_feat_train'",
+  "inputs": [
+    "feature_engineering.df_train",
+    "params:feature_engineering.feat_date"
+  ],
+  "outputs": [
+    "feature_engineering.df_train_w_date_feat"
+  ]
+}

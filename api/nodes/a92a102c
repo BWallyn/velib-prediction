@@ -1,0 +1,7 @@
+{
+  "parameters": {
+    "train_model.dict_rename_target": {
+      "numbikesavailable": "target"
+    }
+  }
+}

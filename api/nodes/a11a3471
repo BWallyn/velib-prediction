@@ -1,0 +1,5 @@
+{
+  "parameters": {
+    "train_model.experiment_folder": "./data/06_models/mlruns"
+  }
+}

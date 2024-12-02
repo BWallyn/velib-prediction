@@ -1,0 +1,8 @@
+{
+  "type": "pandas.parquet_dataset.ParquetDataset",
+  "filepath": "/home/runner/work/velib-prediction/velib-prediction/data/04_feature/df_feat_train.parquet",
+  "run_command": "kedro run --to-outputs=df_train_prepared",
+  "preview": null,
+  "preview_type": null,
+  "stats": null
+}

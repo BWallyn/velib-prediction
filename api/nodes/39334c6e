@@ -1,0 +1,25 @@
+{
+  "code": "def add_lags_sma(  # noqa: PLR0913\n    df: pd.DataFrame, list_lags: list[int], feat_id: str, feat_date: str, feat_target: str, n_shift: int,\n) -> pd.DataFrame:\n    \"\"\"Add different lags to the dataset with a shift of n_shift\n\n    Args:\n        df (pd.DataFrame): Input dataframe\n        list_lags (list[int]): List of the lags to add\n        feat_id (str): Name of the id column of the velib stations\n        feat_date (str): Name of the date column\n        feat_target (str): Name of the target column\n        n_shift (int): Number of rows to shift the results\n    Returns:\n        df (pd.DataFrame): Output dataframe with lags added\n    \"\"\"\n    df = df.sort_values(by=[feat_date])\n    for id in df[feat_id].unique():\n        for lag in list_lags:\n            df.loc[df[feat_id] == id, f'sma_{lag}_lag'] = df.loc[df[feat_id] == id].rolling(lag)[feat_target].mean().shift(n_shift).values\n    return df\n",
+  "filepath": "velib-prediction/src/velib_prediction/pipelines/train_model/nodes.py",
+  "parameters": {
+    "train_model.lags_to_try": [
+      1
+    ],
+    "train_model.feat_id": "stationcode",
+    "train_model.feat_date": "duedate",
+    "train_model.feat_target": "target",
+    "train_model.n_shift": 5
+  },
+  "run_command": "kedro run --to-nodes='train_model.Add_lag_to_dataset'",
+  "inputs": [
+    "train_model.df_w_target_renamed",
+    "params:train_model.lags_to_try",
+    "params:train_model.feat_id",
+    "params:train_model.feat_date",
+    "params:train_model.feat_target",
+    "params:train_model.n_shift"
+  ],
+  "outputs": [
+    "train_model.df_train_w_lags"
+  ]
+}

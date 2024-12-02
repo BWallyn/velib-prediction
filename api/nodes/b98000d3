@@ -1,0 +1,12 @@
+{
+  "code": "def create_idx(df: pd.DataFrame) -> pd.DataFrame:\n    \"\"\"Create a specific index to each row based on the station code and the date of the data\n\n    Args:\n        df (pd.DataFrame): Input DataFrame\n    Returns:\n        df (pd.DataFrame): Output DataFrame with index column\n    \"\"\"\n    # Set column date to datetime\n    df[\"duedate\"] = pd.to_datetime(df[\"duedate\"])\n    # Define index\n    df.insert(0, \"idx\", df[\"stationcode\"].astype(str) + (df[\"duedate\"].values.astype(np.int64) // 10 ** 9).astype(str))\n    return df\n",
+  "filepath": "velib-prediction/src/velib_prediction/pipelines/data_engineering/nodes.py",
+  "parameters": {},
+  "run_command": "kedro run --to-nodes='data_engineering.add_index_to_dataset'",
+  "inputs": [
+    "data_engineering.df_raw"
+  ],
+  "outputs": [
+    "data_engineering.df_w_idx"
+  ]
+}

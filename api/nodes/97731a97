@@ -1,0 +1,5 @@
+{
+  "parameters": {
+    "train_model.experiment_name": "velib_prediction"
+  }
+}

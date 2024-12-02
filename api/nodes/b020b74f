@@ -1,0 +1,8 @@
+{
+  "parameters": {
+    "train_model.catboost_parameters": {
+      "iterations": 100,
+      "depth": 7
+    }
+  }
+}

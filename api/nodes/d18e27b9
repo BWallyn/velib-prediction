@@ -1,0 +1,15 @@
+{
+  "code": "def drop_columns(df: pd.DataFrame, list_cols: list[str]) -> pd.DataFrame:\n    \"\"\"Drop columns\n\n    Args:\n        df (pd.DataFrame): Input DataFrame\n        list_cols (list[str]): List of the columns to drop\n    Returns:\n        (pd.DataFrame): Output DataFrame\n    \"\"\"\n    return df.drop(columns=list_cols)\n",
+  "filepath": "velib-prediction/src/velib_prediction/utils/utils.py",
+  "parameters": {
+    "train_model.feat_date": "duedate"
+  },
+  "run_command": "kedro run --to-nodes='train_model.Drop_date_column'",
+  "inputs": [
+    "train_model.df_sorted",
+    "params:train_model.feat_date"
+  ],
+  "outputs": [
+    "train_model.df_w_date_col"
+  ]
+}

@@ -1,0 +1,491 @@
+{
+  "nodes": [
+    {
+      "id": "53964f21",
+      "name": "list_dataset_files",
+      "tags": [],
+      "pipelines": [
+        "__default__",
+        "data_engineering"
+      ],
+      "type": "task",
+      "modular_pipelines": [
+        "data_engineering"
+      ],
+      "parameters": {
+        "data_engineering.path_data": "data/01_raw/"
+      }
+    },
+    {
+      "id": "06582374",
+      "name": "params:data_engineering.path_data",
+      "tags": [],
+      "pipelines": [
+        "__default__",
+        "data_engineering"
+      ],
+      "type": "parameters",
+      "modular_pipelines": null,
+      "layer": null,
+      "dataset_type": null,
+      "stats": null
+    },
+    {
+      "id": "a1aacd5c",
+      "name": "data_engineering.list_files",
+      "tags": [],
+      "pipelines": [
+        "__default__",
+        "data_engineering"
+      ],
+      "type": "data",
+      "modular_pipelines": [
+        "data_engineering"
+      ],
+      "layer": null,
+      "dataset_type": "io.memory_dataset.MemoryDataset",
+      "stats": null
+    },
+    {
+      "id": "4e99f0b4",
+      "name": "merge_all_datasets",
+      "tags": [],
+      "pipelines": [
+        "__default__",
+        "data_engineering"
+      ],
+      "type": "task",
+      "modular_pipelines": [
+        "data_engineering"
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "02e42ad9",
+      "name": "data_engineering.df_raw",
+      "tags": [],
+      "pipelines": [
+        "__default__",
+        "data_engineering"
+      ],
+      "type": "data",
+      "modular_pipelines": [
+        "data_engineering"
+      ],
+      "layer": null,
+      "dataset_type": "io.memory_dataset.MemoryDataset",
+      "stats": null
+    },
+    {
+      "id": "b98000d3",
+      "name": "add_index_to_dataset",
+      "tags": [],
+      "pipelines": [
+        "__default__",
+        "data_engineering"
+      ],
+      "type": "task",
+      "modular_pipelines": [
+        "data_engineering"
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "71191bf1",
+      "name": "data_engineering.df_w_idx",
+      "tags": [],
+      "pipelines": [
+        "__default__",
+        "data_engineering"
+      ],
+      "type": "data",
+      "modular_pipelines": [
+        "data_engineering"
+      ],
+      "layer": null,
+      "dataset_type": "io.memory_dataset.MemoryDataset",
+      "stats": null
+    },
+    {
+      "id": "bf8a5c02",
+      "name": "remove_unused_cols",
+      "tags": [],
+      "pipelines": [
+        "__default__",
+        "data_engineering"
+      ],
+      "type": "task",
+      "modular_pipelines": [
+        "data_engineering"
+      ],
+      "parameters": {
+        "data_engineering.cols_to_remove": [
+          "name",
+          "nom_arrondissement_communes"
+        ]
+      }
+    },
+    {
+      "id": "d4987498",
+      "name": "params:data_engineering.cols_to_remove",
+      "tags": [],
+      "pipelines": [
+        "__default__",
+        "data_engineering"
+      ],
+      "type": "parameters",
+      "modular_pipelines": null,
+      "layer": null,
+      "dataset_type": null,
+      "stats": null
+    },
+    {
+      "id": "1415fa0e",
+      "name": "data_engineering.df_wtht_unused_cols",
+      "tags": [],
+      "pipelines": [
+        "__default__",
+        "data_engineering"
+      ],
+      "type": "data",
+      "modular_pipelines": [
+        "data_engineering"
+      ],
+      "layer": null,
+      "dataset_type": "io.memory_dataset.MemoryDataset",
+      "stats": null
+    },
+    {
+      "id": "2993dc73",
+      "name": "set_date_format",
+      "tags": [],
+      "pipelines": [
+        "__default__",
+        "data_engineering"
+      ],
+      "type": "task",
+      "modular_pipelines": [
+        "data_engineering"
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "6026487d",
+      "name": "data_engineering.df_date_set",
+      "tags": [],
+      "pipelines": [
+        "__default__",
+        "data_engineering"
+      ],
+      "type": "data",
+      "modular_pipelines": [
+        "data_engineering"
+      ],
+      "layer": null,
+      "dataset_type": "io.memory_dataset.MemoryDataset",
+      "stats": null
+    },
+    {
+      "id": "7c8eb8e7",
+      "name": "add_date_column",
+      "tags": [],
+      "pipelines": [
+        "__default__",
+        "data_engineering"
+      ],
+      "type": "task",
+      "modular_pipelines": [
+        "data_engineering"
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "607883f9",
+      "name": "data_engineering.df_date_added",
+      "tags": [],
+      "pipelines": [
+        "__default__",
+        "data_engineering"
+      ],
+      "type": "data",
+      "modular_pipelines": [
+        "data_engineering"
+      ],
+      "layer": null,
+      "dataset_type": "io.memory_dataset.MemoryDataset",
+      "stats": null
+    },
+    {
+      "id": "8d7e10a1",
+      "name": "reset_values_in_boolean_columns",
+      "tags": [],
+      "pipelines": [
+        "__default__",
+        "data_engineering"
+      ],
+      "type": "task",
+      "modular_pipelines": [
+        "data_engineering"
+      ],
+      "parameters": {
+        "data_engineering.boolean_columns": [
+          "is_installed",
+          "is_renting",
+          "is_returning"
+        ]
+      }
+    },
+    {
+      "id": "cc2e87b4",
+      "name": "params:data_engineering.boolean_columns",
+      "tags": [],
+      "pipelines": [
+        "__default__",
+        "data_engineering"
+      ],
+      "type": "parameters",
+      "modular_pipelines": null,
+      "layer": null,
+      "dataset_type": null,
+      "stats": null
+    },
+    {
+      "id": "a55051ba",
+      "name": "df_with_bool_cols_upd",
+      "tags": [],
+      "pipelines": [
+        "feature_engineering",
+        "__default__",
+        "data_engineering"
+      ],
+      "type": "data",
+      "modular_pipelines": [
+        "feature_engineering",
+        "data_engineering"
+      ],
+      "layer": null,
+      "dataset_type": "pandas.parquet_dataset.ParquetDataset",
+      "stats": {
+        "rows": 1499,
+        "columns": 12,
+        "file_size": 31037
+      }
+    },
+    {
+      "id": "data_engineering",
+      "name": "data_engineering",
+      "tags": [],
+      "pipelines": [
+        "data_engineering"
+      ],
+      "type": "modularPipeline",
+      "modular_pipelines": null,
+      "layer": null,
+      "dataset_type": null,
+      "stats": null
+    }
+  ],
+  "edges": [
+    {
+      "source": "b98000d3",
+      "target": "71191bf1"
+    },
+    {
+      "source": "06582374",
+      "target": "data_engineering"
+    },
+    {
+      "source": "8d7e10a1",
+      "target": "a55051ba"
+    },
+    {
+      "source": "02e42ad9",
+      "target": "b98000d3"
+    },
+    {
+      "source": "d4987498",
+      "target": "data_engineering"
+    },
+    {
+      "source": "06582374",
+      "target": "53964f21"
+    },
+    {
+      "source": "71191bf1",
+      "target": "bf8a5c02"
+    },
+    {
+      "source": "4e99f0b4",
+      "target": "02e42ad9"
+    },
+    {
+      "source": "a1aacd5c",
+      "target": "4e99f0b4"
+    },
+    {
+      "source": "6026487d",
+      "target": "7c8eb8e7"
+    },
+    {
+      "source": "53964f21",
+      "target": "a1aacd5c"
+    },
+    {
+      "source": "7c8eb8e7",
+      "target": "607883f9"
+    },
+    {
+      "source": "607883f9",
+      "target": "8d7e10a1"
+    },
+    {
+      "source": "1415fa0e",
+      "target": "2993dc73"
+    },
+    {
+      "source": "data_engineering",
+      "target": "a55051ba"
+    },
+    {
+      "source": "2993dc73",
+      "target": "6026487d"
+    },
+    {
+      "source": "bf8a5c02",
+      "target": "1415fa0e"
+    },
+    {
+      "source": "d4987498",
+      "target": "bf8a5c02"
+    },
+    {
+      "source": "cc2e87b4",
+      "target": "data_engineering"
+    },
+    {
+      "source": "cc2e87b4",
+      "target": "8d7e10a1"
+    }
+  ],
+  "layers": [],
+  "tags": [],
+  "pipelines": [
+    {
+      "id": "__default__",
+      "name": "__default__"
+    },
+    {
+      "id": "train_model",
+      "name": "train_model"
+    },
+    {
+      "id": "feature_engineering",
+      "name": "feature_engineering"
+    },
+    {
+      "id": "data_engineering",
+      "name": "data_engineering"
+    },
+    {
+      "id": "download_data",
+      "name": "download_data"
+    }
+  ],
+  "modular_pipelines": {
+    "__root__": {
+      "id": "__root__",
+      "name": "__root__",
+      "inputs": [],
+      "outputs": [],
+      "children": [
+        {
+          "id": "a55051ba",
+          "type": "data"
+        },
+        {
+          "id": "d4987498",
+          "type": "parameters"
+        },
+        {
+          "id": "06582374",
+          "type": "parameters"
+        },
+        {
+          "id": "data_engineering",
+          "type": "modularPipeline"
+        },
+        {
+          "id": "cc2e87b4",
+          "type": "parameters"
+        }
+      ]
+    },
+    "data_engineering": {
+      "id": "data_engineering",
+      "name": "data_engineering",
+      "inputs": [
+        "d4987498",
+        "06582374",
+        "cc2e87b4"
+      ],
+      "outputs": [
+        "a55051ba"
+      ],
+      "children": [
+        {
+          "id": "2993dc73",
+          "type": "task"
+        },
+        {
+          "id": "02e42ad9",
+          "type": "data"
+        },
+        {
+          "id": "53964f21",
+          "type": "task"
+        },
+        {
+          "id": "1415fa0e",
+          "type": "data"
+        },
+        {
+          "id": "4e99f0b4",
+          "type": "task"
+        },
+        {
+          "id": "607883f9",
+          "type": "data"
+        },
+        {
+          "id": "7c8eb8e7",
+          "type": "task"
+        },
+        {
+          "id": "bf8a5c02",
+          "type": "task"
+        },
+        {
+          "id": "71191bf1",
+          "type": "data"
+        },
+        {
+          "id": "a1aacd5c",
+          "type": "data"
+        },
+        {
+          "id": "b98000d3",
+          "type": "task"
+        },
+        {
+          "id": "6026487d",
+          "type": "data"
+        },
+        {
+          "id": "8d7e10a1",
+          "type": "task"
+        }
+      ]
+    }
+  },
+  "selected_pipeline": "data_engineering"
+}

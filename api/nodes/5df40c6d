@@ -1,0 +1,8 @@
+{
+  "parameters": {
+    "feature_engineering.cols_to_drop": [
+      "coordonnees_geo",
+      "date"
+    ]
+  }
+}

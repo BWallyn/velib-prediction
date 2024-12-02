@@ -1,0 +1,12 @@
+{
+  "type": "pandas.parquet_dataset.ParquetDataset",
+  "filepath": "/home/runner/work/velib-prediction/velib-prediction/data/02_intermediate/df_data_engineered.parquet",
+  "run_command": "kedro run --to-outputs=df_with_bool_cols_upd",
+  "preview": null,
+  "preview_type": null,
+  "stats": {
+    "rows": 1499,
+    "columns": 12,
+    "file_size": 31037
+  }
+}

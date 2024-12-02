@@ -1,0 +1,29 @@
+{
+  "code": "def train_model_cv_mlflow(  # noqa: PLR0913\n    run_name: str,\n    experiment_id: str,\n    list_train_valid: list[tuple[pd.DataFrame, pd.DataFrame]],\n    feat_cat: list[str],\n    catboost_params: dict[str, Any],\n    verbose: int=0,\n) -> CatBoostRegressor:\n    \"\"\"Using cross validation, train a Catboost regressor model and log the parameters, metrics, model and shap values to MLflow\n\n    Create a MLflow run\n    For each split of train and validation, using expanding window validation:\n    - Create the catboost pools for the catboost model\n    - Define a Catboost regressor model\n    - Train the model on training set and use a validation set to keep the best model\n    - Predict on train and evaluation sets\n    Log parameters, model, metrics, shap and confusion matrix to MLflow\n\n    Args:\n        run_name (str): Name of the MLflow parent run\n        experiment_id (str): Experiment id of the MLflow\n        list_train_valid (list[tuple[pd.DataFrame, pd.DataFrame]]): Tuples of train and validation sets\n        feat_cat (list[str]): List of the categorical features\n        verbose (int): Verbose of the catboost training\n    Returns:\n        model (CatBoostregressor): Model trained\n    \"\"\"\n    # MLflow\n    with mlflow.start_run(run_name=run_name, experiment_id=experiment_id) as parent_run:\n        # Iterate over the different tuples of datasets\n        for i, (df_train, df_valid) in enumerate(list_train_valid):\n            _, _, _ = train_model_mlflow(\n                experiment_id=experiment_id,\n                parent_run_id=parent_run.info.run_id,\n                df_train=df_train,\n                df_valid=df_valid,\n                feat_cat=feat_cat,\n                verbose=verbose,\n                **catboost_params\n            )\n",
+  "filepath": "velib-prediction/src/velib_prediction/pipelines/train_model/nodes.py",
+  "parameters": {
+    "train_model.run_name": "catbooost_model",
+    "train_model.list_feat_cat": [
+      "is_installed",
+      "is_renting",
+      "is_returning",
+      "code_insee_commune",
+      "duedate_weekend"
+    ],
+    "train_model.catboost_parameters": {
+      "iterations": 100,
+      "depth": 7
+    },
+    "train_model.verbose": 10
+  },
+  "run_command": "kedro run --to-nodes='train_model.Train_catboost_model_using_cross_validation'",
+  "inputs": [
+    "params:train_model.run_name",
+    "train_model.experiment_id_created",
+    "train_model.list_train_valid",
+    "params:train_model.list_feat_cat",
+    "params:train_model.catboost_parameters",
+    "params:train_model.verbose"
+  ],
+  "outputs": []
+}

@@ -1,0 +1,15 @@
+{
+  "code": "def get_split_train_val_cv(\n    df: pd.DataFrame, n_splits: int\n) -> list[tuple[pd.DataFrame, pd.DataFrame]]:\n    \"\"\"Split the time serie dataset for cross validation using expanding window\n\n    Args:\n        df (pd.DataFrame): Input dataframe\n        n_splits (int): Number of splits to create\n    Returns:\n        list_train_valid (list[tuple[pd.DataFrame, pd.DataFrame]]): Split dataframe using time series split\n    \"\"\"\n    # Reset index\n    df.reset_index(drop=True, inplace=True)\n    # Prepare\n    list_train_valid = []\n    tscv = TimeSeriesSplit(n_splits=n_splits)\n    for train_index, valid_index in tscv.split(df):\n        list_train_valid.append((df.loc[train_index], df.loc[valid_index]))\n    return list_train_valid\n",
+  "filepath": "velib-prediction/src/velib_prediction/pipelines/train_model/nodes.py",
+  "parameters": {
+    "train_model.n_splits": 3
+  },
+  "run_command": "kedro run --to-nodes='train_model.Create_split_expanding_windows'",
+  "inputs": [
+    "train_model.df_w_date_col",
+    "params:train_model.n_splits"
+  ],
+  "outputs": [
+    "train_model.list_train_valid"
+  ]
+}

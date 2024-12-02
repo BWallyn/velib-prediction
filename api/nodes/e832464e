@@ -1,0 +1,18 @@
+{
+  "code": "def create_mlflow_experiment_if_needed(\n    experiment_folder_path: Optional[str]=None, experiment_name: Optional[str]=None, experiment_id: Optional[str]=None\n) -> str:\n    \"\"\"Create a MLflow experiment if needed.\n    If experiment id is not None, then create a MLflow experiment using the folder path and the experiment name\n\n    Args:\n        experiment_folder_path (Optional[str]): Path to the folder to save the MLflow experiment\n        experiment_name (Optional[str]): Name of the MLflow experiment to create\n        experiment_id (Optional[str]): Id of the MLflow experiment if it exists\n    Returns:\n        experiment_id (str): Id of the MLflow experiment\n    \"\"\"\n    if experiment_id is None:\n        logger.info(\"Creating MLflow experiment...\")\n        experiment_id = create_mlflow_experiment(experiment_folder_path, experiment_name)\n        logger.info(\"MLflow {} experiment created\".format(experiment_id))  # noqa: UP032\n    else:\n        logger.info(\"{} experiment used\".format(experiment_id))  # noqa: UP032\n    return experiment_id\n",
+  "filepath": "velib-prediction/src/velib_prediction/pipelines/train_model/nodes.py",
+  "parameters": {
+    "train_model.experiment_folder": "./data/06_models/mlruns",
+    "train_model.experiment_name": "velib_prediction",
+    "train_model.experiment_id": "662257761878253787"
+  },
+  "run_command": "kedro run --to-nodes='train_model.Create_MLflow_experiment_id_if_needed'",
+  "inputs": [
+    "params:train_model.experiment_folder",
+    "params:train_model.experiment_name",
+    "params:train_model.experiment_id"
+  ],
+  "outputs": [
+    "train_model.experiment_id_created"
+  ]
+}

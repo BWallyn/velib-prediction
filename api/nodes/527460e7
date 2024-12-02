@@ -1,0 +1,17 @@
+{
+  "code": "def rename_columns(df: pd.DataFrame, dict_to_rename: dict[str, str]) -> pd.DataFrame:\n    \"\"\"Rename columns of dataset\n\n    Args:\n        df (pd.DataFrame): Input DataFrame\n        dict_to_rename (dict[str, str]): Dict of the columns to rename\n    Returns:\n        (pd.DataFrame): Output DataFrame\n    \"\"\"\n    return df.rename(columns=dict_to_rename)\n",
+  "filepath": "velib-prediction/src/velib_prediction/utils/utils.py",
+  "parameters": {
+    "train_model.dict_rename_target": {
+      "numbikesavailable": "target"
+    }
+  },
+  "run_command": "kedro run --to-nodes='train_model.Rename_target_column'",
+  "inputs": [
+    "df_train_prepared",
+    "params:train_model.dict_rename_target"
+  ],
+  "outputs": [
+    "train_model.df_w_target_renamed"
+  ]
+}

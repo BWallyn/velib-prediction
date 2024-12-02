@@ -1,0 +1,12 @@
+{
+  "code": "def merge_datasets(list_files: list[str]) -> pd.DataFrame:\n    \"\"\"Merge all datasets into one\n\n    Args:\n        list_files (list[str]): List of paths to all datasets in parquet files.\n    Returns:\n        df_final (pd.DataFrame): Output dataframe\n    \"\"\"\n    df_final = pd.DataFrame()\n    for file in list_files:\n        df = pd.read_parquet(file)\n        df_final = pd.concat([df_final, df])\n        # Free memory\n        del df\n        gc.collect()\n    return df_final\n",
+  "filepath": "velib-prediction/src/velib_prediction/pipelines/data_engineering/nodes.py",
+  "parameters": {},
+  "run_command": "kedro run --to-nodes='data_engineering.merge_all_datasets'",
+  "inputs": [
+    "data_engineering.list_files"
+  ],
+  "outputs": [
+    "data_engineering.df_raw"
+  ]
+}

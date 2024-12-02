@@ -1,0 +1,5 @@
+{
+  "parameters": {
+    "train_model.run_name": "catbooost_model"
+  }
+}
