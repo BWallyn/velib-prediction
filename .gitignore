@@ -159,3 +159,4 @@ mlflow/
 # Catboost
 */catboost_info/
 catboost_info/
+uv.lock
