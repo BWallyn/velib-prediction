@@ -2,7 +2,13 @@ import os
 import tempfile
 from unittest import mock
 
-from velib_prediction.pipelines.data_engineering.nodes import list_parquet_files
+import pandas as pd
+import pytest
+
+from velib_prediction.pipelines.data_engineering.nodes import (
+    list_parquet_files,
+    merge_datasets,
+)
 
 
 def test_list_parquet_files_empty_directory():
@@ -99,3 +105,25 @@ def test_list_parquet_files_invalid_path():
         # Check that an empty list is returned for an invalid path
         result = list_parquet_files('/path/that/does/not/exist')
         assert result == [], "Function should return an empty list for an invalid path"
+
+
+@pytest.fixture
+def sample_dataframes():
+    df1 = pd.DataFrame({'A': [1, 2], 'B': [3, 4]})
+    df2 = pd.DataFrame({'A': [5, 6], 'B': [7, 8]})
+    return [df1, df2]
+
+@pytest.fixture
+def mock_parquet_files(tmp_path, sample_dataframes):
+    file_paths = []
+    for i, df in enumerate(sample_dataframes):
+        file_path = tmp_path / f"data_{i}.parquet"
+        df.to_parquet(file_path)
+        file_paths.append(str(file_path))
+    return file_paths
+
+def test_merge_datasets(mock_parquet_files, sample_dataframes):
+    expected_df = pd.concat(sample_dataframes)
+    actual_df = merge_datasets(mock_parquet_files)
+
+    pd.testing.assert_frame_equal(actual_df, expected_df)
