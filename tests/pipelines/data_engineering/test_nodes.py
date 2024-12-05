@@ -6,6 +6,7 @@ import pandas as pd
 import pytest
 
 from velib_prediction.pipelines.data_engineering.nodes import (
+    create_idx,
     list_parquet_files,
     merge_datasets,
 )
@@ -127,3 +128,31 @@ def test_merge_datasets(mock_parquet_files, sample_dataframes):
     actual_df = merge_datasets(mock_parquet_files)
 
     pd.testing.assert_frame_equal(actual_df, expected_df)
+
+
+@pytest.fixture
+def sample_df():
+    return pd.DataFrame({
+        "stationcode": ["A", "B", "A"],
+        "duedate": ["2023-11-22", "2023-11-23", "2023-11-22"]
+    })
+
+def test_create_idx(sample_df):
+    # Call the function
+    result_df = create_idx(sample_df)
+
+    # Assertions
+    # 1. Check if the index column is added
+    assert "idx" in result_df.columns
+
+    # 2. Check if the index is created correctly
+    expected_df = pd.DataFrame({
+        "idx": ["A1700611200", "B1700697600", "A1700611200"],
+        "stationcode": ["A", "B", "A"],
+        "duedate": ["2023-11-22", "2023-11-23", "2023-11-22"]
+    })
+    expected_df["duedate"] = pd.to_datetime(expected_df["duedate"])
+    pd.testing.assert_frame_equal(result_df, expected_df)
+
+    # 3. Check if the `duedate` column is converted to datetime
+    assert pd.api.types.is_datetime64_any_dtype(result_df["duedate"])
