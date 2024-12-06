@@ -7,8 +7,10 @@ import pytest
 
 from velib_prediction.pipelines.data_engineering.nodes import (
     create_idx,
+    drop_unused_columns,
     list_parquet_files,
     merge_datasets,
+    set_date_format,
 )
 
 
@@ -131,15 +133,15 @@ def test_merge_datasets(mock_parquet_files, sample_dataframes):
 
 
 @pytest.fixture
-def sample_df():
+def input_df_create_idx():
     return pd.DataFrame({
         "stationcode": ["A", "B", "A"],
         "duedate": ["2023-11-22", "2023-11-23", "2023-11-22"]
     })
 
-def test_create_idx(sample_df):
+def test_create_idx(input_df_create_idx):
     # Call the function
-    result_df = create_idx(sample_df)
+    result_df = create_idx(input_df_create_idx)
 
     # Assertions
     # 1. Check if the index column is added
@@ -156,3 +158,51 @@ def test_create_idx(sample_df):
 
     # 3. Check if the `duedate` column is converted to datetime
     assert pd.api.types.is_datetime64_any_dtype(result_df["duedate"])
+
+
+@pytest.fixture
+def input_df_drop_unused_columns():
+    return pd.DataFrame({
+        "col1": [1, 2, 3],
+        "col2": [4, 5, 6],
+        "col3": [7, 8, 9],
+        "col4": [10, 11, 12]
+    })
+
+def test_drop_unused_columns(input_df_drop_unused_columns):
+    # Define columns to remove
+    cols_to_remove = ["col2", "col4"]
+
+    # Call the function
+    result_df = drop_unused_columns(input_df_drop_unused_columns, cols_to_remove)
+
+    # Assertions
+    # 1. Check if the specified columns are removed
+    assert "col2" not in result_df.columns
+    assert "col4" not in result_df.columns
+
+    # 2. Check if other columns remain unchanged
+    assert "col1" in result_df.columns
+    assert "col3" in result_df.columns
+
+    # 3. Check the shape of the resulting DataFrame
+    assert result_df.shape == (3, 2)
+
+
+@pytest.fixture
+def input_df_set_date_format():
+    return pd.DataFrame({
+        "duedate": ["2023-11-22 12:34:56", "2023-12-25 09:10:11"]
+    })
+
+def test_set_date_format(input_df_set_date_format):
+    # Call the function
+    result_df = set_date_format(input_df_set_date_format)
+
+    # Assertions
+    # 1. Check if the `duedate` column is of datetime type
+    assert pd.api.types.is_datetime64_any_dtype(result_df["duedate"])
+
+    # 2. Check if the datetime values are correct
+    expected_dates = pd.Series(pd.to_datetime(["2023-11-22 12:34:56", "2023-12-25 09:10:11"]), name="duedate")
+    pd.testing.assert_series_equal(result_df["duedate"], expected_dates)
