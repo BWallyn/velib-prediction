@@ -6,11 +6,13 @@ import pandas as pd
 import pytest
 
 from velib_prediction.pipelines.data_engineering.nodes import (
+    add_datetime_col,
     create_idx,
     drop_unused_columns,
     list_parquet_files,
     merge_datasets,
     set_date_format,
+    update_values_bool_columns,
 )
 
 
@@ -206,3 +208,50 @@ def test_set_date_format(input_df_set_date_format):
     # 2. Check if the datetime values are correct
     expected_dates = pd.Series(pd.to_datetime(["2023-11-22 12:34:56", "2023-12-25 09:10:11"]), name="duedate")
     pd.testing.assert_series_equal(result_df["duedate"], expected_dates)
+
+
+@pytest.fixture
+def input_df_add_datetime_col():
+    return pd.DataFrame({
+        "duedate": pd.to_datetime(["2023-11-22", "2023-12-25"])
+    })
+
+def test_add_datetime_col(input_df_add_datetime_col):
+    # Call the function
+    result_df = add_datetime_col(input_df_add_datetime_col.copy())  # Avoid modifying the original fixture
+
+    # Assertions
+    # 1. Check if the new 'date' column exists
+    assert "date" in result_df.columns
+
+    # 2. Check if the 'date' column contains date objects
+    # assert pd.api.types.is_datetime64_any_dtype(result_df["date"])
+
+    # 3. Check if the dates are extracted correctly
+    expected_dates = pd.DataFrame({"date": pd.to_datetime(["2023-11-22", "2023-12-25"])})
+    expected_dates["date"] = expected_dates["date"].dt.date
+    pd.testing.assert_series_equal(result_df["date"], expected_dates["date"])
+
+
+@pytest.fixture
+def input_df_update_val():
+    return pd.DataFrame({
+        "col1": ["OUI", "NON", "OUI"],
+        "col2": ["NON", "OUI", "NON"],
+        "col3": [1, 2, 3]
+    })
+
+def test_update_values_bool_columns(input_df_update_val):
+    # Define boolean columns
+    bool_cols = ["col1", "col2"]
+
+    # Call the function
+    result_df = update_values_bool_columns(input_df_update_val.copy(), bool_cols)
+
+    # Assertions
+    # 1. Check if boolean columns are updated correctly
+    expected_df = pd.DataFrame({"col1": [1, 0, 1], "col2": [0, 1, 0]})
+    pd.testing.assert_frame_equal(result_df[bool_cols], expected_df)
+
+    # 2. Check if non-boolean columns remain unchanged
+    pd.testing.assert_series_equal(result_df["col3"], input_df_update_val["col3"])
