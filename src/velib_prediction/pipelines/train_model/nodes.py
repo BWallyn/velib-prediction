@@ -291,7 +291,7 @@ def optimize_hyperparams(  # noqa: PLR0913
         df_train=df_train,
         df_valid=df_valid,
         feat_cat=feat_cat,
-        verbose=None,
+        verbose=100,
         **optimize_params
     )
     logger.info(f"Catboost model trained with RMSE: {rmse_valid}")
