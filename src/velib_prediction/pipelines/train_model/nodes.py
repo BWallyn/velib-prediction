@@ -255,6 +255,7 @@ def train_model_cv_mlflow(  # noqa: PLR0913
 
 
 def optimize_hyperparams(  # noqa: PLR0913
+    trial,
     search_params: dict[str, Any],
     experiment_id: str,
     run_id: str,
@@ -265,6 +266,7 @@ def optimize_hyperparams(  # noqa: PLR0913
     """Bayesian optimization function
 
     Args:
+        trial (): Trial for bayesian optimization
         experiment_id (str): Id of the MLflow experiment
         run_id (str): Id of the MLflow run
         search_params (dict[str, Any]): Search parameters for the hyperparameters
@@ -390,4 +392,4 @@ def train_model_bayesian_opti_cv(  # noqa: PLR0913
         # Optimize
         study.optimize(objective, n_trials=n_trials, show_progress_bar=True)
         logger.info(f"Best parameters found: {study.best_params}")
-    pass
+    return study.best_params
