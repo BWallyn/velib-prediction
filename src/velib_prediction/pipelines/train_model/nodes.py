@@ -182,11 +182,11 @@ def train_model_mlflow(  # noqa: PLR0913
     # Select the target
     y_train = df_train["target"]
     y_valid = df_valid["target"]
-    df_train.drop(columns=["target"], inplace=True)
-    df_valid.drop(columns=["target"], inplace=True)
+    x_train = df_train.drop(columns=["target"])
+    x_valid = df_valid.drop(columns=["target"])
     # Create pools for Catboost model
-    pool_train = Pool(data=df_train, label=y_train, cat_features=feat_cat)
-    pool_eval = Pool(data=df_valid, label=y_valid, cat_features=feat_cat)
+    pool_train = Pool(data=x_train, label=y_train, cat_features=feat_cat)
+    pool_eval = Pool(data=x_valid, label=y_valid, cat_features=feat_cat)
     # Create MLflow child run
     with mlflow.start_run(
         experiment_id=experiment_id,
