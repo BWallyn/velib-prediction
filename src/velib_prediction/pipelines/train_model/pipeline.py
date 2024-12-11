@@ -8,8 +8,9 @@ from kedro.pipeline import Pipeline, node, pipeline
 from velib_prediction.pipelines.train_model.nodes import (
     add_lags_sma,
     create_mlflow_experiment_if_needed,
-    get_split_train_val_cv,
-    train_model_cv_mlflow,
+    split_train_valid_last_hours,
+    train_model_bayesian_opti,
+    train_model_mlflow,
 )
 from velib_prediction.utils.utils import drop_columns, rename_columns, sort_dataframe
 
@@ -49,10 +50,10 @@ def create_pipeline(**kwargs) -> Pipeline:
                 name="Drop_date_column",
             ),
             node(
-                func=get_split_train_val_cv,
-                inputs=["df_w_date_col", "params:n_splits"],
-                outputs="list_train_valid",
-                name="Create_split_expanding_windows"
+                func=split_train_valid_last_hours,
+                inputs=["df_w_date_col", "params:n_hours"],
+                outputs=["df_train", "df_valid"],
+                name="Create_split_train_valid"
             ),
             node(
                 func=create_mlflow_experiment_if_needed,
@@ -65,18 +66,28 @@ def create_pipeline(**kwargs) -> Pipeline:
                 name="Create_MLflow_experiment_id_if_needed",
             ),
             node(
-                func=train_model_cv_mlflow,
+                func=train_model_bayesian_opti,
                 inputs=[
                     "params:run_name",
                     "experiment_id_created",
-                    "list_train_valid",
+                    "params:search_params",
                     "params:list_feat_cat",
-                    "params:catboost_parameters",
-                    "params:verbose",
+                    "df_train",
+                    "df_valid",
+                    "params:feat_cat",
+                    "params:n_trials",
                 ],
-                outputs=None,
-                name="Train_catboost_model_using_cross_validation"
+                outputs="best_params",
+                name="Find_best_parameters_using_bayesian_optimization"
             ),
+            # node(
+            #     func=train_model_mlflow,
+            #     inputs=[
+            #         "experiment_id_created",
+            #         "df_train",
+            #         "df_test_w_date_feat",
+            #     ]
+            # )
         ],
         inputs="df_train_prepared",
         namespace="train_model"
