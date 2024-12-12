@@ -11,7 +11,7 @@ from velib_prediction.pipelines.train_model.nodes import (
     select_columns,
     split_train_valid_last_hours,
     train_model_bayesian_opti,
-    train_model_mlflow,
+    # train_model_mlflow,
 )
 from velib_prediction.utils.utils import drop_columns, rename_columns, sort_dataframe
 
