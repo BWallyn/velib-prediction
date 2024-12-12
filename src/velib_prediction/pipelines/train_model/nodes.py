@@ -31,6 +31,18 @@ logger = logging.getLogger(__name__)
 # ==== FUNCTIONS ====
 # ===================
 
+def select_columns(df: pd.DataFrame, list_feat: list[str]) -> pd.DataFrame:
+    """Select columns of the dataframe
+
+    Args:
+        df (pd.DataFrame): Input DataFrame
+        list_feat (list[str]): List of the features to select
+    Returns:
+        (pd.DataFrame): Output DataFrame
+    """
+    return df[list_feat]
+
+
 def add_lags_sma(  # noqa: PLR0913
     df: pd.DataFrame, list_lags: list[int], feat_id: str, feat_date: str, feat_target: str, n_shift: int,
 ) -> pd.DataFrame:
