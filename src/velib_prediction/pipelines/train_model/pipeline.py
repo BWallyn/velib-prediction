@@ -8,6 +8,7 @@ from kedro.pipeline import Pipeline, node, pipeline
 from velib_prediction.pipelines.train_model.nodes import (
     add_lags_sma,
     create_mlflow_experiment_if_needed,
+    select_columns,
     split_train_valid_last_hours,
     train_model_bayesian_opti,
     train_model_mlflow,
@@ -66,20 +67,33 @@ def create_pipeline(**kwargs) -> Pipeline:
                 name="Create_MLflow_experiment_id_if_needed",
             ),
             node(
+                func=select_columns,
+                inputs=["df_train", "params:model_features"],
+                outputs="df_train_col_selected",
+                name="Select_columns_train",
+            ),
+            node(
+                func=select_columns,
+                inputs=["df_valid", "params:model_features"],
+                outputs="df_valid_col_selected",
+                name="Select_columns_valid",
+            ),
+            node(
                 func=train_model_bayesian_opti,
                 inputs=[
                     "params:run_name",
                     "experiment_id_created",
                     "params:search_params",
                     "params:list_feat_cat",
-                    "df_train",
-                    "df_valid",
+                    "df_train_col_selected",
+                    "df_valid_col_selected",
                     "params:feat_cat",
                     "params:n_trials",
                 ],
                 outputs="best_params",
                 name="Find_best_parameters_using_bayesian_optimization"
             ),
+            node(),
             # node(
             #     func=train_model_mlflow,
             #     inputs=[
