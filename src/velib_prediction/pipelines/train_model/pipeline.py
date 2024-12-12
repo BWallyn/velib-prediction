@@ -93,7 +93,31 @@ def create_pipeline(**kwargs) -> Pipeline:
                 outputs="best_params",
                 name="Find_best_parameters_using_bayesian_optimization"
             ),
-            node(),
+            node(
+                func=add_lags_sma,
+                inputs=[
+                    "df_test_w_date_feat",
+                    "params:lags_to_try",
+                    "params:feat_id",
+                    "params:feat_date",
+                    "params:feat_target",
+                    "params:n_shift",
+                ],
+                outputs="df_test_w_lags",
+                name="Add_lags_to_test",
+            ),
+            node(
+                func=sort_dataframe,
+                inputs=["df_test_w_lags", "params:feat_date"],
+                outputs="df_test_sorted",
+                name="Sort_test_by_date",
+            ),
+            node(
+                func=select_columns,
+                inputs=["df_test_sorted", "params:model_features"],
+                outputs="df_test_col_selected",
+                name="Select_columns_test",
+            ),
             # node(
             #     func=train_model_mlflow,
             #     inputs=[
