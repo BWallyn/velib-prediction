@@ -10,8 +10,8 @@ from velib_prediction.pipelines.train_model.nodes import (
     create_mlflow_experiment_if_needed,
     select_columns,
     split_train_valid_last_hours,
+    train_final_model,
     train_model_bayesian_opti,
-    # train_model_mlflow,
 )
 from velib_prediction.utils.utils import drop_columns, rename_columns, sort_dataframe
 
@@ -84,7 +84,6 @@ def create_pipeline(**kwargs) -> Pipeline:
                     "params:run_name",
                     "experiment_id_created",
                     "params:search_params",
-                    "params:list_feat_cat",
                     "df_train_col_selected",
                     "df_valid_col_selected",
                     "params:feat_cat",
@@ -114,10 +113,28 @@ def create_pipeline(**kwargs) -> Pipeline:
             ),
             node(
                 func=select_columns,
+                inputs=["df_w_date_col", "params:model_features"],
+                outputs="df_training",
+                name="Select_columns_training",
+            ),
+            node(
+                func=select_columns,
                 inputs=["df_test_sorted", "params:model_features"],
                 outputs="df_test_col_selected",
                 name="Select_columns_test",
             ),
+            node(
+                func=train_final_model,
+                inputs=[
+                    "experiment_id_created",
+                    "df_training",
+                    "df_test_col_selected",
+                    "params:list_feat_cat",
+                    "best_params"
+                ],
+                outputs="model_velib",
+                name="Train_final_model"
+            )
             # node(
             #     func=train_model_mlflow,
             #     inputs=[
@@ -127,6 +144,7 @@ def create_pipeline(**kwargs) -> Pipeline:
             #     ]
             # )
         ],
-        inputs="df_train_prepared",
+        inputs=["df_train_prepared", "df_test_w_date_feat"],
+        outputs="model_velib",
         namespace="train_model"
     )
