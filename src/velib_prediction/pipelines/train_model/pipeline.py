@@ -12,7 +12,7 @@ from velib_prediction.pipelines.train_model.nodes import (
     train_final_model,
     train_model_bayesian_opti,
 )
-from velib_prediction.utils.utils import drop_columns, rename_columns, sort_dataframe
+from velib_prediction.utils.utils import rename_columns, sort_dataframe
 
 
 def create_pipeline(**kwargs) -> Pipeline:
@@ -31,14 +31,8 @@ def create_pipeline(**kwargs) -> Pipeline:
                 name="Sort_dataframe_by_date",
             ),
             node(
-                func=drop_columns,
-                inputs=["df_sorted", "params:feat_date"],
-                outputs="df_w_date_col",
-                name="Drop_date_column",
-            ),
-            node(
                 func=split_train_valid_last_hours,
-                inputs=["df_w_date_col", "params:n_hours"],
+                inputs=["df_sorted", "params:feat_date", "params:n_hours"],
                 outputs=["df_train", "df_valid"],
                 name="Create_split_train_valid"
             ),
