@@ -6,7 +6,6 @@ generated using Kedro 0.19.7
 from kedro.pipeline import Pipeline, node, pipeline
 
 from velib_prediction.pipelines.train_model.nodes import (
-    add_lags_sma,
     create_mlflow_experiment_if_needed,
     select_columns,
     split_train_valid_last_hours,
@@ -26,21 +25,8 @@ def create_pipeline(**kwargs) -> Pipeline:
                 name="Rename_target_column",
             ),
             node(
-                func=add_lags_sma,
-                inputs=[
-                    "df_w_target_renamed",
-                    "params:lags_to_try",
-                    "params:feat_id",
-                    "params:feat_date",
-                    "params:feat_target",
-                    "params:n_shift",
-                ],
-                outputs="df_train_w_lags",
-                name="Add_lag_to_dataset",
-            ),
-            node(
                 func=sort_dataframe,
-                inputs=["df_train_w_lags", "params:feat_date"],
+                inputs=["df_w_target_renamed", "params:feat_date"],
                 outputs="df_sorted",
                 name="Sort_dataframe_by_date",
             ),
@@ -68,13 +54,13 @@ def create_pipeline(**kwargs) -> Pipeline:
             ),
             node(
                 func=select_columns,
-                inputs=["df_train", "params:model_features"],
+                inputs=["df_train", "params:model_features", "params:feat_target"],
                 outputs="df_train_col_selected",
                 name="Select_columns_train",
             ),
             node(
                 func=select_columns,
-                inputs=["df_valid", "params:model_features"],
+                inputs=["df_valid", "params:model_features", "params:feat_target"],
                 outputs="df_valid_col_selected",
                 name="Select_columns_valid",
             ),
@@ -93,33 +79,26 @@ def create_pipeline(**kwargs) -> Pipeline:
                 name="Find_best_parameters_using_bayesian_optimization"
             ),
             node(
-                func=add_lags_sma,
-                inputs=[
-                    "df_test_w_date_feat",
-                    "params:lags_to_try",
-                    "params:feat_id",
-                    "params:feat_date",
-                    "params:feat_target",
-                    "params:n_shift",
-                ],
-                outputs="df_test_w_lags",
-                name="Add_lags_to_test",
+                func=rename_columns,
+                inputs=["df_test_w_date_feat", "params:dict_rename_target"],
+                outputs="df_test_target_renamed",
+                name="Rename_target_column_test_set",
             ),
             node(
                 func=sort_dataframe,
-                inputs=["df_test_w_lags", "params:feat_date"],
+                inputs=["df_test_target_renamed", "params:feat_date"],
                 outputs="df_test_sorted",
                 name="Sort_test_by_date",
             ),
             node(
                 func=select_columns,
-                inputs=["df_w_date_col", "params:model_features"],
+                inputs=["df_w_date_col", "params:model_features", "params:feat_target"],
                 outputs="df_training",
                 name="Select_columns_training",
             ),
             node(
                 func=select_columns,
-                inputs=["df_test_sorted", "params:model_features"],
+                inputs=["df_test_sorted", "params:model_features", "params:feat_target"],
                 outputs="df_test_col_selected",
                 name="Select_columns_test",
             ),

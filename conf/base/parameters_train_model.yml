@@ -43,7 +43,6 @@ train_model.model_features: [
   "duedate_day",
   "duedate_weekday",
   "duedate_weekend",
-  "sma_1_lag",
 ]
 
 train_model.feat_cat: [
