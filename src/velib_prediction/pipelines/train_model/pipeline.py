@@ -129,7 +129,7 @@ def create_pipeline(**kwargs) -> Pipeline:
                     "experiment_id_created",
                     "df_training",
                     "df_test_col_selected",
-                    "params:list_feat_cat",
+                    "params:feat_cat",
                     "best_params"
                 ],
                 outputs="model_velib",
