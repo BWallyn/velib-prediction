@@ -411,4 +411,4 @@ def train_final_model(  # noqa: PLR0913
         _log_mlflow_metric(dict_metrics=dict_metrics, run_id=parent_run.info.run_id)
         # Log model
         _log_mlflow_model_catboost(model=model, df=df_train)
-    return model, rmse_train, rmse_valid
+    return model
