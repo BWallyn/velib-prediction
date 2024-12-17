@@ -87,26 +87,27 @@ def get_split_train_val_cv(
     return list_train_valid
 
 
-def _filter_last_hours(group, n_hours: int=5):
+def _filter_last_hours(group, feat_date: str, n_hours: int=5):
     """
     """
-    last_hours = group["duedate"].max() - pd.Timedelta(hours=n_hours)
-    return group[group["duedate"] >= last_hours]
+    last_hours = group[feat_date].max() - pd.Timedelta(hours=n_hours)
+    return group[group[feat_date] >= last_hours]
 
 
-def split_train_valid_last_hours(df: pd.DataFrame, n_hours: int) -> tuple[pd.DataFrame, pd.DataFrame]:
+def split_train_valid_last_hours(df: pd.DataFrame, feat_date: str, n_hours: int) -> tuple[pd.DataFrame, pd.DataFrame]:
     """Split dataset into train and validation sets
 
     Args:
         df (pd.DataFrame): Input DataFrame
+        feat_date (str): Name of the date column
         n_hours (int): Number of hours to keep for validation set
     Returns:
         df_train (pd.DataFrame): Train DataFrame
         df_valid (pd.DataFrame): Valid DataFrame
     """
     # Order dataset by station and date
-    df_sel = df.sort_values(["stationcode", "duedate"], ascending=[True, True])
-    df_valid_index = df_sel.groupby('stationcode').apply(_filter_last_hours, n_hours=n_hours).reset_index(drop=True)["idx"].values
+    df_sel = df.sort_values(["stationcode", feat_date], ascending=[True, True])
+    df_valid_index = df_sel.groupby('stationcode').apply(_filter_last_hours, feat_date=feat_date, n_hours=n_hours).reset_index(drop=True)["idx"].values
     df_valid = df.loc[df["idx"].isin(df_valid_index)]
     df_train = df.loc[~df["idx"].isin(df_valid_index)]
     return df_train, df_valid
