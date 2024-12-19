@@ -86,7 +86,7 @@ def create_pipeline(**kwargs) -> Pipeline:
             ),
             node(
                 func=select_columns,
-                inputs=["df_w_date_col", "params:model_features", "params:feat_target"],
+                inputs=["df_sorted", "params:model_features", "params:feat_target"],
                 outputs="df_training",
                 name="Select_columns_training",
             ),
