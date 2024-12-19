@@ -18,10 +18,10 @@ from sklearn.metrics import root_mean_squared_error
 from sklearn.model_selection import TimeSeriesSplit
 
 from velib_prediction.pipelines.train_model.mlflow import (
+    _create_mlflow_signature,
     _log_mlflow_catboost_parameters,
     _log_mlflow_metric,
     _log_mlflow_model_catboost,
-    _create_mlflow_signature,
     create_mlflow_experiment,
 )
 
