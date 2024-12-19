@@ -18,6 +18,7 @@ from sklearn.metrics import root_mean_squared_error
 from sklearn.model_selection import TimeSeriesSplit
 
 from velib_prediction.pipelines.train_model.mlflow import (
+    _create_mlflow_signature,
     _log_mlflow_catboost_parameters,
     _log_mlflow_metric,
     _log_mlflow_model_catboost,
@@ -222,7 +223,7 @@ def train_model_mlflow(  # noqa: PLR0913
         }
         _log_mlflow_metric(dict_metrics=dict_metrics, run_id=child_run.info.run_id)
         # Log model
-        _log_mlflow_model_catboost(model=model, df=df_train)
+        # _log_mlflow_model_catboost(model=model, df=df_train)
     return model, rmse_train, rmse_valid
 
 
@@ -353,7 +354,7 @@ def train_model_bayesian_opti(  # noqa: PLR0913
         )
 
         # Optimize
-        study.optimize(objective, n_trials=n_trials, show_progress_bar=True)
+        study.optimize(objective, n_trials=n_trials, show_progress_bar=True, n_jobs=-1)
         logger.info(f"Best parameters found: {study.best_params}")
     # Get best parameters
     best_parameters = study.best_params
@@ -412,5 +413,6 @@ def train_final_model(  # noqa: PLR0913
         }
         _log_mlflow_metric(dict_metrics=dict_metrics, run_id=parent_run.info.run_id)
         # Log model
-        _log_mlflow_model_catboost(model=model, df=df_train)
+        signature = _create_mlflow_signature()
+        _log_mlflow_model_catboost(model=model, df=df_train, signature=signature)
     return model
