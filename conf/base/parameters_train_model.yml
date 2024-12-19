@@ -12,6 +12,8 @@ train_model.feat_id: "stationcode"
 
 train_model.feat_date: "duedate"
 
+train_model.n_hours: 24
+
 train_model.feat_target: "target"
 
 train_model.n_shift: 5
@@ -24,9 +26,26 @@ train_model.experiment_folder: "./data/06_models/mlruns"
 
 train_model.experiment_name: "velib_prediction"
 
-train_model.experiment_id: "662257761878253787"
+train_model.experiment_id: "490736927840344472"
 
-train_model.list_feat_cat: [
+train_model.model_features: [
+  "stationcode",
+  "is_installed",
+  "capacity",
+  "numdocksavailable",
+  "mechanical",
+  "ebike",
+  "is_renting",
+  "is_returning",
+  "code_insee_commune",
+  "duedate_year",
+  "duedate_month",
+  "duedate_day",
+  "duedate_weekday",
+  "duedate_weekend",
+]
+
+train_model.feat_cat: [
   "is_installed",
   "is_renting",
   "is_returning",
@@ -40,3 +59,23 @@ train_model.catboost_parameters: {
   "iterations": 100,
   "depth": 7,
 }
+
+train_model.search_params: {
+  "iterations": {
+    "min": 100,
+    "max": 500,
+    "sampling_type": "int",
+  },
+  "depth": {
+    "min": 2,
+    "max": 7,
+    "sampling_type": "int",
+  },
+  "learning_rate": {
+    "min": 0.0001,
+    "max": 0.5,
+    "sampling_type": "loguniform"
+  },
+}
+
+train_model.n_trials: 10
