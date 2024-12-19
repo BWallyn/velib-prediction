@@ -10,6 +10,8 @@ import matplotlib.pyplot as plt
 import mlflow
 import pandas as pd
 from catboost import CatBoostRegressor
+from mlflow.models import ModelSignature
+from mlflow.types.schema import ColSpec, Schema
 
 # Options
 VERSION_FORMAT = "%Y_%m_%dT%H_%M_%S_%fZ"
@@ -51,22 +53,53 @@ def create_mlflow_experiment(
     )
     return experiment_id
 
+def _create_mlflow_signature() -> ModelSignature:
+    """Create a MLflow signature for the model
+
+    Args:
+        None
+    Returns:
+        (ModelSignature): MLflow signature for the model
+    """
+    input_schema = Schema(
+        [
+            ColSpec("string", "stationcode"),
+            ColSpec("integer", "is_installed"),
+            ColSpec("integer", "capacity"),
+            ColSpec("integer", "numdocksavailable"),
+            ColSpec("integer", "mechanical"),
+            ColSpec("integer", "ebike"),
+            ColSpec("integer", "is_renting"),
+            ColSpec("integer", "is_returning"),
+            ColSpec("string", "code_insee_commune"),
+            ColSpec("integer", "duedate_year"),
+            ColSpec("integer", "duedate_month"),
+            ColSpec("integer", "duedate_day"),
+            ColSpec("integer", "duedate_weekday"),
+            ColSpec("integer", "duedate_weekend"),
+            ColSpec("float", "sma_1_lag", required=False),
+        ]
+    )
+    output_schema = Schema([ColSpec("integer", "target")])
+    return ModelSignature(inputs=input_schema, outputs=output_schema)
 
 def _log_mlflow_model_catboost(
-    model: CatBoostRegressor, df: pd.DataFrame
+    model: CatBoostRegressor, df: pd.DataFrame, signature: ModelSignature,
 ) -> None:
     """Log model to MLflow
 
     Args:
         model (CatBoostRegressor): CatBoostRegressor model trained
         df (pd.DataFrame): DataFrame to use as example
+        signature (ModelSignature): Signature of the model to log to MLflow
     Returns:
         None
     """
     mlflow.catboost.log_model(
         model,
         "model",
-        input_example=df[model.feature_names_].sample(10, random_state=42)
+        signature=signature,
+        input_example=df[model.feature_names_].sample(10, random_state=42),
     )
 
 
