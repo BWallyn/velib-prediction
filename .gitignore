@@ -160,3 +160,4 @@ mlflow/
 */catboost_info/
 catboost_info/
 uv.lock
+.vscode/settings.json
