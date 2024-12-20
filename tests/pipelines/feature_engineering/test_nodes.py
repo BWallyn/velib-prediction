@@ -5,6 +5,7 @@ import pandas as pd
 import pytest
 
 from velib_prediction.pipelines.feature_engineering.nodes import (
+    drop_columns,
     extract_date_features,
     # get_holidays,
     get_weekend,
@@ -168,3 +169,45 @@ def test_extract_date_features(sample_dataframe_date):
     assert df_with_features['date_str_year'].iloc[0] == 2023  # noqa: PLR2004
     assert df_with_features['date_str_month'].iloc[1] == 12  # noqa: PLR2004
     assert df_with_features['date_str_weekday'].iloc[2] == 1  # Tuesday (assuming Tuesday is weekday 1)
+
+
+# ==== Drop columns ====
+
+@pytest.fixture
+def sample_dataframe_drop():
+    data = {'col1': [1, 2, 3], 'col2': [4, 5, 6], 'col3': [7, 8, 9]}
+    return pd.DataFrame(data)
+
+def test_drop_columns_basic(sample_dataframe_drop):
+    df_dropped = drop_columns(sample_dataframe_drop.copy(), ['col1', 'col3'])
+    assert list(df_dropped.columns) == ['col2']
+    assert len(df_dropped) == 3  # noqa: PLR2004
+
+def test_drop_columns_empty_list(sample_dataframe_drop):
+    df_dropped = drop_columns(sample_dataframe_drop.copy(), [])
+    assert list(df_dropped.columns) == ['col1', 'col2', 'col3']
+    assert len(df_dropped) == 3  # noqa: PLR2004
+
+def test_drop_columns_all_columns(sample_dataframe_drop):
+    df_dropped = drop_columns(sample_dataframe_drop.copy(), ['col1', 'col2', 'col3'])
+    assert df_dropped.empty
+
+# TODO: fix test
+# def test_drop_columns_nonexistent_column(sample_dataframe_drop):
+#     with pytest.raises(ValueError, match="KeyError: \"['col4'] not found in axis\""): #Check the content of the message
+#         drop_columns(sample_dataframe_drop.copy(), ['col4'])
+
+# TODO: fix test
+# def test_drop_columns_mix_existing_nonexistent(sample_dataframe_drop):
+#     with pytest.raises(ValueError, match="KeyError: \"['col3', 'col4'] not found in axis\""): #Check the content of the message
+#         drop_columns(sample_dataframe_drop.copy(), ['col2', 'col3', 'col4'])
+
+def test_drop_columns_duplicate_columns_to_drop(sample_dataframe_drop):
+    df_dropped = drop_columns(sample_dataframe_drop.copy(), ['col1', 'col1'])
+    assert list(df_dropped.columns) == ['col2', 'col3']
+    assert len(df_dropped) == 3  # noqa: PLR2004
+
+def test_drop_columns_empty_dataframe():
+    df = pd.DataFrame()
+    with pytest.raises(KeyError):
+        drop_columns(df, ['col1'])
