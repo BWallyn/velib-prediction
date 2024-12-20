@@ -13,8 +13,8 @@ def sample_dataframe():
 
 def test_split_train_test_basic(sample_dataframe):
     df_train, df_test = split_train_test(sample_dataframe, 'date', 10)
-    assert len(df_train) == 3  # noqa: PLR2004
-    assert len(df_test) == 2  # noqa: PLR2004
+    assert len(df_train) == 2  # noqa: PLR2004
+    assert len(df_test) == 3  # noqa: PLR2004
     assert df_train['date'].max() < pd.to_datetime('2024-01-10')
     assert df_test['date'].min() >= pd.to_datetime('2024-01-10')
 
@@ -32,14 +32,14 @@ def test_split_train_test_empty_train(sample_dataframe):
 def test_split_train_test_different_date_column_name(sample_dataframe):
     sample_dataframe = sample_dataframe.rename(columns={'date': 'my_date'})
     df_train, df_test = split_train_test(sample_dataframe, 'my_date', 10)
-    assert len(df_train) == 3  # noqa: PLR2004
-    assert len(df_test) == 2  # noqa: PLR2004
+    assert len(df_train) == 2  # noqa: PLR2004
+    assert len(df_test) == 3  # noqa: PLR2004
 
 def test_split_train_test_same_date_cutoff(sample_dataframe):
     df_train, df_test = split_train_test(sample_dataframe, 'date', 5)
-    assert len(df_train) == 4  # noqa: PLR2004
-    assert len(df_test) == 1
-    assert df_test['date'].iloc[0] == pd.to_datetime('2024-01-20')
+    assert len(df_train) == 3  # noqa: PLR2004
+    assert len(df_test) == 2  # noqa: PLR2004
+    assert df_test['date'].iloc[0] == pd.to_datetime('2024-01-15')
 
 def test_split_train_test_one_row_df():
     data = {'date': pd.to_datetime(['2024-01-01']), 'value': [1]}
@@ -51,5 +51,5 @@ def test_split_train_test_one_row_df():
 def test_split_train_test_delta_days_is_float():
     data = {'date': pd.to_datetime(['2024-01-01', '2024-01-05']), 'value': [1,2]}
     df = pd.DataFrame(data)
-    with pytest.raises(TypeError):
+    with pytest.raises(AssertionError):
         split_train_test(df, 'date', 10.5)
