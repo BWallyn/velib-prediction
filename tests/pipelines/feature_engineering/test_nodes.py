@@ -116,8 +116,8 @@ def test_get_weekend_basic(sample_dataframe_weekend):
 
 def test_get_weekend_empty_df():
     df = pd.DataFrame()
-    df_with_weekend = get_weekend(df, 'date')
-    assert df_with_weekend.empty
+    with pytest.raises(ValueError):
+        get_weekend(df, 'date')
 
 def test_get_weekend_no_weekday_column(sample_dataframe_weekend):
     df = sample_dataframe_weekend.drop(columns='date_weekday')
