@@ -25,6 +25,9 @@ def split_train_test(df: pd.DataFrame, feat_date: str, delta_days: int) -> tuple
         df_train (pd.DataFrame): Train set
         df_test (pd.DataFrame): Test set
     """
+    # Check number of days in integer:
+    assert isinstance(delta_days, int), "delta_days should be an integer"
+    # Get the max date
     max_date = df[feat_date].max()
     train_cutoff = max_date - datetime.timedelta(days=delta_days)
     # Split
