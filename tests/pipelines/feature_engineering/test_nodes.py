@@ -5,7 +5,8 @@ import pandas as pd
 import pytest
 
 from velib_prediction.pipelines.feature_engineering.nodes import (
-    get_holidays,
+    extract_date_features,
+    # get_holidays,
     get_weekend,
     split_train_test,
 )
@@ -137,3 +138,33 @@ def test_get_weekend_already_existing_column(sample_dataframe_weekend):
     expected_weekend = np.array([0, 0, 0, 0, 0, 1, 1, 0])
     np.testing.assert_array_equal(df_with_weekend['date_weekend'].values, expected_weekend)
 
+
+# ==== Extract date features ====
+
+@pytest.fixture
+def sample_dataframe_date():
+    data = {'date_str': ['20231215', '20231218', '20240102']}
+    return pd.DataFrame(data)
+
+def test_extract_date_features(sample_dataframe_date):
+    df_with_features = extract_date_features(sample_dataframe_date.copy(), 'date_str')
+
+    # Assert presence of new features
+    assert 'date_str_year' in df_with_features.columns
+    assert 'date_str_month' in df_with_features.columns
+    assert 'date_str_day' in df_with_features.columns
+    assert 'date_str_weekday' in df_with_features.columns
+    assert 'date_str_weekend' in df_with_features.columns
+
+    # Assert data types (optional)
+    assert pd.api.types.is_datetime64_dtype(df_with_features['date_str'])
+    assert df_with_features['date_str_year'].dtype == np.int32
+    assert df_with_features['date_str_month'].dtype == np.int32
+    assert df_with_features['date_str_day'].dtype == np.int32
+    assert df_with_features['date_str_weekday'].dtype == np.int32
+    assert df_with_features['date_str_weekend'].dtype == np.int64
+
+    # Assert specific feature values (optional)
+    assert df_with_features['date_str_year'].iloc[0] == 2023  # noqa: PLR2004
+    assert df_with_features['date_str_month'].iloc[1] == 12  # noqa: PLR2004
+    assert df_with_features['date_str_weekday'].iloc[2] == 1  # Tuesday (assuming Tuesday is weekday 1)
