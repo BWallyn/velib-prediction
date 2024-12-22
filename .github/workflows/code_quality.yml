@@ -1,0 +1,52 @@
+name: Code quality check
+
+on:
+  push:
+    branches: [ main, dev ]
+  pull_request:
+    branches: [ main, dev ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.11"]
+    
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python ${{ matrix.python-verion }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}  # Replace with your desired Python version
+    
+      # Install dependencies
+      - name: Install dependencies
+        run: |
+          pip install uv
+          uv venv
+          uv pip install .[dev]
+    
+      # Linting
+      - name: Lint with Ruff
+        run: |
+          source .vevn/bin/activate
+          ruff src/
+          ruff tests/
+        continue-on-error: true
+    
+      # Test with pytest
+      - name: Test with pytest
+        run: |
+          source .venv/bin/activate
+          pytest tests/
+    
+      # Test coverage
+      - name: Test coverage
+        run: |
+          source .venv/bin/activate
+          coverage run -m pytest  -v -s
+
+      - name: Generate Coverage Report
+        run: |
+          coverage report -m
