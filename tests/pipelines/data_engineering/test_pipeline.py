@@ -9,7 +9,6 @@ https://docs.pytest.org/en/latest/getting-started.html
 """
 import logging
 
-import pandas as pd
 from kedro.io import DataCatalog
 from kedro.runner import SequentialRunner
 
