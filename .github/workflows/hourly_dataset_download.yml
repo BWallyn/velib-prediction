@@ -6,7 +6,7 @@ on:
 
 jobs:
   download-velib-data:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
