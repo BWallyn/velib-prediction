@@ -31,7 +31,7 @@ jobs:
       - name: Lint with Ruff
         run: |
           source .venv/bin/activate
-          ruff check src/ tests/ --output-format=github-annotations
+          ruff check src/ tests/ --output-format=github
         continue-on-error: true
     
       # Test with pytest
