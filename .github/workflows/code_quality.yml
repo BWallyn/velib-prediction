@@ -39,13 +39,7 @@ jobs:
       - name: Test with pytest
         run: |
           source .venv/bin/activate
-          pytest tests/
-    
-      # Test coverage
-      - name: Test coverage
-        run: |
-          source .venv/bin/activate
-          coverage run -m pytest  -v -s
+          coverage run -m pytest -v -s
 
       - name: Generate Coverage Report
         run: |
