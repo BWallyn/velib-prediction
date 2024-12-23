@@ -24,24 +24,28 @@ jobs:
       - name: Install dependencies
         run: |
           pip install uv
-          uv venv
+          uv venv .venv
           uv pip install .[dev]
     
       # Linting
       - name: Lint with Ruff
         run: |
           source .vevn/bin/activate
-          ruff src/
-          ruff tests/
+          ruff check src/ tests/ --output-format=github-annotations
         continue-on-error: true
     
       # Test with pytest
       - name: Test with pytest
         run: |
           source .venv/bin/activate
-          coverage run -m pytest -v -s
+          coverage run -m pytest -v -s tests/
 
       - name: Generate Coverage Report
         run: |
           source .venv/bin/activate
           coverage report -m
+    
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
