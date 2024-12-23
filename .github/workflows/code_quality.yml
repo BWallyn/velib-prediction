@@ -25,7 +25,7 @@ jobs:
         run: |
           pip install uv
           uv venv .venv
-          uv pip install .[dev]
+          uv sync --extra dev
     
       # Linting
       - name: Lint with Ruff
