@@ -6,6 +6,7 @@ build-backend = "setuptools.build_meta"
 name = "velib_prediction"
 readme = "README.md"
 dynamic = [ "version",]
+requires-python = ">=3.11"
 dependencies = [
     "catboost>=1.2.7",
     "geopandas>=1.0.1",
@@ -36,8 +37,8 @@ source_dir = "src"
 [tool.ruff]
 line-length = 88
 show-fixes = true
-select = [ "F", "W", "E", "I", "UP", "PL", "T201",]
-ignore = [ "E501",]
+lint.select = [ "F", "W", "E", "I", "UP", "PL", "T201",]
+lint.ignore = [ "E501",]
 
 [project.entry-points."kedro.hooks"]
 
@@ -59,9 +60,6 @@ exclude_lines = [ "pragma: no cover", "raise NotImplementedError",]
 
 [tool.ruff.format]
 docstring-code-format = true
-
-[tool.setuptools.dynamic.dependencies]
-file = "requirements.txt"
 
 [tool.setuptools.dynamic.version]
 attr = "velib_prediction.__version__"
