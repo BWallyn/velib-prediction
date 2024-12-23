@@ -1,0 +1,51 @@
+name: Code quality check
+
+on:
+  push:
+    branches: [ main, dev ]
+  pull_request:
+    branches: [ main, dev ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.11"]
+    
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}  # Replace with your desired Python version
+    
+      # Install dependencies
+      - name: Install dependencies
+        run: |
+          pip install uv
+          uv venv .venv
+          uv sync --extra dev
+    
+      # Linting
+      - name: Lint with Ruff
+        run: |
+          source .venv/bin/activate
+          ruff check src/ tests/ --output-format=github
+        continue-on-error: true
+    
+      # Test with pytest
+      - name: Test with pytest and collect coverage
+        run: |
+          source .venv/bin/activate
+          pytest
+
+      - name: Generate Coverage Report
+        run: |
+          source .venv/bin/activate
+          coverage report -m
+    
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
