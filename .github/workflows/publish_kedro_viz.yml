@@ -1,6 +1,18 @@
 # Create workflow to deploy kedro viz on branches
 name: Kedro-Viz
 
+permissions:
+    # The contents write permission is required to use the action 
+    # if your GitHub publishing source is a branch
+    contents: write 
+
+    # The pages and id-token write permissions are required to use 
+    # the action if your GitHub publishing source is a custom 
+    # GitHub Actions workflow
+    pages: write 
+    id-token: write
+
+
 # Triggers
 on:
   pull_request:
