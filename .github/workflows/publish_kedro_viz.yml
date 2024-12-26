@@ -36,9 +36,8 @@ jobs:
       # Install dependencies
       - name: Install dependencies
         run: |
-          pip install uv
-          uv venv .venv
-          uv sync --extra dev
+          python -m pip install --upgrade pip
+          pip install -r pyproject.toml
 
       # Use the action
       - name: Deploy Kedro-Viz to Github Pages
