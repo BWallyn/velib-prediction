@@ -17,22 +17,37 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.11"]
     permissions:
       contents: write
+
     steps:
       - name: Fetch the repository
         uses: actions/checkout@v4
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
+          python-version: ${{ matrix.python-version }}
           cache: "pip"
+
+      # Install dependencies
       - name: Install dependencies
-        run: pip install -r requirements.txt
+        run: |
+          pip install uv
+          uv venv .venv
+          uv sync --extra dev
+
       - name: Consent to the use of Kedro-Telemetry
         run: "echo 'consent: true' > .telemetry"
+
       - name: Create build directory
-        run: kedro viz build
+        run: |
+          source .venv/bin/activate
+          kedro viz build
+
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         if: github.ref == 'refs/heads/main'
