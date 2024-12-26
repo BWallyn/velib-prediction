@@ -10,6 +10,7 @@ https://docs.pytest.org/en/latest/getting-started.html
 import logging
 
 import pandas as pd
+import pytest
 from kedro.io import DataCatalog
 from kedro.runner import SequentialRunner
 
@@ -18,7 +19,11 @@ from velib_prediction.pipelines.feature_engineering.pipeline import (
 )
 
 
-def test_data_science_pipeline(caplog):    # Note: caplog is passed as an argument
+@pytest.fixture
+def sample_dataframe():
+    return pd.read_parquet("tests/data/df_data_engineered.parquet")
+
+def test_data_science_pipeline(caplog, sample_dataframe: pd.DataFrame):    # Note: caplog is passed as an argument
     # Arrange pipeline
     pipeline = create_fe_pipeline().from_nodes("feature_engineering.split_train_test").to_nodes("feature_engineering.Drop_unused_columns")
 
@@ -26,7 +31,7 @@ def test_data_science_pipeline(caplog):    # Note: caplog is passed as an argume
     catalog = DataCatalog()
 
     dummy_data = {
-        "df_with_bool_cols_upd": pd.read_parquet("tests/data/df_data_engineered.parquet")
+        "df_with_bool_cols_upd": sample_dataframe,
     }
 
     dummy_parameters = {
