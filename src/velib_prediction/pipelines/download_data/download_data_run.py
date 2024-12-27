@@ -4,7 +4,7 @@
 
 import logging
 import os
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 import pandas as pd
 import requests
@@ -20,7 +20,7 @@ logger = logging.getLogger(__name__)
 def generate_timestamp() -> str:
     """Generate the timestamp to be used by versionning data
     """
-    current_ts = datetime.now(tz=timezone.utc).strftime("%Y_%m_%dT%H_%M_%S_%fz")
+    current_ts = datetime.now(tz=UTC).strftime("%Y_%m_%dT%H_%M_%S_%fz")
     return current_ts[:-4] + current_ts[-1:] # Don't keep microseconds
 
 
