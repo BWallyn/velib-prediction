@@ -3,6 +3,7 @@ import pandas as pd
 import pytest
 
 from velib_prediction.pipelines.train_model.nodes import (
+    _filter_last_hours,
     add_lags_sma,
     get_split_train_val_cv,
     select_columns,
@@ -390,3 +391,132 @@ def test_column_preservation(sample_df_split_cv):
     for train, val in result:
         assert all(col in train.columns for col in df.columns)
         assert all(col in val.columns for col in df.columns)
+
+
+# ==== Split last hours ====
+
+@pytest.fixture
+def sample_group():
+    """Create a sample DataFrame group for testing"""
+    dates = pd.date_range(
+        start='2024-01-01 00:00:00',
+        end='2024-01-01 23:00:00',
+        freq='H'
+    )
+    return pd.DataFrame({
+        'timestamp': dates,
+        'value': range(len(dates))
+    })
+
+def test_basic_filtering(sample_group):
+    """Test basic functionality with default hours"""
+    result = _filter_last_hours(sample_group.copy(), feat_date='timestamp')
+    # Check if result has correct number of hours (5 hours + last hour = 6 entries)
+    assert len(result) == 6  # noqa: PLR2004
+    # Check if filtered dates are within last 5 hours
+    max_date = result['timestamp'].max()
+    min_date = result['timestamp'].min()
+    assert (max_date - min_date) <= pd.Timedelta(hours=5)
+
+def test_custom_hours(sample_group):
+    """Test with custom number of hours"""
+    n_hours = 3
+    result = _filter_last_hours(sample_group.copy(), feat_date='timestamp', n_hours=n_hours)
+    # Check if result has correct number of hours
+    assert len(result) == 4  # 3 hours + last hour  # noqa: PLR2004
+    # Verify time span
+    time_span = result['timestamp'].max() - result['timestamp'].min()
+    assert time_span <= pd.Timedelta(hours=n_hours)
+
+def test_zero_hours(sample_group):
+    """Test with zero hours"""
+    result = _filter_last_hours(sample_group.copy(), feat_date='timestamp', n_hours=0)
+    # Should only return the last timestamp
+    assert len(result) == 1
+    assert result['timestamp'].iloc[0] == sample_group['timestamp'].max()
+
+def test_empty_group():
+    """Test with empty DataFrame"""
+    empty_group = pd.DataFrame(columns=['timestamp', 'value'])
+    result = _filter_last_hours(empty_group, feat_date='timestamp')
+    assert len(result) == 0
+    assert result.empty
+
+def test_single_timestamp():
+    """Test with single timestamp"""
+    single_time = pd.DataFrame({
+        'timestamp': [pd.Timestamp('2024-01-01 00:00:00')],
+        'value': [1]
+    })
+    result = _filter_last_hours(single_time, feat_date='timestamp')
+    assert len(result) == 1
+    assert result.equals(single_time)
+
+def test_irregular_timestamps(sample_group):
+    """Test with irregular time intervals"""
+    irregular_times = pd.DataFrame({
+        'timestamp': [
+            '2024-01-01 18:00:00',
+            '2024-01-01 18:30:00',
+            '2024-01-01 19:15:00',
+            '2024-01-01 20:45:00',
+            '2024-01-01 23:00:00'
+        ],
+        'value': range(5)
+    })
+    irregular_times['timestamp'] = pd.to_datetime(irregular_times['timestamp'])
+    result = _filter_last_hours(irregular_times, feat_date='timestamp', n_hours=3)
+    # Check if timestamps within last 3 hours are included
+    last_time = irregular_times['timestamp'].max()
+    expected_min_time = last_time - pd.Timedelta(hours=3)
+    assert all(result['timestamp'] >= expected_min_time)
+
+def test_exact_boundary():
+    """Test with timestamps exactly on the boundary"""
+    times = pd.DataFrame({
+        'timestamp': [
+            '2024-01-01 18:00:00',
+            '2024-01-01 20:00:00',  # Exactly 3 hours before last
+            '2024-01-01 23:00:00'
+        ],
+        'value': range(3)
+    })
+    times['timestamp'] = pd.to_datetime(times['timestamp'])
+    result = _filter_last_hours(times, feat_date='timestamp', n_hours=3)
+    # Should include boundary timestamp
+    assert len(result) == 2  # noqa: PLR2004
+    assert min(result['timestamp']) == pd.to_datetime('2024-01-01 20:00:00')
+
+def test_different_column_name():
+    """Test with different date column name"""
+    df = pd.DataFrame({
+        'date_col': pd.date_range(
+            start='2024-01-01 20:00:00',
+            end='2024-01-01 23:00:00',
+            freq='H'
+        ),
+        'value': range(4)
+    })
+    result = _filter_last_hours(df, feat_date='date_col', n_hours=2)
+    assert len(result) == 3  # Last 2 hours + last entry  # noqa: PLR2004
+    assert (result['date_col'].max() - result['date_col'].min()) <= pd.Timedelta(hours=2)
+
+def test_preserve_other_columns():
+    """Test that non-datetime columns are preserved"""
+    df = pd.DataFrame({
+        'timestamp': pd.date_range(
+            start='2024-01-01 20:00:00',
+            end='2024-01-01 23:00:00',
+            freq='H'
+        ),
+        'value': range(4),
+        'category': ['A', 'B', 'C', 'D'],
+        'metric': [1.1, 2.2, 3.3, 4.4]
+    })
+    result = _filter_last_hours(df, feat_date='timestamp', n_hours=2)
+    # Check all columns are preserved
+    assert all(col in result.columns for col in df.columns)
+    # Check data integrity
+    assert all(result['value'] == df.iloc[-3:]['value'])
+    assert all(result['category'] == df.iloc[-3:]['category'])
+    assert all(result['metric'] == df.iloc[-3:]['metric'])
