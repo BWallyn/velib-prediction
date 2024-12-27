@@ -7,6 +7,7 @@ from velib_prediction.pipelines.train_model.nodes import (
     add_lags_sma,
     get_split_train_val_cv,
     select_columns,
+    split_train_valid_last_hours,
 )
 
 # ==== Select columns ====
@@ -290,7 +291,7 @@ def sample_df_split_cv():
         'value': range(10)
     })
 
-def test_basic_split(sample_df_split_cv):
+def test_basic_split_cv(sample_df_split_cv):
     """Test basic functionality with simple parameters"""
     n_splits = 3
     result = get_split_train_val_cv(sample_df_split_cv.copy(), n_splits)
@@ -320,7 +321,7 @@ def test_index_reset(sample_df_split_cv):
         assert train.index.is_monotonic_increasing
         assert val.index.is_monotonic_increasing
 
-def test_data_integrity(sample_df_split_cv):
+def test_data_integrity_cv(sample_df_split_cv):
     """Test that no data is lost or duplicated in the splits"""
     n_splits = 3
     result = get_split_train_val_cv(sample_df_split_cv.copy(), n_splits)
@@ -356,7 +357,7 @@ def test_max_splits(sample_df_split_cv):
         assert len(train) >= 1
         assert len(val) >= 1
 
-def test_empty_dataframe():
+def test_empty_dataframe_cv():
     """Test with empty DataFrame"""
     empty_df = pd.DataFrame(columns=['date', 'value'])
     with pytest.raises(ValueError):
@@ -381,7 +382,7 @@ def test_small_dataframe():
     with pytest.raises(ValueError):
         get_split_train_val_cv(small_df.copy(), n_splits=3)
 
-def test_column_preservation(sample_df_split_cv):
+def test_column_preservation_cv(sample_df_split_cv):
     """Test that all columns are preserved in splits"""
     # Add extra columns
     df = sample_df_split_cv.copy()
@@ -428,7 +429,7 @@ def test_custom_hours(sample_group):
     time_span = result['timestamp'].max() - result['timestamp'].min()
     assert time_span <= pd.Timedelta(hours=n_hours)
 
-def test_zero_hours(sample_group):
+def test_zero_hours_cv(sample_group):
     """Test with zero hours"""
     result = _filter_last_hours(sample_group.copy(), feat_date='timestamp', n_hours=0)
     # Should only return the last timestamp
@@ -452,7 +453,7 @@ def test_single_timestamp():
     assert len(result) == 1
     assert result.equals(single_time)
 
-def test_irregular_timestamps(sample_group):
+def test_irregular_timestamps_cv(sample_group):
     """Test with irregular time intervals"""
     irregular_times = pd.DataFrame({
         'timestamp': [
@@ -520,3 +521,179 @@ def test_preserve_other_columns():
     assert all(result['value'] == df.iloc[-3:]['value'])
     assert all(result['category'] == df.iloc[-3:]['category'])
     assert all(result['metric'] == df.iloc[-3:]['metric'])
+
+
+# ==== Split last hours ====
+
+@pytest.fixture
+def sample_df_split():
+    """Create a sample DataFrame for testing"""
+    dates = pd.date_range(
+        start='2024-01-01 00:00:00',
+        end='2024-01-01 23:00:00',
+        freq='H'
+    )
+    # Create DataFrame with two stations
+    df = pd.DataFrame({
+        'timestamp': dates.tolist() * 2,
+        'stationcode': [1] * len(dates) + [2] * len(dates),
+        'value': list(range(len(dates))) * 2
+    })
+    # Add index column
+    df['idx'] = range(len(df))
+    return df.sort_values(['stationcode', 'timestamp'])
+
+def test_basic_split(sample_df_split):
+    """Test basic functionality with simple parameters"""
+    n_hours = 5
+    df_train, df_valid = split_train_valid_last_hours(
+        sample_df_split.copy(),
+        feat_date='timestamp',
+        n_hours=n_hours
+    )
+    # Check that all data is preserved
+    assert len(df_train) + len(df_valid) == len(sample_df_split)
+    # Check that each station has correct number of validation hours
+    for station in sample_df_split['stationcode'].unique():
+        station_valid = df_valid[df_valid['stationcode'] == station]
+        max_time = station_valid['timestamp'].max()
+        min_time = station_valid['timestamp'].min()
+        assert (max_time - min_time) <= pd.Timedelta(hours=n_hours)
+
+def test_data_ordering(sample_df_split):
+    """Test that data remains properly ordered"""
+    df_train, df_valid = split_train_valid_last_hours(
+        sample_df_split.copy(),
+        feat_date='timestamp',
+        n_hours=5
+    )
+    # Check ordering in train set
+    assert df_train.groupby('stationcode')['timestamp'].is_monotonic_increasing.all()
+    # Check ordering in validation set
+    assert df_valid.groupby('stationcode')['timestamp'].is_monotonic_increasing.all()
+
+def test_temporal_split(sample_df_split):
+    """Test that temporal split is correct"""
+    n_hours = 5
+    df_train, df_valid = split_train_valid_last_hours(
+        sample_df_split.copy(),
+        feat_date='timestamp',
+        n_hours=n_hours
+    )
+    # For each station, check that validation data comes after training data
+    for station in sample_df_split['stationcode'].unique():
+        train_max = df_train[df_train['stationcode'] == station]['timestamp'].max()
+        valid_min = df_valid[df_valid['stationcode'] == station]['timestamp'].min()
+        assert train_max < valid_min
+
+def test_zero_hours(sample_df_split):
+    """Test with zero validation hours"""
+    df_train, df_valid = split_train_valid_last_hours(
+        sample_df_split.copy(),
+        feat_date='timestamp',
+        n_hours=0
+    )
+    # Validation set should only contain last timestamp for each station
+    assert len(df_valid) == len(sample_df_split['stationcode'].unique())
+    # Train set should contain all other data
+    assert len(df_train) == len(sample_df_split) - len(sample_df_split['stationcode'].unique())
+
+def test_all_hours(sample_df_split):
+    """Test with validation hours larger than available data"""
+    n_hours = 24  # More hours than available in the data
+    df_train, df_valid = split_train_valid_last_hours(
+        sample_df_split.copy(),
+        feat_date='timestamp',
+        n_hours=n_hours
+    )
+    # All data should be in validation set
+    assert len(df_valid) == len(sample_df_split)
+    assert len(df_train) == 0
+
+def test_single_station():
+    """Test with single station"""
+    dates = pd.date_range(
+        start='2024-01-01 00:00:00',
+        end='2024-01-01 23:00:00',
+        freq='H'
+    )
+    df = pd.DataFrame({
+        'timestamp': dates,
+        'stationcode': [1] * len(dates),
+        'value': range(len(dates)),
+        'idx': range(len(dates))
+    })
+    df_train, df_valid = split_train_valid_last_hours(
+        df,
+        feat_date='timestamp',
+        n_hours=5
+    )
+    # Check correct split
+    assert len(df_valid) == 6  # 5 hours plus last hour  # noqa: PLR2004
+    assert len(df_train) == len(df) - 6
+
+def test_irregular_timestamps():
+    """Test with irregular time intervals"""
+    df = pd.DataFrame({
+        'timestamp': [
+            '2024-01-01 18:00:00',
+            '2024-01-01 19:30:00',
+            '2024-01-01 20:45:00',
+            '2024-01-01 23:00:00'
+        ] * 2,
+        'stationcode': [1, 1, 1, 1, 2, 2, 2, 2],
+        'value': range(8),
+        'idx': range(8)
+    })
+    df['timestamp'] = pd.to_datetime(df['timestamp'])
+    df_train, df_valid = split_train_valid_last_hours(
+        df,
+        feat_date='timestamp',
+        n_hours=3
+    )
+    # Check that irregular timestamps are handled correctly
+    for station in df['stationcode'].unique():
+        valid_times = df_valid[df_valid['stationcode'] == station]['timestamp']
+        time_span = valid_times.max() - valid_times.min()
+        assert time_span <= pd.Timedelta(hours=3)
+
+def test_empty_dataframe():
+    """Test with empty DataFrame"""
+    empty_df = pd.DataFrame(columns=['timestamp', 'stationcode', 'value', 'idx'])
+    df_train, df_valid = split_train_valid_last_hours(
+        empty_df,
+        feat_date='timestamp',
+        n_hours=5
+    )
+    assert df_train.empty
+    assert df_valid.empty
+
+def test_column_preservation(sample_df_split):
+    """Test that all columns are preserved"""
+    # Add extra columns
+    df = sample_df_split.copy()
+    df['category'] = 'A'
+    df['extra'] = 1.0
+    df_train, df_valid = split_train_valid_last_hours(
+        df,
+        feat_date='timestamp',
+        n_hours=5
+    )
+    # Check all columns are preserved in both splits
+    assert all(col in df_train.columns for col in df.columns)
+    assert all(col in df_valid.columns for col in df.columns)
+
+def test_data_integrity(sample_df_split):
+    """Test that no data is lost or duplicated"""
+    df_train, df_valid = split_train_valid_last_hours(
+        sample_df_split.copy(),
+        feat_date='timestamp',
+        n_hours=5
+    )
+    # Check no duplicates in either set
+    assert not df_train['idx'].duplicated().any()
+    assert not df_valid['idx'].duplicated().any()
+    # Check no overlap between sets
+    assert not set(df_train['idx']).intersection(set(df_valid['idx']))
+    # Check all data is accounted for
+    assert set(df_train['idx']).union(set(df_valid['idx'])) == set(sample_df_split['idx'])
