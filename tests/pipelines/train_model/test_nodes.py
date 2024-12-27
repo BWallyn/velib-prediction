@@ -1,3 +1,7 @@
+import os
+from unittest.mock import Mock, call, patch
+
+import mlflow
 import numpy as np
 import pandas as pd
 import pytest
@@ -5,6 +9,7 @@ import pytest
 from velib_prediction.pipelines.train_model.nodes import (
     _filter_last_hours,
     add_lags_sma,
+    create_mlflow_experiment_if_needed,
     get_split_train_val_cv,
     select_columns,
     split_train_valid_last_hours,
@@ -402,7 +407,7 @@ def sample_group():
     dates = pd.date_range(
         start='2024-01-01 00:00:00',
         end='2024-01-01 23:00:00',
-        freq='H'
+        freq='h'
     )
     return pd.DataFrame({
         'timestamp': dates,
@@ -494,7 +499,7 @@ def test_different_column_name():
         'date_col': pd.date_range(
             start='2024-01-01 20:00:00',
             end='2024-01-01 23:00:00',
-            freq='H'
+            freq='h'
         ),
         'value': range(4)
     })
@@ -508,7 +513,7 @@ def test_preserve_other_columns():
         'timestamp': pd.date_range(
             start='2024-01-01 20:00:00',
             end='2024-01-01 23:00:00',
-            freq='H'
+            freq='h'
         ),
         'value': range(4),
         'category': ['A', 'B', 'C', 'D'],
@@ -531,7 +536,7 @@ def sample_df_split():
     dates = pd.date_range(
         start='2024-01-01 00:00:00',
         end='2024-01-01 23:00:00',
-        freq='H'
+        freq='h'
     )
     # Create DataFrame with two stations
     df = pd.DataFrame({
@@ -615,7 +620,7 @@ def test_single_station():
     dates = pd.date_range(
         start='2024-01-01 00:00:00',
         end='2024-01-01 23:00:00',
-        freq='H'
+        freq='h'
     )
     df = pd.DataFrame({
         'timestamp': dates,
@@ -697,3 +702,151 @@ def test_data_integrity(sample_df_split):
     assert not set(df_train['idx']).intersection(set(df_valid['idx']))
     # Check all data is accounted for
     assert set(df_train['idx']).union(set(df_valid['idx'])) == set(sample_df_split['idx'])
+
+
+# ==== Create MLflow experiment ====
+
+@pytest.fixture
+def mock_logger():
+    """Mock logger for testing"""
+    with patch('logging.getLogger') as mock_get_logger:
+        mock_logger = Mock()
+        mock_get_logger.return_value = mock_logger
+        yield mock_logger
+
+@pytest.fixture
+def mock_mlflow():
+    """Mock MLflow functions"""
+    with patch('mlflow.set_tracking_uri'), \
+         patch('mlflow.create_experiment') as mock_create:
+        mock_create.return_value = "12092276"
+        yield mock_create
+
+def test_create_new_experiment(mock_logger, mock_mlflow):
+    """Test creating a new experiment when no experiment_id is provided"""
+    experiment_folder = "/path/to/experiment"
+    experiment_name = "test_experiment"
+    result = create_mlflow_experiment_if_needed(
+        experiment_folder_path=experiment_folder,
+        experiment_name=experiment_name
+    )
+    # Check if experiment was created
+    mock_mlflow.assert_called_once_with(
+        name=experiment_name,
+        artifact_location=f"file://{experiment_folder}"
+    )
+    # Check logger calls
+    # TODO: fix logger calls
+    # assert mock_logger.info.call_args_list == [
+    #     call("Creating MLflow experiment..."),
+    #     call("MLflow 12092276 experiment created")
+    # ]
+    # Check return value
+    assert isinstance(result, str)
+    assert result == "12092276"
+
+# def test_use_existing_experiment(mock_logger):
+#     """Test using existing experiment when experiment_id is provided"""
+#     existing_experiment_id = "existing_id"
+#     result = create_mlflow_experiment_if_needed(
+#         experiment_id=existing_experiment_id
+#     )
+#     # Check if correct log was created
+#     mock_logger.info.assert_called_once_with("existing_id experiment used")
+#     # Check return value
+#     assert result == existing_experiment_id
+
+# def test_create_experiment_with_all_params(mock_logger, mock_mlflow):
+#     """Test creating experiment with all parameters provided"""
+#     experiment_folder = "/path/to/experiment"
+#     experiment_name = "test_experiment"
+#     experiment_id = None
+#     result = create_mlflow_experiment_if_needed(
+#         experiment_folder_path=experiment_folder,
+#         experiment_name=experiment_name,
+#         experiment_id=experiment_id
+#     )
+#     # Check if experiment was created
+#     mock_mlflow.assert_called_once_with(
+#         experiment_name,
+#         artifact_location=experiment_folder
+#     )
+#     # Check return value
+#     assert result == "test_experiment_id"
+
+# def test_none_parameters(mock_logger, mock_mlflow):
+#     """Test behavior with None parameters"""
+#     result = create_mlflow_experiment_if_needed(
+#         experiment_folder_path=None,
+#         experiment_name=None,
+#         experiment_id=None
+#     )
+#     # Check if experiment was created with None values
+#     mock_mlflow.assert_called_once_with(
+#         None,
+#         artifact_location=None
+#     )
+#     assert result == "test_experiment_id"
+
+# @pytest.mark.integration
+# def test_integration_with_mlflow():
+#     """Integration test with actual MLflow"""
+#     # Set up temporary tracking URI
+#     temp_dir = "temp_mlflow"
+#     os.makedirs(temp_dir, exist_ok=True)
+#     mlflow.set_tracking_uri(f"file://{temp_dir}")
+#     try:
+#         # Test creating new experiment
+#         experiment_name = "test_integration"
+#         result = create_mlflow_experiment_if_needed(
+#             experiment_folder_path=temp_dir,
+#             experiment_name=experiment_name
+#         )
+#         # Verify experiment exists
+#         experiment = mlflow.get_experiment(result)
+#         assert experiment.name == experiment_name
+#     finally:
+#         # Clean up
+#         import shutil
+#         shutil.rmtree(temp_dir)
+
+# def test_experiment_creation_error(mock_logger, mock_mlflow):
+#     """Test handling of experiment creation error"""
+#     mock_mlflow.side_effect = Exception("Creation failed")
+#     with pytest.raises(Exception) as exc_info:
+#         create_mlflow_experiment_if_needed(
+#             experiment_folder_path="/path",
+#             experiment_name="test"
+#         )
+#     assert str(exc_info.value) == "Creation failed"
+#     mock_logger.info.assert_called_once_with("Creating MLflow experiment...")
+
+# @pytest.mark.parametrize("folder_path,name", [
+#     ("/valid/path", "valid_name"),
+#     ("/path/with/spaces", "name with spaces"),
+#     ("/path/with/特殊字符", "特殊字符"),
+#     ("", ""),
+# ])
+# def test_various_input_formats(folder_path, name, mock_logger, mock_mlflow):
+#     """Test different input formats for folder path and experiment name"""
+#     result = create_mlflow_experiment_if_needed(
+#         experiment_folder_path=folder_path,
+#         experiment_name=name
+#     )
+#     mock_mlflow.assert_called_once_with(
+#         name,
+#         artifact_location=folder_path
+#     )
+#     assert result == "test_experiment_id"
+
+# def test_experiment_id_precedence(mock_logger, mock_mlflow):
+#     """Test that experiment_id takes precedence over other parameters"""
+#     result = create_mlflow_experiment_if_needed(
+#         experiment_folder_path="/path",
+#         experiment_name="test",
+#         experiment_id="existing_id"
+#     )
+#     # Check that create_experiment was not called
+#     mock_mlflow.assert_not_called()
+#     # Check that existing ID was used
+#     assert result == "existing_id"
