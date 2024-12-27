@@ -12,6 +12,7 @@ from typing import Any
 
 import mlflow
 import optuna
+from optuna.trial import Trial
 import pandas as pd
 from catboost import CatBoostRegressor, Pool
 from sklearn.metrics import root_mean_squared_error
@@ -269,8 +270,25 @@ def train_model_cv_mlflow(  # noqa: PLR0913
             )
 
 
+def _build_search_space(trial: Trial, hyperparams_search_space: dict[str, Any]):
+    """
+    """
+    hyperparams = {}
+    # Set the hyperparams
+    for param_name, sampling_params in hyperparams_search_space.items():
+        if sampling_params["sampling_type"] == "categorical":
+            hyperparams[param_name] = eval(
+                f"trial.suggest_{sampling_params['sampling_type']}('{param_name}', {sampling_params['choices']})"
+            )
+        else:
+            hyperparams[param_name] = eval(
+                f"trial.suggest_{sampling_params['sampling_type']}('{param_name}', {sampling_params['min']}, {sampling_params['max']})"
+            )
+    return hyperparams
+
+
 def optimize_hyperparams(  # noqa: PLR0913
-    trial,
+    trial: Trial,
     search_params: dict[str, Any],
     experiment_id: str,
     run_id: str,
