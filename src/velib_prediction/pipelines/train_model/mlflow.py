@@ -43,12 +43,9 @@ def create_mlflow_experiment(
     Returns:
         (str): Id of the created experiment
     """
-    # Generate timestamp for the MLflow logging
-    timestamp = generate_timestamp()
-
     # Create MLflow experiment
     experiment_id = mlflow.create_experiment(
-        name=f"{experiment_name}_{timestamp}",
+        name=f"{experiment_name}",
         artifact_location=Path.cwd().joinpath(experiment_folder_path).as_uri(),
     )
     return experiment_id
