@@ -8,7 +8,7 @@ generated using Kedro 0.19.7
 
 import logging
 from functools import partial
-from typing import Any, Optional
+from typing import Any
 
 import mlflow
 import optuna
@@ -115,7 +115,7 @@ def split_train_valid_last_hours(df: pd.DataFrame, feat_date: str, n_hours: int)
 
 
 def create_mlflow_experiment_if_needed(
-    experiment_folder_path: Optional[str]=None, experiment_name: Optional[str]=None, experiment_id: Optional[str]=None
+    experiment_folder_path: str | None=None, experiment_name: str | None=None, experiment_id: str | None=None
 ) -> str:
     """Create a MLflow experiment if needed.
     If experiment id is not None, then create a MLflow experiment using the folder path and the experiment name

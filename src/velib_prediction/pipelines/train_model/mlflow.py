@@ -2,7 +2,7 @@
 # ==== IMPORTS ====
 # =================
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
@@ -28,7 +28,7 @@ def generate_timestamp() -> str:
     Returns:
         (str): String representation of the current timestamp
     """
-    current_ts = datetime.now(tz=timezone.utc).strftime(VERSION_FORMAT)
+    current_ts = datetime.now(tz=UTC).strftime(VERSION_FORMAT)
     return current_ts[:-4] + current_ts[-1:] # Dont keep microseconds
 
 
