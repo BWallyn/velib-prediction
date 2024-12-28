@@ -7,6 +7,7 @@ from kedro.pipeline import Pipeline, node, pipeline
 
 from velib_prediction.pipelines.train_model.nodes import (
     create_mlflow_experiment_if_needed,
+    instantiate_search_space,
     select_columns,
     split_train_valid_last_hours,
     train_final_model,
@@ -59,11 +60,17 @@ def create_pipeline(**kwargs) -> Pipeline:
                 name="Select_columns_valid",
             ),
             node(
+                func=instantiate_search_space,
+                inputs=["params:search_params"],
+                outputs="bayesian_opti_space",
+                name="Instantiate_search_space",
+            ),
+            node(
                 func=train_model_bayesian_opti,
                 inputs=[
                     "params:run_name",
                     "experiment_id_created",
-                    "params:search_params",
+                    "bayesian_opti_space",
                     "df_train_col_selected",
                     "df_valid_col_selected",
                     "params:feat_cat",
