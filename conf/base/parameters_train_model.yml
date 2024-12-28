@@ -26,7 +26,7 @@ train_model.experiment_folder: "./data/06_models/mlruns"
 
 train_model.experiment_name: "velib_prediction"
 
-train_model.experiment_id: "490736927840344472"
+train_model.experiment_id:
 
 train_model.model_features: [
   "stationcode",
@@ -78,4 +78,4 @@ train_model.search_params: {
   },
 }
 
-train_model.n_trials: 10
+train_model.n_trials: 15
