@@ -12,9 +12,9 @@ from typing import Any
 
 import mlflow
 import optuna
-from optuna.trial import Trial
 import pandas as pd
 from catboost import CatBoostRegressor, Pool
+from optuna.trial import Trial
 from sklearn.metrics import root_mean_squared_error
 from sklearn.model_selection import TimeSeriesSplit
 
@@ -271,7 +271,13 @@ def train_model_cv_mlflow(  # noqa: PLR0913
 
 
 def _build_search_space(trial: Trial, hyperparams_search_space: dict[str, Any]):
-    """
+    """Build the search space for the bayesian optimization
+
+    Args:
+        trial (Trial): Optuna trial
+        hyperparams_search_space (dict[str, Any]): Search space for the hyperparameters
+    Returns:
+        hyperparams (dict[str, Any]): Dictionary containing the sampled hyperparameters for the current trial
     """
     hyperparams = {}
     # Set the hyperparams
@@ -309,12 +315,7 @@ def optimize_hyperparams(  # noqa: PLR0913
     Returns:
         rmse_valid (float): Root Mean Squared Error on the validation set
     """
-    optimize_params = {}
-    # Set the hyperparams
-    for param_name, sampling_params in search_params.items():
-        optimize_params[param_name] = eval(
-            f"trial.suggest_{sampling_params['sampling_type']}('{param_name}', {sampling_params['min']}, {sampling_params['max']})"
-        )
+    optimize_params = _build_search_space(trial, search_params)
 
     # Train model mlflow
     logger.info(f"Train Catboost model using {optimize_params}")
