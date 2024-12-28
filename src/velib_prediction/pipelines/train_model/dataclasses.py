@@ -18,7 +18,7 @@ class BayesianOptiSearchSpace(BaseModel):
         proposed_distributions = set(
             [sampling_params["sampling_type"] for _, sampling_params in v.items()]
         )
-        supported_distributions = {"uniform", "loguniform", "uniform", "categorical"}
+        supported_distributions = {"uniform", "loguniform", "discreteuniform", "intuniform", "intloguniform", "categorical", "int"}
         if (proposed_distributions - supported_distributions) != set():
             raise ValueError(
                 f"Some provided distributions are not supported: {proposed_distributions - supported_distributions}"
