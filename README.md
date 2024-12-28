@@ -5,6 +5,12 @@ The goal of this project is to predict the number of rides in Velib stations loc
 ![Velib](./reports/images/velib-velo-electrique.jpeg)
 
 
+## 🛰️ Architecture
+
+All this project is designed using [Kedro](https://docs.kedro.org).
+You can find the architecture of the project here: https://bwallyn.github.io/velib-prediction/
+
+
 ## 📡 Data
 
 Data are extracted from the [Open Data Paris website](https://opendata.paris.fr/explore/dataset/velib-disponibilite-en-temps-reel/information/?disjunctive.name&disjunctive.is_installed&disjunctive.is_renting&disjunctive.is_returning&disjunctive.nom_arrondissement_communes).
