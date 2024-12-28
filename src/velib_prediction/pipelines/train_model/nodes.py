@@ -18,6 +18,7 @@ from optuna.trial import Trial
 from sklearn.metrics import root_mean_squared_error
 from sklearn.model_selection import TimeSeriesSplit
 
+from velib_prediction.pipelines.train_model.dataclasses import BayesianOptiSearchSpace
 from velib_prediction.pipelines.train_model.mlflow import (
     _create_mlflow_signature,
     _log_mlflow_catboost_parameters,
@@ -268,6 +269,17 @@ def train_model_cv_mlflow(  # noqa: PLR0913
                 verbose=verbose,
                 **catboost_params
             )
+
+
+def instantiate_search_space(search_params: dict[str, Any]) -> type[BayesianOptiSearchSpace]:
+    """Instantiate the class defining the search space for the Bayesian Optimization
+
+    Args:
+        search_params (dict[str, Any]): Search space for the hyperparameters
+    Returns:
+        (type[BayesianOptiSearchSpace]): Class defining the search space for the Bayesian Optimization
+    """
+    return BayesianOptiSearchSpace(hyperparams_search_space=search_params)
 
 
 def _build_search_space(trial: Trial, hyperparams_search_space: dict[str, Any]):
