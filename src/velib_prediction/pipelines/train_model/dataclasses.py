@@ -24,3 +24,7 @@ class BayesianOptiSearchSpace(BaseModel):
                 f"Some provided distributions are not supported: {proposed_distributions - supported_distributions}"
             )
         return v
+
+    # Make the class immutable
+    class Config:
+        frozen = True
