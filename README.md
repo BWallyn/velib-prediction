@@ -23,8 +23,23 @@ A Github action is running every hour to fetch data from the Open Data Paris web
 
 ## 🚀 Model
 
+The model used to predict the number of remaining bikes is a Gradient Boosting Model. To do so, we use [CatBoost](https://catboost.ai).
+
 
 ## 📈 Results
+
+
+## Guidelines
+
+### Installation guide
+
+All the dependencies are declared in the `pyproject.toml` for `uv` installation.
+
+To install them, run:
+
+```
+uv pip install -r pyproject.toml
+```
 
 
 
