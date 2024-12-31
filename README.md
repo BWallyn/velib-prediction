@@ -20,10 +20,17 @@ A Github action is running every hour to fetch data from the Open Data Paris web
 
 ## 🧪 Feature engineering
 
+The feature engineering is located in the `feature_engineering` Kedro pipeline.
+
+The feature engineering consists:
+- Information about the date the data was saved.
+- Information about the holidays downloaded from the web.
+
 
 ## 🚀 Model
 
 The model used to predict the number of remaining bikes is a Gradient Boosting Model. To do so, we use [CatBoost](https://catboost.ai).
+The training of the model can be found in the Kedro pipeline `train_model`.
 
 
 ## 📈 Results
