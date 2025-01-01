@@ -5,6 +5,12 @@ The goal of this project is to predict the number of rides in Velib stations loc
 ![Velib](./reports/images/velib-velo-electrique.jpeg)
 
 
+## 🛰️ Architecture
+
+All this project is designed using [Kedro](https://docs.kedro.org).
+You can find the architecture of the project here: https://bwallyn.github.io/velib-prediction/
+
+
 ## 📡 Data
 
 Data are extracted from the [Open Data Paris website](https://opendata.paris.fr/explore/dataset/velib-disponibilite-en-temps-reel/information/?disjunctive.name&disjunctive.is_installed&disjunctive.is_renting&disjunctive.is_returning&disjunctive.nom_arrondissement_communes).
@@ -14,11 +20,48 @@ A Github action is running every hour to fetch data from the Open Data Paris web
 
 ## 🧪 Feature engineering
 
+The feature engineering is located in the `feature_engineering` Kedro pipeline.
+
+The feature engineering consists:
+- Information about the date the data was saved.
+- Information about the holidays downloaded from the web.
+
 
 ## 🚀 Model
 
+The model used to predict the number of remaining bikes is a Gradient Boosting Model. To do so, we use [CatBoost](https://catboost.ai).
+The training of the model can be found in the Kedro pipeline `train_model`.
+
 
 ## 📈 Results
+
+
+## Guidelines
+
+### Installation guide
+
+All the dependencies are declared in the `pyproject.toml` for `uv` installation.
+
+To install them, run:
+
+```
+uv pip install -r pyproject.toml
+```
+
+### Development guide
+
+To add developments, you can follow the guide:
+- Install all the dependencies and the extra dependencies
+```
+uv sync --extra dev
+```
+- Create a new branch using the following guidelines:
+  - `feature/<branch-name>` to add a feature to the project.
+  - `fix/<branch-name>` to fix a bug in the project.
+- Code.
+- Add unit tests.
+- Create a pull request to the `dev` branch.
+- Merge and if it validated create a pull request to the `main` branch.
 
 
 
