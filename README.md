@@ -48,6 +48,21 @@ To install them, run:
 uv pip install -r pyproject.toml
 ```
 
+### Development guide
+
+To add developments, you can follow the guide:
+- Install all the dependencies and the extra dependencies
+```
+uv sync --extra dev
+```
+- Create a new branch using the following guidelines:
+  - `feature/<branch-name>` to add a feature to the project.
+  - `fix/<branch-name>` to fix a bug in the project.
+- Code.
+- Add unit tests.
+- Create a pull request to the `dev` branch.
+- Merge and if it validated create a pull request to the `main` branch.
+
 
 
 ## A word on Kedro
