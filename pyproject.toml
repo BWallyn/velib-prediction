@@ -21,6 +21,7 @@ dependencies = [
     "statsmodels>=0.14.4",
     "pyarrow>=18.1.0",
     "notebook>=7.0.7",
+    "streamlit>=1.41.1",
 ]
 
 [project.scripts]
