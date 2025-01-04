@@ -10,9 +10,9 @@ import streamlit as st
 # ===================
 
 # Load dataset
-@st.cache
+@st.cache_data
 def _load_data(path: str) -> pd.DataFrame:
-    return pd.read_csv(path)
+    return pd.read_parquet(path)
 
 # Main function to run the app
 def main():
