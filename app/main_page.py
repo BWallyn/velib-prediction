@@ -16,7 +16,10 @@ def _load_data(path: str) -> pd.DataFrame:
 
 # Main function to run the app
 def main():
-    st.title("Velib Dataset Information")
+    st.title("Velib Data Analysis")
+    st.write("""
+        This app is used to analyze the Velib dataset. The goal is to predict the number of available bikes at a given station in the next 24 hours.
+    """)
 
     # Load data
     df_train = _load_data('data/04_feature/df_feat_train.parquet')
