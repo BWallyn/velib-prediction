@@ -14,13 +14,21 @@ import streamlit as st
 def _load_data(path: str) -> pd.DataFrame:
     return pd.read_parquet(path)
 
-# Main function to run the app
-def main():
+
+def _create_header():
+    """
+    """
     st.title("Velib Data Analysis")
     st.image("reports/images/velib-velo-electrique.jpeg", caption="Electrical velib")
     st.write("""
         This app is used to analyze the Velib dataset. The goal is to predict the number of available bikes at a given station in the next 24 hours.
     """)
+
+
+# Main function to run the app
+def main():
+    # Set header
+    _create_header()
 
     # Load data
     df_train = _load_data('data/04_feature/df_feat_train.parquet')
