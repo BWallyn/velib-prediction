@@ -17,6 +17,7 @@ def _load_data(path: str) -> pd.DataFrame:
 # Main function to run the app
 def main():
     st.title("Velib Data Analysis")
+    st.image("reports/images/velib-velo-electrique.jpg", caption="Electrical velib")
     st.write("""
         This app is used to analyze the Velib dataset. The goal is to predict the number of available bikes at a given station in the next 24 hours.
     """)
