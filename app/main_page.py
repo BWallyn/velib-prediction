@@ -53,5 +53,10 @@ def main():
     st.subheader("Number of Rows and Columns")
     st.write(f"Rows: {df_train.shape[0]}, Columns: {df_train.shape[1]}")
 
+
+# =============
+# ==== RUN ====
+# =============
+
 if __name__ == "__main__":
     main()
