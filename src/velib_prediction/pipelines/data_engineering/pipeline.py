@@ -63,6 +63,6 @@ def create_pipeline(**kwargs) -> Pipeline:
             )
         ],
         inputs=None,
-        outputs="df_with_bool_cols_upd",
+        outputs=["df_with_bool_cols_upd", "df_raw"],
         namespace="data_engineering"
     )
