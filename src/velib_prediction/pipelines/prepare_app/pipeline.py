@@ -26,5 +26,7 @@ def create_pipeline(**kwargs) -> Pipeline:
                 outputs="list_coordinates",
                 name="Extract_list_of_station_coordinates"
             ),
-        ]
+        ],
+        inputs="df_raw",
+        namespace="prepare_app"
     )
