@@ -40,3 +40,15 @@ def extract_geo_points_by_station(gdf: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
         (gpd.GeoDataFrame): Output DataFrame
     """
     return gdf.drop_duplicates(subset=["stationcode"])[["stationcode", "name", "coordonnees_geo"]]
+
+
+def add_geographical_info(df: pd.DataFrame, location_stations: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
+    """Add geographical information of the Velib stations to the DataFrame.
+
+    Args:
+        df (pd.DataFrame): Input DataFrame
+        location_stations (gpd.GeoDataFrame): GeoDataFrame containing the location of the stations
+    Returns:
+        (gpd.GeoDataFrame): Output GeoDataFrame
+    """
+    return df.merge(location_stations, how="left", on="stationcode")
