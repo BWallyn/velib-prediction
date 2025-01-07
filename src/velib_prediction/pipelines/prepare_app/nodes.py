@@ -27,7 +27,7 @@ def convert_to_geojson(df: pd.DataFrame) -> gpd.GeoDataFrame:
     df = df.drop("coordonnees_geo", axis=1)
     # Transform to geopandas dataframe
     return gpd.GeoDataFrame(
-        df, geometry=gpd.points_from_xy(df.Longitude, df.Latitude), crs="EPSG:4326"
+        df, geometry=gpd.points_from_xy(df.lon, df.lat), crs="EPSG:4326"
     )
 
 
@@ -39,4 +39,16 @@ def extract_geo_points_by_station(gdf: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
     Returns:
         (gpd.GeoDataFrame): Output DataFrame
     """
-    return gdf.drop_duplicates(subset=["stationcode"])[["stationcode", "name", "coordonnees_geo"]]
+    return gdf.drop_duplicates(subset=["stationcode"])[["stationcode", "name", "geometry"]]
+
+
+def add_geographical_info(df: pd.DataFrame, location_stations: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
+    """Add geographical information of the Velib stations to the DataFrame.
+
+    Args:
+        df (pd.DataFrame): Input DataFrame
+        location_stations (gpd.GeoDataFrame): GeoDataFrame containing the location of the stations
+    Returns:
+        (gpd.GeoDataFrame): Output GeoDataFrame
+    """
+    return df.merge(location_stations, how="left", on="stationcode")
