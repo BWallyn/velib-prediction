@@ -161,3 +161,4 @@ mlflow/
 catboost_info/
 uv.lock
 .vscode/settings.json
+data/01_raw/velib-disponibilite-en-temps-reel.parquet
