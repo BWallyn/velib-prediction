@@ -53,3 +53,7 @@ df_test_w_date_feat:
 #     dtype_backend: numpy_nullable
 #   save_args:
 #     engine: pyarrow
+
+# df_train_with_coordinates:
+#   type: geopandas.GenericDataset
+#   filepath: data/04_feature/df_train_with_coorrdinates.json
