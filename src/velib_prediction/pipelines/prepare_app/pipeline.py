@@ -10,6 +10,7 @@ from velib_prediction.pipelines.prepare_app.nodes import (
     convert_to_geojson,
     extract_geo_points_by_station,
 )
+from velib_prediction.utils.utils import save_geojson
 
 
 def create_pipeline(**kwargs) -> Pipeline:
@@ -33,7 +34,14 @@ def create_pipeline(**kwargs) -> Pipeline:
                 outputs="df_train_with_coordinates",
                 name="Add_geographical_info_to_train",
             ),
+            node(
+                func=save_geojson,
+                inputs=["df_train_with_coordinates", "params:path_save_gdf"],
+                outputs=None,
+                name="Save_geodataframe_to_geojson",
+            ),
         ],
         inputs=["df_raw", "df_train_prepared"],
+        outputs="df_train_with_coordinates",
         namespace="prepare_app"
     )
