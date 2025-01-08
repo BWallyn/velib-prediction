@@ -51,4 +51,5 @@ def add_geographical_info(df: pd.DataFrame, location_stations: gpd.GeoDataFrame)
     Returns:
         (gpd.GeoDataFrame): Output GeoDataFrame
     """
-    return df.merge(location_stations, how="left", on="stationcode")
+    df_coord = df.merge(location_stations, how="left", on="stationcode")
+    return gpd.GeoDataFrame(df_coord, geometry="geometry")
