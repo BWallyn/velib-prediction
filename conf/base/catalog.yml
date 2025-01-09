@@ -57,3 +57,12 @@ df_test_w_date_feat:
 # df_train_with_coordinates:
 #   type: geopandas.GenericDataset
 #   filepath: data/04_feature/df_train_with_coorrdinates.json
+
+df_w_lat_lon:
+  type: pandas.ParquetDataset
+  filepath: data/08_reporting/station_locations.parquet
+  load_args:
+    engine: pyarrow
+    dtype_backend: numpy_nullable
+  save_args:
+    engine: pyarrow
