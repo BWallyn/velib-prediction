@@ -43,18 +43,17 @@ def main():
     _create_header()
 
     # Load data
-    df_train = _load_data('data/04_feature/df_feat_train.parquet')
+    # df_train = _load_data('data/04_feature/df_feat_train.parquet')
 
     # Load geo data
     list_stations = _load_data("data/08_reporting/station_locations.parquet")
     # Display velib stations
     _display_stations(list_stations)
-
-    # Display dataset
-    st.subheader("Dataset")
-    st.write(df_train)
-
     st.write(list_stations)
+
+    # # Display dataset
+    # st.subheader("Dataset")
+    # st.write(df_train)
 
     # # Display basic statistics
     # st.subheader("Basic Statistics")
