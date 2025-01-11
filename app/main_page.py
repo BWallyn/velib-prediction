@@ -34,7 +34,7 @@ def _display_stations(station_coordinates: gpd.GeoDataFrame):
     """
     """
     st.subheader("Display Velib stations")
-    st.map(station_coordinates, latitude="lat", longitude="lon")
+    st.map(station_coordinates, latitude="lat", longitude="lon", size="capacity")
 
 
 # Main function to run the app
