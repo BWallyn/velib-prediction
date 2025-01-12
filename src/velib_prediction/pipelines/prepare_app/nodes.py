@@ -13,6 +13,20 @@ import pandas as pd
 # ==== FUNCTIONS ====
 # ===================
 
+def extract_lat_lon(df: pd.DataFrame) -> pd.DataFrame:
+    """Extract the latitude and longitude from the coordinates column.
+
+    Args:
+        df (pd.DataFrame): Input DataFrame
+    Returns:
+        (pd.DataFrame): Output DataFrame containing latitude and longitude
+    """
+    # Split into lat and lon
+    df[['lat', 'lon']] = pd.DataFrame(df['coordonnees_geo'].tolist())
+    # Drop the geocoordinates
+    return df.drop("coordonnees_geo", axis=1)
+
+
 def convert_to_geojson(df: pd.DataFrame) -> gpd.GeoDataFrame:
     """Convert the dataframe to a geojson using the coordinates column.
 
@@ -21,10 +35,6 @@ def convert_to_geojson(df: pd.DataFrame) -> gpd.GeoDataFrame:
     Returns:
         (gpd.GeoDataFrame): Output GeoDataFrame containing latitude and longitude
     """
-    # Split into lat and lon
-    df[['lat', 'lon']] = pd.DataFrame(df['coordonnees_geo'].tolist())
-    # Drop the geocoordinates
-    df = df.drop("coordonnees_geo", axis=1)
     # Transform to geopandas dataframe
     return gpd.GeoDataFrame(
         df, geometry=gpd.points_from_xy(df.lon, df.lat), crs="EPSG:4326"
@@ -51,4 +61,5 @@ def add_geographical_info(df: pd.DataFrame, location_stations: gpd.GeoDataFrame)
     Returns:
         (gpd.GeoDataFrame): Output GeoDataFrame
     """
-    return df.merge(location_stations, how="left", on="stationcode")
+    df_coord = df.merge(location_stations, how="left", on="stationcode")
+    return gpd.GeoDataFrame(df_coord, geometry="geometry")

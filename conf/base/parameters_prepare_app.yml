@@ -3,3 +3,5 @@
 #
 # Documentation for this file format can be found in "Parameters"
 # Link: https://docs.kedro.org/en/0.19.10/configuration/parameters.html
+
+prepare_app.path_save_gdf: "data/04_feature/df_train_with_coorrdinates.json"

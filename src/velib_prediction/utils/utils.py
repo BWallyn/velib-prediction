@@ -2,6 +2,7 @@
 # ==== IMPORTS ====
 # =================
 
+import geopandas as gpd
 import pandas as pd
 
 # ===================
@@ -42,3 +43,15 @@ def drop_columns(df: pd.DataFrame, list_cols: list[str]) -> pd.DataFrame:
         (pd.DataFrame): Output DataFrame
     """
     return df.drop(columns=list_cols)
+
+
+def save_geojson(gdf: gpd.GeoDataFrame, path: str) -> None:
+    """Save GeoDataFrame to GeoJson file.
+
+    Args:
+        gdf (gpd.GeoDataFrame): Input GeoDataFrame
+        path (str): Path to save GeoJson file
+    Returns:
+        None
+    """
+    gdf.to_file(path)
