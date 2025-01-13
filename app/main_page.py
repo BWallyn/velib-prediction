@@ -20,8 +20,13 @@ def _load_geo_data(path: str) -> gpd.GeoDataFrame:
     return gpd.read_file(path)
 
 
-def _create_header():
-    """
+def _create_header() -> None:
+    """Create header of the app
+
+    Args:
+        None
+    Returns:
+        None
     """
     st.title("Velib Data Analysis")
     st.image("reports/images/velib-velo-electrique.jpeg", caption="Electrical velib")
@@ -31,7 +36,12 @@ def _create_header():
 
 
 def _display_stations(station_coordinates: gpd.GeoDataFrame):
-    """
+    """Display the Velib stations on a map
+
+    Args:
+        station_coordinates (gpd.GeoDataFrame): GeoDataFrame containing the coordinates of the Velib stations
+    Returns:
+        None
     """
     st.subheader("Display Velib stations")
     st.map(station_coordinates, latitude="lat", longitude="lon", size="capacity")
@@ -39,6 +49,13 @@ def _display_stations(station_coordinates: gpd.GeoDataFrame):
 
 # Main function to run the app
 def main():
+    """Main function to run the app
+
+    Args:
+        None
+    Returns:
+        None
+    """
     # Set header
     _create_header()
 
