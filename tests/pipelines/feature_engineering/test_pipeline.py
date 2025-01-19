@@ -25,7 +25,11 @@ def sample_dataframe():
 
 def test_data_science_pipeline(caplog, sample_dataframe: pd.DataFrame):    # Note: caplog is passed as an argument
     # Arrange pipeline
-    pipeline = create_fe_pipeline().from_nodes("feature_engineering.split_train_test").to_nodes("feature_engineering.Drop_unused_columns")
+    pipeline = (
+        create_fe_pipeline()
+        .from_nodes("feature_engineering.split_train_test")
+        .to_nodes("feature_engineering.Add_date_feat_train", "feature_engineering.Add_date_feat_test")
+    )
 
     # Arrange data catalog
     catalog = DataCatalog()
