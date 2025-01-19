@@ -38,7 +38,7 @@ def create_pipeline(**kwargs) -> Pipeline:
             ),
             node(
                 func=add_geographical_info,
-                inputs=["df_train_prepared", "list_coordinates"],
+                inputs=["df_training_feat_engineered", "list_coordinates"],
                 outputs="df_train_with_coordinates",
                 name="Add_geographical_info_to_train",
             ),
@@ -50,12 +50,12 @@ def create_pipeline(**kwargs) -> Pipeline:
             ),
             node(
                 func=prepare_data_to_plot_predictions,
-                inputs=["model_velib", "df_training", "df_test_col_selected"],
+                inputs=["model_velib", "df_training_sorted", "df_test_sorted"],
                 outputs="df_pred_to_plot",
                 name="Prepare_data_to_plot_predictions",
             )
         ],
-        inputs=["df_raw", "df_train_prepared", "df_training", "df_test_col_selected", "model_velib"],
+        inputs=["df_raw", "df_training_feat_engineered", "df_training_sorted", "df_test_sorted", "model_velib"],
         outputs=["df_w_lat_lon", "df_train_with_coordinates", "df_pred_to_plot"],
         namespace="prepare_app"
     )
