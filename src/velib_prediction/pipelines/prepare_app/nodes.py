@@ -92,5 +92,8 @@ def prepare_data_to_plot_predictions(model: CatBoostRegressor, df_training: pd.D
     # Predictions
     df_training["pred"] = _model_predict(model, df_training)
     df_test["pred"] = _model_predict(model, df_test)
+    # Add the dataset info
+    df_training["dataset"] = "training"
+    df_test["dataset"] = "test"
     # Concatenate the data
     return pd.concat([df_training, df_test], axis=0)
