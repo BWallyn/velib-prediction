@@ -18,18 +18,18 @@ df_with_bool_cols_upd:
 
 
 # Pipeline feature engineering
-df_train_prepared:
+df_training_feat_engineered:
   type: pandas.ParquetDataset
-  filepath: data/04_feature/df_feat_train.parquet
+  filepath: data/04_feature/df_train_feat_engineered.parquet
   load_args:
     engine: pyarrow
     dtype_backend: numpy_nullable
   save_args:
     engine: pyarrow
 
-df_test_w_date_feat:
+df_test_feat_engineered:
   type: pandas.ParquetDataset
-  filepath: data/04_feature/df_feat_test.parquet
+  filepath: data/04_feature/df_test_feat_engineered.parquet
   load_args:
     engine: pyarrow
     dtype_backend: numpy_nullable
@@ -58,9 +58,47 @@ df_test_w_date_feat:
 #   type: geopandas.GenericDataset
 #   filepath: data/04_feature/df_train_with_coorrdinates.json
 
+
+# Pipeline training
+
+df_training_sorted:
+  type: pandas.ParquetDataset
+  filepath: data/05_model_input/df_training_modeling.parquet
+  load_args:
+    engine: pyarrow
+    dtype_backend: numpy_nullable
+  save_args:
+    engine: pyarrow
+
+df_test_sorted:
+  type: pandas.ParquetDataset
+  filepath: data/05_model_input/df_test_modeling.parquet
+  load_args:
+    engine: pyarrow
+    dtype_backend: numpy_nullable
+  save_args:
+    engine: pyarrow
+
+model_velib:
+  type: pickle.PickleDataset
+  filepath: data/06_models/model_velib.pkl
+
+
+# Report
+
 df_w_lat_lon:
   type: pandas.ParquetDataset
   filepath: data/08_reporting/station_locations.parquet
+  load_args:
+    engine: pyarrow
+    dtype_backend: numpy_nullable
+  save_args:
+    engine: pyarrow
+
+
+df_pred_to_plot:
+  type: pandas.ParquetDataset
+  filepath: data/08_reporting/predictions_to_plot.parquet
   load_args:
     engine: pyarrow
     dtype_backend: numpy_nullable

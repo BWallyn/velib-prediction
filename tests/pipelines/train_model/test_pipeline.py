@@ -63,7 +63,7 @@ def test_data_science_pipeline(caplog, sample_dataframe_train: pd.DataFrame):   
 
     catalog.add_feed_dict(
         {
-            "df_train_prepared": dummy_data["df_train_prepared"],
+            "df_training_feat_engineered": dummy_data["df_train_prepared"],
             "params:train_model.dict_rename_target": dummy_parameters["dict_rename_target"],
             "params:train_model.feat_date": dummy_parameters["feat_date"],
             "params:train_model.n_hours": dummy_parameters["n_hours"],
