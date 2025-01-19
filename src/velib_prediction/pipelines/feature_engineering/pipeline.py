@@ -32,7 +32,7 @@ def create_pipeline(**kwargs) -> Pipeline:
             node(
                 func=extract_date_features,
                 inputs=["df_train", "params:feat_date"],
-                outputs="df_train_feat_engineered",
+                outputs="df_training_feat_engineered",
                 name="Add_date_feat_train"
             ),
             node(
@@ -86,6 +86,6 @@ def create_pipeline(**kwargs) -> Pipeline:
             # ),
         ],
         inputs=["df_with_bool_cols_upd"],
-        outputs=["df_train_feat_engineered", "df_test_feat_engineered"],
+        outputs=["df_training_feat_engineered", "df_test_feat_engineered"],
         namespace="feature_engineering"
     )

@@ -18,7 +18,7 @@ df_with_bool_cols_upd:
 
 
 # Pipeline feature engineering
-df_train_feat_engineered:
+df_training_feat_engineered:
   type: pandas.ParquetDataset
   filepath: data/04_feature/df_train_feat_engineered.parquet
   load_args:
