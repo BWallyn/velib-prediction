@@ -66,3 +66,24 @@ df_w_lat_lon:
     dtype_backend: numpy_nullable
   save_args:
     engine: pyarrow
+
+
+# Pipeline training
+
+df_training:
+  type: pandas.ParquetDataset
+  filepath: data/05_model_input/df_training_modeling.parquet
+  load_args:
+    engine: pyarrow
+    dtype_backend: numpy_nullable
+  save_args:
+    engine: pyarrow
+
+df_test_col_selected:
+  type: pandas.ParquetDataset
+  filepath: data/05_model_input/df_test_modeling.parquet
+  load_args:
+    engine: pyarrow
+    dtype_backend: numpy_nullable
+  save_args:
+    engine: pyarrow
