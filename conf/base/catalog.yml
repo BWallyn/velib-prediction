@@ -18,18 +18,18 @@ df_with_bool_cols_upd:
 
 
 # Pipeline feature engineering
-df_train_prepared:
+df_train_feat_engineered:
   type: pandas.ParquetDataset
-  filepath: data/04_feature/df_feat_train.parquet
+  filepath: data/04_feature/df_train_feat_engineered.parquet
   load_args:
     engine: pyarrow
     dtype_backend: numpy_nullable
   save_args:
     engine: pyarrow
 
-df_test_w_date_feat:
+df_test_feat_engineered:
   type: pandas.ParquetDataset
-  filepath: data/04_feature/df_feat_test.parquet
+  filepath: data/04_feature/df_test_feat_engineered.parquet
   load_args:
     engine: pyarrow
     dtype_backend: numpy_nullable
@@ -61,7 +61,7 @@ df_test_w_date_feat:
 
 # Pipeline training
 
-df_training:
+df_training_sorted:
   type: pandas.ParquetDataset
   filepath: data/05_model_input/df_training_modeling.parquet
   load_args:
@@ -70,7 +70,7 @@ df_training:
   save_args:
     engine: pyarrow
 
-df_test_col_selected:
+df_test_sorted:
   type: pandas.ParquetDataset
   filepath: data/05_model_input/df_test_modeling.parquet
   load_args:
