@@ -67,7 +67,7 @@ def add_geographical_info(df: pd.DataFrame, location_stations: gpd.GeoDataFrame)
     return gpd.GeoDataFrame(df_coord, geometry="geometry")
 
 
-def model_predict(model: CatBoostRegressor, df: pd.DataFrame) -> np.array:
+def _model_predict(model: CatBoostRegressor, df: pd.DataFrame) -> np.array:
     """Predict the target using the trained model.
 
     Args:
@@ -77,3 +77,20 @@ def model_predict(model: CatBoostRegressor, df: pd.DataFrame) -> np.array:
         (np.array): Predictions
     """
     return model.predict(df[model.feature_names_])
+
+
+def prepare_data_to_plot_predictions(model: CatBoostRegressor, df_training: pd.DataFrame, df_test: pd.DataFrame) -> pd.DataFrame:
+    """Prepare data to plot predictions.
+
+    Args:
+        model (CatboostRegressor): Trained model
+        df_training (pd.DataFrame): Training data
+        df_test (pd.DataFrame): Test data
+    Returns:
+        (pd.DataFrame): DataFrame of training and test containing the predictions
+    """
+    # Predictions
+    df_training["pred"] = _model_predict(model, df_training)
+    df_test["pred"] = _model_predict(model, df_test)
+    # Concatenate the data
+    return pd.concat([df_training, df_test], axis=0)
