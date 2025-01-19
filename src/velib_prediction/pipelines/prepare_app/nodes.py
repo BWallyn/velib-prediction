@@ -7,7 +7,9 @@ generated using Kedro 0.19.10
 # =================
 
 import geopandas as gpd
+import numpy as np
 import pandas as pd
+from catboost import CatBoostRegressor
 
 # ===================
 # ==== FUNCTIONS ====
@@ -63,3 +65,15 @@ def add_geographical_info(df: pd.DataFrame, location_stations: gpd.GeoDataFrame)
     """
     df_coord = df.merge(location_stations, how="left", on="stationcode")
     return gpd.GeoDataFrame(df_coord, geometry="geometry")
+
+
+def model_predict(model: CatBoostRegressor, df: pd.DataFrame) -> np.array:
+    """Predict the target using the trained model.
+
+    Args:
+        model (CatboostRegressor): Trained model
+        df (pd.DataFrame): Data to predict
+    Returns:
+        (np.array): Predictions
+    """
+    return model.predict(df[model.feature_names_])
