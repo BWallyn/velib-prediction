@@ -55,7 +55,7 @@ def create_pipeline(**kwargs) -> Pipeline:
                 name="Prepare_data_to_plot_predictions",
             )
         ],
-        inputs=["df_raw", "df_train_prepared", "df_training", "df_test_col_selected"],
+        inputs=["df_raw", "df_train_prepared", "df_training", "df_test_col_selected", "model_velib"],
         outputs=["df_w_lat_lon", "df_train_with_coordinates", "df_pred_to_plot"],
         namespace="prepare_app"
     )
