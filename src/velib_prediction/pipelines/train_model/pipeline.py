@@ -20,7 +20,7 @@ def create_pipeline(**kwargs) -> Pipeline:
         pipe=[
             node(
                 func=rename_columns,
-                inputs=["df_train_feat_engineered", "params:dict_rename_target"],
+                inputs=["df_training_feat_engineered", "params:dict_rename_target"],
                 outputs="df_w_target_renamed",
                 name="Rename_target_column",
             ),
