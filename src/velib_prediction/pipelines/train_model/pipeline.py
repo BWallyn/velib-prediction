@@ -118,6 +118,6 @@ def create_pipeline(**kwargs) -> Pipeline:
             # )
         ],
         inputs=["df_train_prepared", "df_test_w_date_feat"],
-        outputs=["model_velib", "df_test_col_selected"],
+        outputs=["model_velib", "df_training", "df_test_col_selected"],
         namespace="train_model"
     )
