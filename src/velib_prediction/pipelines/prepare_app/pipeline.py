@@ -10,6 +10,7 @@ from velib_prediction.pipelines.prepare_app.nodes import (
     convert_to_geojson,
     extract_geo_points_by_station,
     extract_lat_lon,
+    prepare_data_to_plot_predictions,
 )
 from velib_prediction.utils.utils import save_geojson
 
@@ -47,8 +48,14 @@ def create_pipeline(**kwargs) -> Pipeline:
                 outputs=None,
                 name="Save_geodataframe_to_geojson",
             ),
+            node(
+                func=prepare_data_to_plot_predictions,
+                inputs=["model_velib", "df_training", "df_test_col_selected"],
+                outputs="df_pred_to_plot",
+                name="Prepare_data_to_plot_predictions",
+            )
         ],
-        inputs=["df_raw", "df_train_prepared"],
-        outputs=["df_w_lat_lon", "df_train_with_coordinates"],
+        inputs=["df_raw", "df_train_prepared", "df_training", "df_test_col_selected"],
+        outputs=["df_w_lat_lon", "df_train_with_coordinates", "df_pred_to_plot"],
         namespace="prepare_app"
     )
