@@ -3,6 +3,7 @@
 # =================
 
 import geopandas as gpd
+import matplotlib.pyplot as plt
 import pandas as pd
 import streamlit as st
 
@@ -35,7 +36,7 @@ def _create_header() -> None:
     """)
 
 
-def _display_stations(station_coordinates: gpd.GeoDataFrame):
+def _display_stations(station_coordinates: gpd.GeoDataFrame) -> None:
     """Display the Velib stations on a map
 
     Args:
@@ -45,6 +46,23 @@ def _display_stations(station_coordinates: gpd.GeoDataFrame):
     """
     st.subheader("Display Velib stations")
     st.map(station_coordinates, latitude="lat", longitude="lon", size="capacity")
+
+
+def _plot_predictions(df: pd.DataFrame, station_name: str) -> None:
+    """Plot the predictions
+    """
+    # Filter the station
+    df_station = df[df["name"] == station_name]
+    df_station_training = df_station[df_station["dataset"] == "training"]
+    df_station_test = df_station[df_station["dataset"] == "test"]
+    # Plot the predictions
+    fig, ax = plt.subplots()
+    plt.plot(df_station_training["duedate"], df_station_training["target"], "o-", color="blue", label="Available bikes")
+    plt.plot(df_station_test["duedate"], df_station_test["target"], "o-", color="green", label="Available bikes")
+    plt.plot(df_station_test["duedate"], df_station_test["pred"], "--", color="red", label="Predictions")
+    # Plot
+    st.subheader(f"Predictions for station {station_name}")
+    st.pyplot(fig)
 
 
 # Main function to run the app
@@ -67,6 +85,11 @@ def main():
     # Display velib stations
     _display_stations(list_stations)
     st.write(list_stations)
+
+    # Display prediction ov available bikes
+    station_name = "Jourdan - Stade Charléty"
+    df_pred = _load_data("data/08_reporting/predictions_to_plot.parquet")
+    _plot_predictions(df_pred, station_name)
 
     # # Display dataset
     # st.subheader("Dataset")
