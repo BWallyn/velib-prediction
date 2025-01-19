@@ -58,15 +58,6 @@ df_test_w_date_feat:
 #   type: geopandas.GenericDataset
 #   filepath: data/04_feature/df_train_with_coorrdinates.json
 
-df_w_lat_lon:
-  type: pandas.ParquetDataset
-  filepath: data/08_reporting/station_locations.parquet
-  load_args:
-    engine: pyarrow
-    dtype_backend: numpy_nullable
-  save_args:
-    engine: pyarrow
-
 
 # Pipeline training
 
@@ -82,6 +73,32 @@ df_training:
 df_test_col_selected:
   type: pandas.ParquetDataset
   filepath: data/05_model_input/df_test_modeling.parquet
+  load_args:
+    engine: pyarrow
+    dtype_backend: numpy_nullable
+  save_args:
+    engine: pyarrow
+
+model_velib:
+  type: pickle.PickleDataset
+  filepath: data/06_models/model_velib.pkl
+
+
+# Report
+
+df_w_lat_lon:
+  type: pandas.ParquetDataset
+  filepath: data/08_reporting/station_locations.parquet
+  load_args:
+    engine: pyarrow
+    dtype_backend: numpy_nullable
+  save_args:
+    engine: pyarrow
+
+
+df_pred_to_plot:
+  type: pandas.ParquetDataset
+  filepath: data/08_reporting/predictions_to_plot.parquet
   load_args:
     engine: pyarrow
     dtype_backend: numpy_nullable
