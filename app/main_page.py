@@ -48,8 +48,26 @@ def _display_stations(station_coordinates: gpd.GeoDataFrame) -> None:
     st.map(station_coordinates, latitude="lat", longitude="lon", size="capacity")
 
 
+def _create_selectbox(df: pd.DataFrame, column: str) -> str:
+    """Create a selectbox to choose a station.
+
+    Args:
+        df (pd.DataFrame): DataFrame containing the station names
+        column (str): Column containing the station names
+    Returns:
+        (str): Selected station
+    """
+    return st.selectbox("Select the station", df[column].unique())
+
+
 def _plot_predictions(df: pd.DataFrame, station_name: str) -> None:
     """Plot the predictions
+
+    Args:
+        df (pd.DataFrame): DataFrame containing the predictions
+        station_name (str): Name of the station to plot
+    Returns:
+        None
     """
     # Filter the station
     df_station = df[df["name"] == station_name]
@@ -61,7 +79,6 @@ def _plot_predictions(df: pd.DataFrame, station_name: str) -> None:
     plt.plot(df_station_test["duedate"], df_station_test["target"], "o-", color="green", label="Available bikes")
     plt.plot(df_station_test["duedate"], df_station_test["pred"], "--", color="red", label="Predictions")
     # Plot
-    st.subheader(f"Predictions for station {station_name}")
     st.pyplot(fig)
 
 
@@ -87,7 +104,8 @@ def main():
     st.write(list_stations)
 
     # Display prediction ov available bikes
-    station_name = "Jourdan - Stade Charléty"
+    st.subheader("Predictions for a specific station")
+    station_name = _create_selectbox(list_stations, "name")
     df_pred = _load_data("data/08_reporting/predictions_to_plot.parquet")
     _plot_predictions(df_pred, station_name)
 
