@@ -5,7 +5,11 @@
 import geopandas as gpd
 import matplotlib.pyplot as plt
 import pandas as pd
+import seaborn as sns
 import streamlit as st
+
+# Options
+sns.set_style("whitegrid")
 
 # ===================
 # ==== FUNCTIONS ====
