@@ -5,7 +5,11 @@
 import geopandas as gpd
 import matplotlib.pyplot as plt
 import pandas as pd
+import seaborn as sns
 import streamlit as st
+
+# Options
+sns.set_style("whitegrid")
 
 # ===================
 # ==== FUNCTIONS ====
@@ -77,7 +81,12 @@ def _plot_predictions(df: pd.DataFrame, station_name: str) -> None:
     fig, ax = plt.subplots()
     plt.plot(df_station_training["duedate"], df_station_training["target"], "o-", color="blue", label="Available bikes")
     plt.plot(df_station_test["duedate"], df_station_test["target"], "o-", color="green", label="Available bikes")
-    plt.plot(df_station_test["duedate"], df_station_test["pred"], "--", color="red", label="Predictions")
+    plt.plot(df_station_test["duedate"], df_station_test["pred"], "o--", color="red", label="Predictions")
+    # Set plot
+    plt.xticks(rotation=45)
+    plt.title(f"Number of available bikes at station {station_name}")
+    plt.legend()
+    plt.tight_layout()
     # Plot
     st.pyplot(fig)
 
