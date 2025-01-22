@@ -5,6 +5,7 @@
 import geopandas as gpd
 import matplotlib.pyplot as plt
 import pandas as pd
+import plotly.graph_objects as go
 import seaborn as sns
 import streamlit as st
 
@@ -77,18 +78,19 @@ def _plot_predictions(df: pd.DataFrame, station_name: str) -> None:
     df_station = df[df["name"] == station_name]
     df_station_training = df_station[df_station["dataset"] == "training"]
     df_station_test = df_station[df_station["dataset"] == "test"]
+    # Create the plot
+    fig = go.Figure()
+    fig.add_trace(
+        go.Scatter(x=df_station_training["duedate"], y=df_station_training["target"], mode="lines+markers", name="Available bikes")
+    )
+    fig.add_trace(
+        go.Scatter(x=df_station_test["duedate"], y=df_station_test["target"], mode="lines+markers", name="Available bikes")
+    )
+    fig.add_trace(
+        go.Scatter(x=df_station_test["duedate"], y=df_station_test["pred"], mode="lines+markers", name="Predictions")
+    )
     # Plot the predictions
-    fig, ax = plt.subplots()
-    plt.plot(df_station_training["duedate"], df_station_training["target"], "o-", color="blue", label="Available bikes")
-    plt.plot(df_station_test["duedate"], df_station_test["target"], "o-", color="green", label="Available bikes")
-    plt.plot(df_station_test["duedate"], df_station_test["pred"], "o--", color="red", label="Predictions")
-    # Set plot
-    plt.xticks(rotation=45)
-    plt.title(f"Number of available bikes at station {station_name}")
-    plt.legend()
-    plt.tight_layout()
-    # Plot
-    st.pyplot(fig)
+    st.plotly_chart(fig, theme="streamlit", use_container_width=True)
 
 
 # Main function to run the app
