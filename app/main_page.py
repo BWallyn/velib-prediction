@@ -3,8 +3,14 @@
 # =================
 
 import geopandas as gpd
+import matplotlib.pyplot as plt
 import pandas as pd
+import plotly.graph_objects as go
+import seaborn as sns
 import streamlit as st
+
+# Options
+sns.set_style("whitegrid")
 
 # ===================
 # ==== FUNCTIONS ====
@@ -20,8 +26,13 @@ def _load_geo_data(path: str) -> gpd.GeoDataFrame:
     return gpd.read_file(path)
 
 
-def _create_header():
-    """
+def _create_header() -> None:
+    """Create header of the app
+
+    Args:
+        None
+    Returns:
+        None
     """
     st.title("Velib Data Analysis")
     st.image("reports/images/velib-velo-electrique.jpeg", caption="Electrical velib")
@@ -30,15 +41,67 @@ def _create_header():
     """)
 
 
-def _display_stations(station_coordinates: gpd.GeoDataFrame):
-    """
+def _display_stations(station_coordinates: gpd.GeoDataFrame) -> None:
+    """Display the Velib stations on a map
+
+    Args:
+        station_coordinates (gpd.GeoDataFrame): GeoDataFrame containing the coordinates of the Velib stations
+    Returns:
+        None
     """
     st.subheader("Display Velib stations")
     st.map(station_coordinates, latitude="lat", longitude="lon", size="capacity")
 
 
+def _create_selectbox(df: pd.DataFrame, column: str) -> str:
+    """Create a selectbox to choose a station.
+
+    Args:
+        df (pd.DataFrame): DataFrame containing the station names
+        column (str): Column containing the station names
+    Returns:
+        (str): Selected station
+    """
+    return st.selectbox("Select the station", df[column].unique())
+
+
+def _plot_predictions(df: pd.DataFrame, station_name: str) -> None:
+    """Plot the predictions
+
+    Args:
+        df (pd.DataFrame): DataFrame containing the predictions
+        station_name (str): Name of the station to plot
+    Returns:
+        None
+    """
+    # Filter the station
+    df_station = df[df["name"] == station_name]
+    df_station_training = df_station[df_station["dataset"] == "training"]
+    df_station_test = df_station[df_station["dataset"] == "test"]
+    # Create the plot
+    fig = go.Figure()
+    fig.add_trace(
+        go.Scatter(x=df_station_training["duedate"], y=df_station_training["target"], mode="lines+markers", name="Available bikes")
+    )
+    fig.add_trace(
+        go.Scatter(x=df_station_test["duedate"], y=df_station_test["target"], mode="lines+markers", name="Available bikes")
+    )
+    fig.add_trace(
+        go.Scatter(x=df_station_test["duedate"], y=df_station_test["pred"], mode="lines+markers", name="Predictions")
+    )
+    # Plot the predictions
+    st.plotly_chart(fig, theme="streamlit", use_container_width=True)
+
+
 # Main function to run the app
 def main():
+    """Main function to run the app
+
+    Args:
+        None
+    Returns:
+        None
+    """
     # Set header
     _create_header()
 
@@ -50,6 +113,12 @@ def main():
     # Display velib stations
     _display_stations(list_stations)
     st.write(list_stations)
+
+    # Display prediction ov available bikes
+    st.subheader("Predictions for a specific station")
+    station_name = _create_selectbox(list_stations, "name")
+    df_pred = _load_data("data/08_reporting/predictions_to_plot.parquet")
+    _plot_predictions(df_pred, station_name)
 
     # # Display dataset
     # st.subheader("Dataset")

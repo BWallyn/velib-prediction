@@ -20,19 +20,19 @@ def create_pipeline(**kwargs) -> Pipeline:
         pipe=[
             node(
                 func=rename_columns,
-                inputs=["df_train_prepared", "params:dict_rename_target"],
+                inputs=["df_training_feat_engineered", "params:dict_rename_target"],
                 outputs="df_w_target_renamed",
                 name="Rename_target_column",
             ),
             node(
                 func=sort_dataframe,
                 inputs=["df_w_target_renamed", "params:feat_date"],
-                outputs="df_sorted",
+                outputs="df_training_sorted",
                 name="Sort_dataframe_by_date",
             ),
             node(
                 func=split_train_valid_last_hours,
-                inputs=["df_sorted", "params:feat_date", "params:n_hours"],
+                inputs=["df_training_sorted", "params:feat_date", "params:n_hours"],
                 outputs=["df_train", "df_valid"],
                 name="Create_split_train_valid"
             ),
@@ -74,7 +74,7 @@ def create_pipeline(**kwargs) -> Pipeline:
             ),
             node(
                 func=rename_columns,
-                inputs=["df_test_w_date_feat", "params:dict_rename_target"],
+                inputs=["df_test_feat_engineered", "params:dict_rename_target"],
                 outputs="df_test_target_renamed",
                 name="Rename_target_column_test_set",
             ),
@@ -86,7 +86,7 @@ def create_pipeline(**kwargs) -> Pipeline:
             ),
             node(
                 func=select_columns,
-                inputs=["df_sorted", "params:model_features", "params:feat_target"],
+                inputs=["df_training_sorted", "params:model_features", "params:feat_target"],
                 outputs="df_training",
                 name="Select_columns_training",
             ),
@@ -117,7 +117,7 @@ def create_pipeline(**kwargs) -> Pipeline:
             #     ]
             # )
         ],
-        inputs=["df_train_prepared", "df_test_w_date_feat"],
-        outputs="model_velib",
+        inputs=["df_training_feat_engineered", "df_test_feat_engineered"],
+        outputs=["model_velib", "df_training_sorted", "df_test_sorted"],
         namespace="train_model"
     )
