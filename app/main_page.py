@@ -3,7 +3,6 @@
 # =================
 
 import geopandas as gpd
-import matplotlib.pyplot as plt
 import pandas as pd
 import plotly.graph_objects as go
 import seaborn as sns
@@ -89,6 +88,12 @@ def _plot_predictions(df: pd.DataFrame, station_name: str) -> None:
     fig.add_trace(
         go.Scatter(x=df_station_test["duedate"], y=df_station_test["pred"], mode="lines+markers", name="Predictions")
     )
+    # Edit the layout
+    fig.update_layout(
+        title=dict(text=f'Number of available bikes at station {station_name}'),
+        xaxis=dict(title=dict(text='Date')),
+        yaxis=dict(title=dict(text='Number of available bikes')),
+    )
     # Plot the predictions
     st.plotly_chart(fig, theme="streamlit", use_container_width=True)
 
@@ -112,7 +117,6 @@ def main():
     list_stations = _load_data("data/08_reporting/station_locations.parquet")
     # Display velib stations
     _display_stations(list_stations)
-    st.write(list_stations)
 
     # Display prediction ov available bikes
     st.subheader("Predictions for a specific station")
