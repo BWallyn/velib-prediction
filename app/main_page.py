@@ -25,6 +25,12 @@ def _load_geo_data(path: str) -> gpd.GeoDataFrame:
     return gpd.read_file(path)
 
 
+def _set_parameters() -> None:
+    """Set the parameters for the app
+    """
+    st.set_page_config(layout="wide")
+
+
 def _create_header() -> None:
     """Create header of the app
 
@@ -49,6 +55,8 @@ def _display_stations(station_coordinates: gpd.GeoDataFrame) -> None:
         None
     """
     st.subheader("Display Velib stations")
+    # Get unique row by station
+    station_coordinates = station_coordinates.drop_duplicates(subset=["stationcode"])
     st.map(station_coordinates, latitude="lat", longitude="lon", size="capacity")
 
 
@@ -98,6 +106,15 @@ def _plot_predictions(df: pd.DataFrame, station_name: str) -> None:
     st.plotly_chart(fig, theme="streamlit", use_container_width=True)
 
 
+def _create_sidebar() -> None:
+    """
+    """
+    st.sidebar.header("About")
+    st.sidebar.markdown(
+        "This app is used to analyze the Velib dataset. The goal is to predict the number of available bikes at a given station in the next 24 hours."
+    )
+
+
 # Main function to run the app
 def main():
     """Main function to run the app
@@ -107,8 +124,14 @@ def main():
     Returns:
         None
     """
+    # Set parameters of the app
+    _set_parameters()
+
     # Set header
     _create_header()
+
+    # Set sidebar
+    _create_sidebar()
 
     # Load data
     # df_train = _load_data('data/04_feature/df_feat_train.parquet')
