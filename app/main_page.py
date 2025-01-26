@@ -55,6 +55,8 @@ def _display_stations(station_coordinates: gpd.GeoDataFrame) -> None:
         None
     """
     st.subheader("Display Velib stations")
+    # Get unique row by station
+    station_coordinates = station_coordinates.drop_duplicates(subset=["stationcode"])
     st.map(station_coordinates, latitude="lat", longitude="lon", size="capacity")
 
 
