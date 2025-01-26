@@ -76,7 +76,7 @@ def _model_predict(model: CatBoostRegressor, df: pd.DataFrame) -> np.array:
     Returns:
         (np.array): Predictions
     """
-    return model.predict(df[model.feature_names_])
+    return np.round(model.predict(df[model.feature_names_]), 0)
 
 
 def prepare_data_to_plot_predictions(model: CatBoostRegressor, df_training: pd.DataFrame, df_test: pd.DataFrame) -> pd.DataFrame:

@@ -11,6 +11,7 @@ from functools import partial
 from typing import Any
 
 import mlflow
+import numpy as np
 import optuna
 import pandas as pd
 from catboost import CatBoostRegressor, Pool
@@ -210,8 +211,8 @@ def train_model_mlflow(  # noqa: PLR0913
     ) as child_run:
         model = _train_model(pool_train, pool_eval, plot_training=False, verbose=verbose, **kwargs)
         # Predict
-        pred_train = model.predict(pool_train)
-        pred_eval = model.predict(pool_eval)
+        pred_train = np.round(model.predict(pool_train), 0)
+        pred_eval = np.round(model.predict(pool_eval), 0)
         # Log parameters to MLflow
         _log_mlflow_catboost_parameters(model=model)
         # Log metrics
@@ -400,8 +401,8 @@ def train_final_model(  # noqa: PLR0913
         # Set model
         model = _train_model(pool_train, None, plot_training=False, verbose=verbose, **best_parameters)
         # Predict
-        pred_train = model.predict(pool_train)
-        pred_eval = model.predict(pool_eval)
+        pred_train = np.round(model.predict(pool_train), 0)
+        pred_eval = np.round(model.predict(pool_eval), 0)
         # Log parameters to MLflow
         _log_mlflow_catboost_parameters(model=model)
         # Log metrics
