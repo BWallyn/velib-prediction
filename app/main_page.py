@@ -4,6 +4,7 @@
 
 import geopandas as gpd
 import pandas as pd
+import plotly.express as px
 import plotly.graph_objects as go
 import seaborn as sns
 import streamlit as st
@@ -46,6 +47,19 @@ def _create_header() -> None:
     """)
 
 
+def _plot_capacity_stations(df: pd.DataFrame) -> None:
+    """Plot the capacity of stations on a histogram plot
+
+    Args:
+        df (pd.DataFrame): Input DataFrame containing the stations coded and names and capacity
+    Returns:
+        None
+    """
+    df_plot = df.drop_duplicates(subset=["stationcode"])[["name", "capacity"]]
+    fig = px.bar(df_plot, x="name", y="capacity", title="Capacity of Velib stations")
+    st.plotly_chart(fig, theme="streamlit", use_container_width=True)
+
+
 def _display_stations(station_coordinates: gpd.GeoDataFrame) -> None:
     """Display the Velib stations on a map
 
@@ -70,6 +84,43 @@ def _create_selectbox(df: pd.DataFrame, column: str) -> str:
         (str): Selected station
     """
     return st.selectbox("Select the station", df[column].unique())
+
+
+def _plot_bikes_type_over_time(df: pd.DataFrame, station_name: str) -> None:
+    """
+    """
+    # Filter the station
+    df_station = df[df["name"] == station_name]
+    # Create the plot
+    fig = go.Figure()
+    fig.add_trace(
+        go.Scatter(
+            x=df_station["duedate"],
+            y=df_station["mechanical"],
+            hoverinfo="x+y",
+            mode="lines+markers",
+            name="Available mechanical bikes",
+            stackgroup="one"
+        )
+    )
+    fig.add_trace(
+        go.Scatter(
+            x=df_station["duedate"],
+            y=df_station["ebike"],
+            hoverinfo="x+y",
+            mode="lines+markers",
+            name="Available electrical bikes",
+            stackgroup="one"
+        )
+    )
+    # Edit the layout
+    fig.update_layout(
+        title=dict(text=f'Number of available types of bikes at station {station_name}'),
+        xaxis=dict(title=dict(text='Date')),
+        yaxis=dict(title=dict(text='Number of available bikes')),
+    )
+    # Plot the predictions
+    st.plotly_chart(fig, theme="streamlit", use_container_width=True)
 
 
 def _plot_predictions(df: pd.DataFrame, station_name: str) -> None:
@@ -141,10 +192,18 @@ def main():
     # Display velib stations
     _display_stations(list_stations)
 
-    # Display prediction ov available bikes
-    st.subheader("Predictions for a specific station")
-    station_name = _create_selectbox(list_stations, "name")
+    # Load predictions
     df_pred = _load_data("data/08_reporting/predictions_to_plot.parquet")
+    # Display the capacity
+    _plot_capacity_stations(df_pred)
+
+    # Create selection box to select the station to display info
+    st.subheader("Analyze a specific station")
+    station_name = _create_selectbox(list_stations, "name")
+
+    # Display the number of available bikes
+    _plot_bikes_type_over_time(df_pred, station_name)
+    # Display prediction ov available bikes
     _plot_predictions(df_pred, station_name)
 
     # # Display dataset
