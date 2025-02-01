@@ -8,6 +8,7 @@ import plotly.express as px
 import plotly.graph_objects as go
 import seaborn as sns
 import streamlit as st
+import yaml
 
 # Options
 sns.set_style("whitegrid")
@@ -69,9 +70,37 @@ def _display_stations(station_coordinates: gpd.GeoDataFrame) -> None:
         None
     """
     st.subheader("Display Velib stations")
+    # Get mapbox token
+    with open("./conf/local/credentials.yml") as file:
+        data = yaml.safe_load(file)
+    token = data["mapbox"]["token"]
     # Get unique row by station
     station_coordinates = station_coordinates.drop_duplicates(subset=["stationcode"])
-    st.map(station_coordinates, latitude="lat", longitude="lon", size="capacity")
+    # Create plot
+    fig = go.Figure()
+    fig.add_trace(go.Scattermapbox(
+        lon=station_coordinates["lon"],
+        lat=station_coordinates["lat"],
+        text=station_coordinates["name"],
+        marker=dict(
+            size=station_coordinates["capacity"],
+            sizemode="area",
+        ),
+        name="Velib stations"
+    ))
+    # Edit the layout
+    fig.update_layout(
+        title_text='Velib stations in Paris',
+        showlegend=True,
+    )
+    fig.update_layout(
+        mapbox_style="light",
+        mapbox_accesstoken=token,
+        mapbox_zoom=10,
+        mapbox_center={"lat": 48.85, "lon": 2.33},
+    )
+    # Plot the map
+    st.plotly_chart(fig, theme="streamlit", use_container_width=True)
 
 
 def _create_selectbox(df: pd.DataFrame, column: str) -> str:
