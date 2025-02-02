@@ -17,10 +17,12 @@ sns.set_style("whitegrid")
 # ==== FUNCTIONS ====
 # ===================
 
+
 # Load dataset
 @st.cache_data
 def _load_data(path: str) -> pd.DataFrame:
     return pd.read_parquet(path)
+
 
 @st.cache_data
 def _load_geo_data(path: str) -> gpd.GeoDataFrame:
@@ -28,8 +30,7 @@ def _load_geo_data(path: str) -> gpd.GeoDataFrame:
 
 
 def _set_parameters() -> None:
-    """Set the parameters for the app
-    """
+    """Set the parameters for the app"""
     st.set_page_config(layout="wide")
 
 
@@ -87,7 +88,7 @@ def _display_stations(station_coordinates: gpd.GeoDataFrame) -> None:
     )
     # Edit the layout
     fig.update_layout(
-        title_text='Velib stations in Paris',
+        title_text="Velib stations in Paris",
         showlegend=True,
         width=800,
         height=800,
@@ -134,7 +135,7 @@ def _plot_bikes_type_over_time(df: pd.DataFrame, station_name: str) -> None:
             hoverinfo="x+y",
             mode="lines+markers",
             name="Available mechanical bikes",
-            stackgroup="one"
+            stackgroup="one",
         )
     )
     fig.add_trace(
@@ -144,14 +145,16 @@ def _plot_bikes_type_over_time(df: pd.DataFrame, station_name: str) -> None:
             hoverinfo="x+y",
             mode="lines+markers",
             name="Available electrical bikes",
-            stackgroup="one"
+            stackgroup="one",
         )
     )
     # Edit the layout
     fig.update_layout(
-        title=dict(text=f'Number of available types of bikes at station {station_name}'),
-        xaxis=dict(title=dict(text='Date')),
-        yaxis=dict(title=dict(text='Number of available bikes')),
+        title=dict(
+            text=f"Number of available types of bikes at station {station_name}"
+        ),
+        xaxis=dict(title=dict(text="Date")),
+        yaxis=dict(title=dict(text="Number of available bikes")),
     )
     # Plot the predictions
     st.plotly_chart(fig, theme="streamlit", use_container_width=True)
@@ -173,19 +176,34 @@ def _plot_predictions(df: pd.DataFrame, station_name: str) -> None:
     # Create the plot
     fig = go.Figure()
     fig.add_trace(
-        go.Scatter(x=df_station_training["duedate"], y=df_station_training["target"], mode="lines+markers", name="Available bikes")
+        go.Scatter(
+            x=df_station_training["duedate"],
+            y=df_station_training["target"],
+            mode="lines+markers",
+            name="Available bikes",
+        )
     )
     fig.add_trace(
-        go.Scatter(x=df_station_test["duedate"], y=df_station_test["target"], mode="lines+markers", name="Available bikes")
+        go.Scatter(
+            x=df_station_test["duedate"],
+            y=df_station_test["target"],
+            mode="lines+markers",
+            name="Available bikes",
+        )
     )
     fig.add_trace(
-        go.Scatter(x=df_station_test["duedate"], y=df_station_test["pred"], mode="lines+markers", name="Predictions")
+        go.Scatter(
+            x=df_station_test["duedate"],
+            y=df_station_test["pred"],
+            mode="lines+markers",
+            name="Predictions",
+        )
     )
     # Edit the layout
     fig.update_layout(
-        title=dict(text=f'Number of available bikes at station {station_name}'),
-        xaxis=dict(title=dict(text='Date')),
-        yaxis=dict(title=dict(text='Number of available bikes')),
+        title=dict(text=f"Number of available bikes at station {station_name}"),
+        xaxis=dict(title=dict(text="Date")),
+        yaxis=dict(title=dict(text="Number of available bikes")),
     )
     # Plot the predictions
     st.plotly_chart(fig, theme="streamlit", use_container_width=True)
