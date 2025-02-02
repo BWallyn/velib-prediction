@@ -17,10 +17,12 @@ sns.set_style("whitegrid")
 # ==== FUNCTIONS ====
 # ===================
 
+
 # Load dataset
 @st.cache_data
 def _load_data(path: str) -> pd.DataFrame:
     return pd.read_parquet(path)
+
 
 @st.cache_data
 def _load_geo_data(path: str) -> gpd.GeoDataFrame:
@@ -28,8 +30,7 @@ def _load_geo_data(path: str) -> gpd.GeoDataFrame:
 
 
 def _set_parameters() -> None:
-    """Set the parameters for the app
-    """
+    """Set the parameters for the app"""
     st.set_page_config(layout="wide")
 
 
@@ -77,21 +78,20 @@ def _display_stations(station_coordinates: gpd.GeoDataFrame) -> None:
     # Get unique row by station
     station_coordinates = station_coordinates.drop_duplicates(subset=["stationcode"])
     # Create plot
-    fig = go.Figure()
-    fig.add_trace(go.Scattermapbox(
-        lon=station_coordinates["lon"],
-        lat=station_coordinates["lat"],
-        text=station_coordinates["name"],
-        marker=dict(
-            size=station_coordinates["capacity"],
-            sizemode="area",
-        ),
-        name="Velib stations"
-    ))
+    fig = px.scatter_mapbox(
+        station_coordinates,
+        lat="lat",
+        lon="lon",
+        color="capacity",
+        size="capacity",
+        color_continuous_scale=px.colors.cyclical.IceFire,
+    )
     # Edit the layout
     fig.update_layout(
-        title_text='Velib stations in Paris',
+        title_text="Velib stations in Paris",
         showlegend=True,
+        width=800,
+        height=800,
     )
     fig.update_layout(
         mapbox_style="light",
@@ -116,7 +116,13 @@ def _create_selectbox(df: pd.DataFrame, column: str) -> str:
 
 
 def _plot_bikes_type_over_time(df: pd.DataFrame, station_name: str) -> None:
-    """
+    """Plot the number of each type of bikes over time for a specific station
+
+    Args:
+        df (pd.DataFrame): Input DetaFrame containing the number of bikes over time
+        station_name (str): Name of the station to plot
+    Returns:
+        None
     """
     # Filter the station
     df_station = df[df["name"] == station_name]
@@ -129,7 +135,7 @@ def _plot_bikes_type_over_time(df: pd.DataFrame, station_name: str) -> None:
             hoverinfo="x+y",
             mode="lines+markers",
             name="Available mechanical bikes",
-            stackgroup="one"
+            stackgroup="one",
         )
     )
     fig.add_trace(
@@ -139,14 +145,16 @@ def _plot_bikes_type_over_time(df: pd.DataFrame, station_name: str) -> None:
             hoverinfo="x+y",
             mode="lines+markers",
             name="Available electrical bikes",
-            stackgroup="one"
+            stackgroup="one",
         )
     )
     # Edit the layout
     fig.update_layout(
-        title=dict(text=f'Number of available types of bikes at station {station_name}'),
-        xaxis=dict(title=dict(text='Date')),
-        yaxis=dict(title=dict(text='Number of available bikes')),
+        title=dict(
+            text=f"Number of available types of bikes at station {station_name}"
+        ),
+        xaxis=dict(title=dict(text="Date")),
+        yaxis=dict(title=dict(text="Number of available bikes")),
     )
     # Plot the predictions
     st.plotly_chart(fig, theme="streamlit", use_container_width=True)
@@ -168,26 +176,46 @@ def _plot_predictions(df: pd.DataFrame, station_name: str) -> None:
     # Create the plot
     fig = go.Figure()
     fig.add_trace(
-        go.Scatter(x=df_station_training["duedate"], y=df_station_training["target"], mode="lines+markers", name="Available bikes")
+        go.Scatter(
+            x=df_station_training["duedate"],
+            y=df_station_training["target"],
+            mode="lines+markers",
+            name="Available bikes",
+        )
     )
     fig.add_trace(
-        go.Scatter(x=df_station_test["duedate"], y=df_station_test["target"], mode="lines+markers", name="Available bikes")
+        go.Scatter(
+            x=df_station_test["duedate"],
+            y=df_station_test["target"],
+            mode="lines+markers",
+            name="Available bikes",
+        )
     )
     fig.add_trace(
-        go.Scatter(x=df_station_test["duedate"], y=df_station_test["pred"], mode="lines+markers", name="Predictions")
+        go.Scatter(
+            x=df_station_test["duedate"],
+            y=df_station_test["pred"],
+            mode="lines+markers",
+            name="Predictions",
+        )
     )
     # Edit the layout
     fig.update_layout(
-        title=dict(text=f'Number of available bikes at station {station_name}'),
-        xaxis=dict(title=dict(text='Date')),
-        yaxis=dict(title=dict(text='Number of available bikes')),
+        title=dict(text=f"Number of available bikes at station {station_name}"),
+        xaxis=dict(title=dict(text="Date")),
+        yaxis=dict(title=dict(text="Number of available bikes")),
     )
     # Plot the predictions
     st.plotly_chart(fig, theme="streamlit", use_container_width=True)
 
 
 def _create_sidebar() -> None:
-    """
+    """Create a sidebar for the app.
+
+    Args:
+        None
+    Returns:
+        None
     """
     st.sidebar.header("About")
     st.sidebar.markdown(
@@ -234,22 +262,6 @@ def main():
     _plot_bikes_type_over_time(df_pred, station_name)
     # Display prediction ov available bikes
     _plot_predictions(df_pred, station_name)
-
-    # # Display dataset
-    # st.subheader("Dataset")
-    # st.write(df_train)
-
-    # # Display basic statistics
-    # st.subheader("Basic Statistics")
-    # st.write(df_train.describe())
-
-    # # Display data types
-    # st.subheader("Data Types")
-    # st.write(df_train.dtypes)
-
-    # # Display number of rows and columns
-    # st.subheader("Number of Rows and Columns")
-    # st.write(f"Rows: {df_train.shape[0]}, Columns: {df_train.shape[1]}")
 
 
 # =============
