@@ -77,21 +77,20 @@ def _display_stations(station_coordinates: gpd.GeoDataFrame) -> None:
     # Get unique row by station
     station_coordinates = station_coordinates.drop_duplicates(subset=["stationcode"])
     # Create plot
-    fig = go.Figure()
-    fig.add_trace(go.Scattermapbox(
-        lon=station_coordinates["lon"],
-        lat=station_coordinates["lat"],
-        text=station_coordinates["name"],
-        marker=dict(
-            size=station_coordinates["capacity"],
-            sizemode="area",
-        ),
-        name="Velib stations"
-    ))
+    fig = px.scatter_mapbox(
+        station_coordinates,
+        lat="lat",
+        lon="lon",
+        color="capacity",
+        size="capacity",
+        color_continuous_scale=px.colors.cyclical.IceFire,
+    )
     # Edit the layout
     fig.update_layout(
         title_text='Velib stations in Paris',
         showlegend=True,
+        width=800,
+        height=800,
     )
     fig.update_layout(
         mapbox_style="light",
