@@ -115,7 +115,13 @@ def _create_selectbox(df: pd.DataFrame, column: str) -> str:
 
 
 def _plot_bikes_type_over_time(df: pd.DataFrame, station_name: str) -> None:
-    """
+    """Plot the number of each type of bikes over time for a specific station
+
+    Args:
+        df (pd.DataFrame): Input DetaFrame containing the number of bikes over time
+        station_name (str): Name of the station to plot
+    Returns:
+        None
     """
     # Filter the station
     df_station = df[df["name"] == station_name]
@@ -186,7 +192,12 @@ def _plot_predictions(df: pd.DataFrame, station_name: str) -> None:
 
 
 def _create_sidebar() -> None:
-    """
+    """Create a sidebar for the app.
+
+    Args:
+        None
+    Returns:
+        None
     """
     st.sidebar.header("About")
     st.sidebar.markdown(
@@ -233,22 +244,6 @@ def main():
     _plot_bikes_type_over_time(df_pred, station_name)
     # Display prediction ov available bikes
     _plot_predictions(df_pred, station_name)
-
-    # # Display dataset
-    # st.subheader("Dataset")
-    # st.write(df_train)
-
-    # # Display basic statistics
-    # st.subheader("Basic Statistics")
-    # st.write(df_train.describe())
-
-    # # Display data types
-    # st.subheader("Data Types")
-    # st.write(df_train.dtypes)
-
-    # # Display number of rows and columns
-    # st.subheader("Number of Rows and Columns")
-    # st.write(f"Rows: {df_train.shape[0]}, Columns: {df_train.shape[1]}")
 
 
 # =============
