@@ -39,3 +39,9 @@ class ValidatedDataFrame(BaseModel):
         # Validate the DataFrame
         schema.validate(values)
         return values
+
+
+    # ==== Freezing the class ====
+    class Config:
+        frozen = True
+        arbitrary_types_allowed = True
