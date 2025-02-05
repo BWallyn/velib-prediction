@@ -10,6 +10,10 @@ import datetime
 
 import pandas as pd
 
+from velib_prediction.pipelines.feature_engineering.dataclasses import (
+    ValidatedDataFrame,
+)
+
 # ===================
 # ==== FUNCTIONS ====
 # ===================
@@ -143,3 +147,18 @@ def drop_columns(df: pd.DataFrame, cols_to_drop: list[str]) -> pd.DataFrame:
         (pd.DataFrame): Output DataFrame
     """
     return df.drop(columns=cols_to_drop)
+
+
+def validate_dataset(
+    df: pd.DataFrame,
+) -> pd.DataFrame:
+    """Validate the input DataFrame
+
+    Args:
+        df (pd.DataFrame): Input DataFrame
+    Returns:
+        df (pd.DataFrame): Output DataFrame validated
+    """
+    # Perform dataframe validation
+    validated_df = ValidatedDataFrame(df=df)
+    return validated_df.df
