@@ -11,6 +11,7 @@ from velib_prediction.pipelines.feature_engineering.nodes import (
     extract_date_features,
     get_holidays,
     split_train_test,
+    validate_dataset,
 )
 
 
@@ -32,13 +33,13 @@ def create_pipeline(**kwargs) -> Pipeline:
             node(
                 func=extract_date_features,
                 inputs=["df_train", "params:feat_date"],
-                outputs="df_training_feat_engineered",
+                outputs="df_training_date",
                 name="Add_date_feat_train"
             ),
             node(
                 func=extract_date_features,
                 inputs=["df_test", "params:feat_date"],
-                outputs="df_test_feat_engineered",
+                outputs="df_test_date",
                 name="Add_date_feat_test"
             ),
             # TODO fix holidays merge
@@ -84,6 +85,18 @@ def create_pipeline(**kwargs) -> Pipeline:
             #     outputs="df_train_prepared",
             #     name="Drop_unused_columns",
             # ),
+            node(
+                func=validate_dataset,
+                inputs="df_training_date",
+                outputs="df_training_feat_engineered",
+                name="Validate_training_data",
+            ),
+            node(
+                func=validate_dataset,
+                inputs="df_test_date",
+                outputs="df_test_feat_engineered",
+                name="Validate_test_data",
+            ),
         ],
         inputs=["df_with_bool_cols_upd"],
         outputs=["df_training_feat_engineered", "df_test_feat_engineered"],
