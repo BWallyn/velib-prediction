@@ -6,12 +6,8 @@ import geopandas as gpd
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
-import seaborn as sns
 import streamlit as st
 import yaml
-
-# Options
-sns.set_style("whitegrid")
 
 # ===================
 # ==== FUNCTIONS ====
