@@ -241,12 +241,12 @@ def main():
     # df_train = _load_data('data/04_feature/df_feat_train.parquet')
 
     # Load geo data
-    list_stations = _load_data("data/08_reporting/station_locations.parquet")
+    list_stations = _load_data("../data/08_reporting/station_locations.parquet")
     # Display velib stations
     _display_stations(list_stations)
 
     # Load predictions
-    df_pred = _load_data("data/08_reporting/predictions_to_plot.parquet")
+    df_pred = _load_data("../data/08_reporting/predictions_to_plot.parquet")
     # Display the capacity
     _plot_capacity_stations(df_pred)
 
