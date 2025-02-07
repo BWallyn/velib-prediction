@@ -18,7 +18,10 @@ data/**
 !.gitkeep
 
 # keep also the example dataset
-!data/01_raw/*
+# !data/01_raw/*
+
+# Except the files for the app
+!data/08_reporting/app/*
 
 
 ##########################
@@ -161,4 +164,3 @@ mlflow/
 catboost_info/
 uv.lock
 .vscode/settings.json
-data/01_raw/velib-disponibilite-en-temps-reel.parquet

@@ -88,7 +88,7 @@ model_velib:
 
 df_w_lat_lon:
   type: pandas.ParquetDataset
-  filepath: data/08_reporting/station_locations.parquet
+  filepath: app/station_locations.parquet
   load_args:
     engine: pyarrow
     dtype_backend: numpy_nullable
@@ -98,7 +98,7 @@ df_w_lat_lon:
 
 df_pred_to_plot:
   type: pandas.ParquetDataset
-  filepath: data/08_reporting/predictions_to_plot.parquet
+  filepath: app/predictions_to_plot.parquet
   load_args:
     engine: pyarrow
     dtype_backend: numpy_nullable
