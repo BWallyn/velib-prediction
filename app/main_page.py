@@ -39,7 +39,7 @@ def _create_header() -> None:
         None
     """
     st.title("Velib Data Analysis")
-    st.image("./velib-velo-electrique.jpeg", caption="Electrical velib")
+    st.image("velib-velo-electrique.jpeg", caption="Electrical velib")
     st.write("""
         This app is used to analyze the Velib dataset. The goal is to predict the number of available bikes at a given station in the next 24 hours.
     """)
@@ -241,12 +241,12 @@ def main():
     # df_train = _load_data('data/04_feature/df_feat_train.parquet')
 
     # Load geo data
-    list_stations = _load_data("./station_locations.parquet")
+    list_stations = _load_data("station_locations.parquet")
     # Display velib stations
     _display_stations(list_stations)
 
     # Load predictions
-    df_pred = _load_data("./predictions_to_plot.parquet")
+    df_pred = _load_data("predictions_to_plot.parquet")
     # Display the capacity
     _plot_capacity_stations(df_pred)
 
