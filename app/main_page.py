@@ -39,7 +39,7 @@ def _create_header() -> None:
         None
     """
     st.title("Velib Data Analysis")
-    st.image("../reports/images/velib-velo-electrique.jpeg", caption="Electrical velib")
+    st.image("./velib-velo-electrique.jpeg", caption="Electrical velib")
     st.write("""
         This app is used to analyze the Velib dataset. The goal is to predict the number of available bikes at a given station in the next 24 hours.
     """)
