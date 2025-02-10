@@ -27,7 +27,7 @@ def _load_geo_data(path: str) -> gpd.GeoDataFrame:
 
 def _set_parameters() -> None:
     """Set the parameters for the app"""
-    st.set_page_config(layout="wide")
+    st.set_page_config(layout="wide", page_icon=':material/directions_bike:', page_title="Velib Data Analysis")
 
 
 def _create_header() -> None:
