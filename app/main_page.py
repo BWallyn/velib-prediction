@@ -27,7 +27,7 @@ def _load_geo_data(path: str) -> gpd.GeoDataFrame:
 
 def _set_parameters() -> None:
     """Set the parameters for the app"""
-    st.set_page_config(layout="wide")
+    st.set_page_config(layout="wide", page_icon=':material/directions_bike:', page_title="Velib Data Analysis")
 
 
 def _create_header() -> None:
@@ -39,7 +39,7 @@ def _create_header() -> None:
         None
     """
     st.title("Velib Data Analysis")
-    # st.image("velib-velo-electrique.jpeg", caption="Electrical velib")
+    st.image("reports/images/velib-velo-electrique.jpeg", caption="Electrical velib")
     st.write("""
         This app is used to analyze the Velib dataset. The goal is to predict the number of available bikes at a given station in the next 24 hours.
     """)
@@ -58,19 +58,23 @@ def _plot_capacity_stations(df: pd.DataFrame) -> None:
     st.plotly_chart(fig, theme="streamlit", use_container_width=True)
 
 
-def _display_stations(station_coordinates: gpd.GeoDataFrame) -> None:
+def _display_stations(station_coordinates: gpd.GeoDataFrame, local: bool=False) -> None:
     """Display the Velib stations on a map
 
     Args:
         station_coordinates (gpd.GeoDataFrame): GeoDataFrame containing the coordinates of the Velib stations
+        local (bool): Boolean to indicate if the app is run locally or not
     Returns:
         None
     """
     st.subheader("Display Velib stations")
     # Get mapbox token
-    with open("../conf/local/credentials.yml") as file:
-        data = yaml.safe_load(file)
-    token = data["mapbox"]["token"]
+    if local:
+        with open("../conf/local/credentials.yml") as file:
+            data = yaml.safe_load(file)
+        token = data["mapbox"]["token"]
+    else:
+        token = st.secrets["credentials"]["mapbox-token"]
     # Get unique row by station
     station_coordinates = station_coordinates.drop_duplicates(subset=["stationcode"])
     # Create plot
@@ -241,12 +245,12 @@ def main():
     # df_train = _load_data('data/04_feature/df_feat_train.parquet')
 
     # Load geo data
-    list_stations = _load_data("station_locations.parquet")
+    list_stations = _load_data("data/08_reporting/app/station_locations.parquet")
     # Display velib stations
-    _display_stations(list_stations)
+    _display_stations(list_stations, local=False)
 
     # Load predictions
-    df_pred = _load_data("predictions_to_plot.parquet")
+    df_pred = _load_data("data/08_reporting/app/predictions_to_plot.parquet")
     # Display the capacity
     _plot_capacity_stations(df_pred)
 
