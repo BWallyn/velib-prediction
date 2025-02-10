@@ -63,6 +63,7 @@ def _display_stations(station_coordinates: gpd.GeoDataFrame, local: bool=False) 
 
     Args:
         station_coordinates (gpd.GeoDataFrame): GeoDataFrame containing the coordinates of the Velib stations
+        local (bool): Boolean to indicate if the app is run locally or not
     Returns:
         None
     """
@@ -246,7 +247,7 @@ def main():
     # Load geo data
     list_stations = _load_data("app/station_locations.parquet")
     # Display velib stations
-    _display_stations(list_stations)
+    _display_stations(list_stations, local=False)
 
     # Load predictions
     df_pred = _load_data("app/predictions_to_plot.parquet")
