@@ -58,7 +58,7 @@ def _plot_capacity_stations(df: pd.DataFrame) -> None:
     st.plotly_chart(fig, theme="streamlit", use_container_width=True)
 
 
-def _display_stations(station_coordinates: gpd.GeoDataFrame) -> None:
+def _display_stations(station_coordinates: gpd.GeoDataFrame, local: bool=False) -> None:
     """Display the Velib stations on a map
 
     Args:
@@ -68,9 +68,12 @@ def _display_stations(station_coordinates: gpd.GeoDataFrame) -> None:
     """
     st.subheader("Display Velib stations")
     # Get mapbox token
-    with open("../conf/local/credentials.yml") as file:
-        data = yaml.safe_load(file)
-    token = data["mapbox"]["token"]
+    if local:
+        with open("../conf/local/credentials.yml") as file:
+            data = yaml.safe_load(file)
+        token = data["mapbox"]["token"]
+    else:
+        token = st.secrets["credentials"]["mapbox-token"]
     # Get unique row by station
     station_coordinates = station_coordinates.drop_duplicates(subset=["stationcode"])
     # Create plot
