@@ -4,6 +4,8 @@ The goal of this project is to predict the number of rides in Velib stations loc
 
 ![Velib](./reports/images/velib-velo-electrique.jpeg)
 
+The app to present details about the project can be found here: https://bwallyn-velib-prediction.streamlit.app
+
 
 ## 🛰️ Architecture
 
