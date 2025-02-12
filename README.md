@@ -38,6 +38,11 @@ The training of the model can be found in the Kedro pipeline `train_model`.
 ## 📈 Results
 
 
+## 📱 App
+
+To present the data and the predictions of the model, a streamlit app is available [here](https://bwallyn-velib-prediction.streamlit.app).
+
+
 ## Guidelines
 
 ### Installation guide
