@@ -4,6 +4,8 @@ The goal of this project is to predict the number of rides in Velib stations loc
 
 ![Velib](./reports/images/velib-velo-electrique.jpeg)
 
+The app to present details about the project can be found here: https://bwallyn-velib-prediction.streamlit.app
+
 
 ## 🛰️ Architecture
 
@@ -34,6 +36,11 @@ The training of the model can be found in the Kedro pipeline `train_model`.
 
 
 ## 📈 Results
+
+
+## 📱 App
+
+To present the data and the predictions of the model, a streamlit app is available [here](https://bwallyn-velib-prediction.streamlit.app).
 
 
 ## Guidelines
