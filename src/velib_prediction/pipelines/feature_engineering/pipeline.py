@@ -7,9 +7,9 @@ from kedro.pipeline import Pipeline, node, pipeline
 
 from velib_prediction.pipelines.feature_engineering.nodes import (
     # add_holidays_period,
-    drop_columns,
     extract_date_features,
     get_holidays,
+    reduce_mem_usage,
     split_train_test,
     validate_dataset,
 )
@@ -22,13 +22,19 @@ def create_pipeline(**kwargs) -> Pipeline:
                 func=get_holidays,
                 inputs=None,
                 outputs="df_holidays",
-                name="download_holiday_dates"
+                name="Download_holiday_dates"
+            ),
+            node(
+                func=reduce_mem_usage,
+                inputs="df_with_bool_cols_upd",
+                outputs="df_memory_reduced",
+                name="Reduce_memory_usage"
             ),
             node(
                 func=split_train_test,
-                inputs=["df_with_bool_cols_upd", "params:feat_date", "params:delta_days"],
+                inputs=["df_memory_reduced", "params:feat_date", "params:delta_days"],
                 outputs=["df_train", "df_test"],
-                name="split_train_test"
+                name="Split_train_test"
             ),
             node(
                 func=extract_date_features,
