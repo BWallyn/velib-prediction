@@ -20,6 +20,7 @@ VERSION_FORMAT = "%Y_%m_%dT%H_%M_%S_%fZ"
 # ==== FUNCTIONS ====
 # ===================
 
+
 def generate_timestamp() -> str:
     """Generate timestamp to be used by versionning
 
@@ -29,11 +30,12 @@ def generate_timestamp() -> str:
         (str): String representation of the current timestamp
     """
     current_ts = datetime.now(tz=UTC).strftime(VERSION_FORMAT)
-    return current_ts[:-4] + current_ts[-1:] # Dont keep microseconds
+    return current_ts[:-4] + current_ts[-1:]  # Dont keep microseconds
 
 
 def create_mlflow_experiment(
-    experiment_folder_path: str, experiment_name: str,
+    experiment_folder_path: str,
+    experiment_name: str,
 ) -> str:
     """Create a MLflow experiment
 
@@ -49,6 +51,7 @@ def create_mlflow_experiment(
         artifact_location=Path.cwd().joinpath(experiment_folder_path).as_uri(),
     )
     return experiment_id
+
 
 def _create_mlflow_signature() -> ModelSignature:
     """Create a MLflow signature for the model
@@ -80,8 +83,11 @@ def _create_mlflow_signature() -> ModelSignature:
     output_schema = Schema([ColSpec("integer", "target")])
     return ModelSignature(inputs=input_schema, outputs=output_schema)
 
+
 def _log_mlflow_model_catboost(
-    model: CatBoostRegressor, df: pd.DataFrame, signature: ModelSignature,
+    model: CatBoostRegressor,
+    df: pd.DataFrame,
+    signature: ModelSignature,
 ) -> None:
     """Log model to MLflow
 
@@ -131,13 +137,13 @@ def _log_mlflow_catboost_parameters(model: CatBoostRegressor) -> None:
         model (CatBoostRegressor): Catboost regressor model trained
     """
     all_params = model.get_all_params()
-    mlflow.log_param('depth', all_params['depth'])
-    mlflow.log_param('iterations', all_params['iterations'])
-    mlflow.log_param('loss_function', all_params['loss_function'])
-    mlflow.log_param('learning_rate', all_params['learning_rate'])
-    mlflow.log_param('l2_leaf_reg', all_params['l2_leaf_reg'])
-    mlflow.log_param('random_strength', all_params['random_strength'])
-    mlflow.log_param('border_count', all_params['border_count'])
+    mlflow.log_param("depth", all_params["depth"])
+    mlflow.log_param("iterations", all_params["iterations"])
+    mlflow.log_param("loss_function", all_params["loss_function"])
+    mlflow.log_param("learning_rate", all_params["learning_rate"])
+    mlflow.log_param("l2_leaf_reg", all_params["l2_leaf_reg"])
+    mlflow.log_param("random_strength", all_params["random_strength"])
+    mlflow.log_param("border_count", all_params["border_count"])
 
 
 def _log_fig_in_artifacts(fig: plt.figure, figure_path: str) -> None:

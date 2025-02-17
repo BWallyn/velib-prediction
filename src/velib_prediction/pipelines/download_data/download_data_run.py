@@ -17,11 +17,11 @@ logger = logging.getLogger(__name__)
 # ==== FUNCTIONS ====
 # ===================
 
+
 def generate_timestamp() -> str:
-    """Generate the timestamp to be used by versionning data
-    """
+    """Generate the timestamp to be used by versionning data"""
     current_ts = datetime.now(tz=UTC).strftime("%Y_%m_%dT%H_%M_%S_%fz")
-    return current_ts[:-4] + current_ts[-1:] # Don't keep microseconds
+    return current_ts[:-4] + current_ts[-1:]  # Don't keep microseconds
 
 
 def download_data(url: str) -> pd.DataFrame:
@@ -35,7 +35,7 @@ def download_data(url: str) -> pd.DataFrame:
     response = requests.get(url)
     if response.status_code != 200:  # noqa: PLR2004
         logger.error("Error retriving data")
-    df = pd.DataFrame(response.json()['results'])
+    df = pd.DataFrame(response.json()["results"])
     return df
 
 
@@ -49,9 +49,9 @@ def save_data(df: pd.DataFrame, path_data: str) -> None:
         None
     """
     timestamp = generate_timestamp()
-    logger.info('Saving dataset...')
+    logger.info("Saving dataset...")
     df.to_parquet(os.path.join(path_data, f"velib_{timestamp}.parquet"))
-    logger.info('Dataset saved')
+    logger.info("Dataset saved")
 
 
 def main(url: str, path_data: str) -> None:
@@ -71,10 +71,10 @@ def main(url: str, path_data: str) -> None:
 # ==== RUN ====
 # =============
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     # Options
     URL = "https://opendata.paris.fr/api/explore/v2.1/catalog/datasets/velib-disponibilite-en-temps-reel/records?refine=nom_arrondissement_communes%3A%22Paris%22&refine=nom_arrondissement_communes%3A%22Levallois-Perret%22&refine=nom_arrondissement_communes%3A%22Puteaux%22&refine=nom_arrondissement_communes%3A%22Suresnes%22&refine=nom_arrondissement_communes%3A%22Boulogne-Billancourt%22&refine=nom_arrondissement_communes%3A%22Clichy%22"
-    PATH_DATA = './data/01_raw/'
+    PATH_DATA = "./data/01_raw/"
 
     # Run
     main(url=URL, path_data=PATH_DATA)
