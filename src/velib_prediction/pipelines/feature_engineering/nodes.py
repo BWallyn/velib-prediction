@@ -23,7 +23,7 @@ logger = logging.getLogger(__name__)
 # ==== FUNCTIONS ====
 # ===================
 
-def reduce_mem_usage(df: pd.DataFrame) -> pd.DataFrame:
+def reduce_mem_usage(df: pd.DataFrame) -> pd.DataFrame:  # noqa: PLR0912
     """Iterate through all the columns of a dataframe and modify the data type to reduce memory usage.
 
     Args:
@@ -36,7 +36,9 @@ def reduce_mem_usage(df: pd.DataFrame) -> pd.DataFrame:
     for col in df.columns:
         col_type = df[col].dtype
 
-        if not isinstance(col_type, object):
+        if col in ["coordonnees_geo", "date"]:
+            pass
+        elif (not isinstance(col_type, object)):
             c_min = df[col].min()
             c_max = df[col].max()
             if str(col_type)[:3] == 'int':
@@ -76,6 +78,8 @@ def split_train_test(df: pd.DataFrame, feat_date: str, delta_days: int) -> tuple
         df_train (pd.DataFrame): Train set
         df_test (pd.DataFrame): Test set
     """
+    # Set the right type for date feature
+    df[feat_date] = pd.to_datetime(df[feat_date].cat.as_ordered(), format='%Y-%m-%d').dt.date
     # Check number of days in integer:
     assert isinstance(delta_days, int), "delta_days should be an integer"
     # Get the max date
