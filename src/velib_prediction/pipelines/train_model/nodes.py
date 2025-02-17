@@ -33,7 +33,10 @@ logger = logging.getLogger(__name__)
 # ==== FUNCTIONS ====
 # ===================
 
-def select_columns(df: pd.DataFrame, list_feat: list[str], target_name: str) -> pd.DataFrame:
+
+def select_columns(
+    df: pd.DataFrame, list_feat: list[str], target_name: str
+) -> pd.DataFrame:
     """Select columns of the dataframe
 
     Args:
@@ -47,7 +50,12 @@ def select_columns(df: pd.DataFrame, list_feat: list[str], target_name: str) -> 
 
 
 def add_lags_sma(  # noqa: PLR0913
-    df: pd.DataFrame, list_lags: list[int], feat_id: str, feat_date: str, feat_target: str, n_shift: int,
+    df: pd.DataFrame,
+    list_lags: list[int],
+    feat_id: str,
+    feat_date: str,
+    feat_target: str,
+    n_shift: int,
 ) -> pd.DataFrame:
     """Add different lags to the dataset with a shift of n_shift
 
@@ -64,7 +72,13 @@ def add_lags_sma(  # noqa: PLR0913
     df = df.sort_values(by=[feat_date])
     for id in df[feat_id].unique():
         for lag in list_lags:
-            df.loc[df[feat_id] == id, f'sma_{lag}_lag'] = df.loc[df[feat_id] == id].rolling(lag)[feat_target].mean().shift(n_shift).values
+            df.loc[df[feat_id] == id, f"sma_{lag}_lag"] = (
+                df.loc[df[feat_id] == id]
+                .rolling(lag)[feat_target]
+                .mean()
+                .shift(n_shift)
+                .values
+            )
     return df
 
 
@@ -89,14 +103,15 @@ def get_split_train_val_cv(
     return list_train_valid
 
 
-def _filter_last_hours(group, feat_date: str, n_hours: int=5):
-    """
-    """
+def _filter_last_hours(group, feat_date: str, n_hours: int = 5):
+    """ """
     last_hours = group[feat_date].max() - pd.Timedelta(hours=n_hours)
     return group[group[feat_date] >= last_hours]
 
 
-def split_train_valid_last_hours(df: pd.DataFrame, feat_date: str, n_hours: int) -> tuple[pd.DataFrame, pd.DataFrame]:
+def split_train_valid_last_hours(
+    df: pd.DataFrame, feat_date: str, n_hours: int
+) -> tuple[pd.DataFrame, pd.DataFrame]:
     """Split dataset into train and validation sets
 
     Args:
@@ -109,14 +124,21 @@ def split_train_valid_last_hours(df: pd.DataFrame, feat_date: str, n_hours: int)
     """
     # Order dataset by station and date
     df_sel = df.sort_values(["stationcode", feat_date], ascending=[True, True])
-    df_valid_index = df_sel.groupby('stationcode').apply(_filter_last_hours, feat_date=feat_date, n_hours=n_hours).reset_index(drop=True)["idx"].values
+    df_valid_index = (
+        df_sel.groupby("stationcode")
+        .apply(_filter_last_hours, feat_date=feat_date, n_hours=n_hours)
+        .reset_index(drop=True)["idx"]
+        .values
+    )
     df_valid = df.loc[df["idx"].isin(df_valid_index)]
     df_train = df.loc[~df["idx"].isin(df_valid_index)]
     return df_train, df_valid
 
 
 def create_mlflow_experiment_if_needed(
-    experiment_folder_path: str | None=None, experiment_name: str | None=None, experiment_id: str | None=None
+    experiment_folder_path: str | None = None,
+    experiment_name: str | None = None,
+    experiment_id: str | None = None,
 ) -> str:
     """Create a MLflow experiment if needed.
     If experiment id is not None, then create a MLflow experiment using the folder path and the experiment name
@@ -130,16 +152,20 @@ def create_mlflow_experiment_if_needed(
     """
     if experiment_id is None:
         logger.info("Creating MLflow experiment...")
-        experiment_id = create_mlflow_experiment(experiment_folder_path, experiment_name)
+        experiment_id = create_mlflow_experiment(
+            experiment_folder_path, experiment_name
+        )
         logger.info("MLflow {} experiment created".format(experiment_id))  # noqa: UP032
     else:
         logger.info("{} experiment used".format(experiment_id))  # noqa: UP032
     return experiment_id
 
 
-
 def _train_model(
-    pool_train: Pool, pool_eval: Pool, plot_training: bool, verbose: int,
+    pool_train: Pool,
+    pool_eval: Pool,
+    plot_training: bool,
+    verbose: int,
     **kwargs,
 ) -> CatBoostRegressor:
     """Train a catboost model
@@ -154,10 +180,7 @@ def _train_model(
         model (CatBoostRegressor): Catboost regressor model trained
     """
     # Create model
-    model = CatBoostRegressor(
-        random_seed=12,
-        **kwargs
-    )
+    model = CatBoostRegressor(random_seed=12, **kwargs)
     # Fit model
     model.fit(
         pool_train,
@@ -175,8 +198,8 @@ def train_model_mlflow(  # noqa: PLR0913
     df_train: pd.DataFrame,
     df_valid: pd.DataFrame,
     feat_cat: list[str],
-    verbose: int=0,
-    **kwargs
+    verbose: int = 0,
+    **kwargs,
 ) -> tuple[CatBoostRegressor, float, float]:
     """Train a Catboost regressor model and log the parameters, metrics, model and shap values to MLflow
 
@@ -207,9 +230,11 @@ def train_model_mlflow(  # noqa: PLR0913
     with mlflow.start_run(
         experiment_id=experiment_id,
         nested=True,
-        tags={mlflow.utils.mlflow_tags.MLFLOW_PARENT_RUN_ID: parent_run_id}
+        tags={mlflow.utils.mlflow_tags.MLFLOW_PARENT_RUN_ID: parent_run_id},
     ) as child_run:
-        model = _train_model(pool_train, pool_eval, plot_training=False, verbose=verbose, **kwargs)
+        model = _train_model(
+            pool_train, pool_eval, plot_training=False, verbose=verbose, **kwargs
+        )
         # Predict
         pred_train = np.round(model.predict(pool_train), 0)
         pred_eval = np.round(model.predict(pool_eval), 0)
@@ -219,8 +244,8 @@ def train_model_mlflow(  # noqa: PLR0913
         rmse_train = root_mean_squared_error(y_true=y_train, y_pred=pred_train)
         rmse_valid = root_mean_squared_error(y_true=y_valid, y_pred=pred_eval)
         dict_metrics = {
-            'rmse_train': rmse_train,
-            'rmse_valid': rmse_valid,
+            "rmse_train": rmse_train,
+            "rmse_valid": rmse_valid,
         }
         _log_mlflow_metric(dict_metrics=dict_metrics, run_id=child_run.info.run_id)
         # Log model
@@ -234,7 +259,7 @@ def train_model_cv_mlflow(  # noqa: PLR0913
     list_train_valid: list[tuple[pd.DataFrame, pd.DataFrame]],
     feat_cat: list[str],
     catboost_params: dict[str, Any],
-    verbose: int=0,
+    verbose: int = 0,
 ) -> CatBoostRegressor:
     """Using cross validation, train a Catboost regressor model and log the parameters, metrics, model and shap values to MLflow
 
@@ -266,7 +291,7 @@ def train_model_cv_mlflow(  # noqa: PLR0913
                 df_valid=df_valid,
                 feat_cat=feat_cat,
                 verbose=verbose,
-                **catboost_params
+                **catboost_params,
             )
 
 
@@ -308,7 +333,7 @@ def optimize_hyperparams(  # noqa: PLR0913
         df_valid=df_valid,
         feat_cat=feat_cat,
         verbose=100,
-        **optimize_params
+        **optimize_params,
     )
     logger.info(f"Catboost model trained with RMSE: {rmse_valid}")
     # Add the best iteration as an attribute
@@ -370,7 +395,7 @@ def train_final_model(  # noqa: PLR0913
     df_valid: pd.DataFrame,
     feat_cat: list[str],
     best_parameters: dict[str, Any],
-    verbose: int=0,
+    verbose: int = 0,
 ):
     """Train a Catboost regressor model and log the parameters, metrics, model and shap values to MLflow
 
@@ -399,7 +424,9 @@ def train_final_model(  # noqa: PLR0913
     pool_eval = Pool(data=x_valid, label=y_valid, cat_features=feat_cat)
     with mlflow.start_run(experiment_id=experiment_id) as parent_run:
         # Set model
-        model = _train_model(pool_train, None, plot_training=False, verbose=verbose, **best_parameters)
+        model = _train_model(
+            pool_train, None, plot_training=False, verbose=verbose, **best_parameters
+        )
         # Predict
         pred_train = np.round(model.predict(pool_train), 0)
         pred_eval = np.round(model.predict(pool_eval), 0)
@@ -409,8 +436,8 @@ def train_final_model(  # noqa: PLR0913
         rmse_train = root_mean_squared_error(y_true=y_train, y_pred=pred_train)
         rmse_valid = root_mean_squared_error(y_true=y_valid, y_pred=pred_eval)
         dict_metrics = {
-            'rmse_train': rmse_train,
-            'rmse_valid': rmse_valid,
+            "rmse_train": rmse_train,
+            "rmse_valid": rmse_valid,
         }
         _log_mlflow_metric(dict_metrics=dict_metrics, run_id=parent_run.info.run_id)
         # Log model

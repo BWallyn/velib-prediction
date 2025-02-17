@@ -22,12 +22,15 @@ def test_list_parquet_files_empty_directory():
     """
     with tempfile.TemporaryDirectory() as temp_dir:
         # Mock the logger to prevent actual logging
-        with mock.patch('logging.getLogger') as mock_get_logger:
+        with mock.patch("logging.getLogger") as mock_get_logger:
             mock_logger = mock.Mock()
             mock_get_logger.return_value = mock_logger
 
             result = list_parquet_files(temp_dir)
-            assert result == [], "Function should return an empty list for an empty directory"
+            assert (
+                result == []
+            ), "Function should return an empty list for an empty directory"
+
 
 def test_list_parquet_files_single_level():
     """
@@ -36,20 +39,20 @@ def test_list_parquet_files_single_level():
     with tempfile.TemporaryDirectory() as temp_dir:
         # Create some test files
         parquet_files = [
-            os.path.join(temp_dir, 'test1.parquet'),
-            os.path.join(temp_dir, 'test2.parquet')
+            os.path.join(temp_dir, "test1.parquet"),
+            os.path.join(temp_dir, "test2.parquet"),
         ]
         non_parquet_files = [
-            os.path.join(temp_dir, 'test.txt'),
-            os.path.join(temp_dir, 'test.csv')
+            os.path.join(temp_dir, "test.txt"),
+            os.path.join(temp_dir, "test.csv"),
         ]
 
         # Create the files
         for file_path in parquet_files + non_parquet_files:
-            open(file_path, 'w').close()
+            open(file_path, "w").close()
 
         # Mock the logger
-        with mock.patch('logging.getLogger') as mock_get_logger:
+        with mock.patch("logging.getLogger") as mock_get_logger:
             mock_logger = mock.Mock()
             mock_get_logger.return_value = mock_logger
 
@@ -57,8 +60,11 @@ def test_list_parquet_files_single_level():
             result = list_parquet_files(temp_dir)
 
             # Assert that only parquet files are returned
-            assert set(result) == set(parquet_files), "Function should only return .parquet files"
+            assert set(result) == set(
+                parquet_files
+            ), "Function should only return .parquet files"
             assert len(result) == 2, "Should find exactly 2 parquet files"  # noqa: PLR2004
+
 
 def test_list_parquet_files_nested_directory():
     """
@@ -66,28 +72,28 @@ def test_list_parquet_files_nested_directory():
     """
     with tempfile.TemporaryDirectory() as temp_dir:
         # Create nested directory structure with parquet files
-        nested_dir1 = os.path.join(temp_dir, 'subdir1')
-        nested_dir2 = os.path.join(temp_dir, 'subdir2')
+        nested_dir1 = os.path.join(temp_dir, "subdir1")
+        nested_dir2 = os.path.join(temp_dir, "subdir2")
         os.makedirs(nested_dir1)
         os.makedirs(nested_dir2)
 
         # Create parquet files in different directories
         parquet_files = [
-            os.path.join(temp_dir, 'test1.parquet'),
-            os.path.join(nested_dir1, 'test2.parquet'),
-            os.path.join(nested_dir2, 'test3.parquet')
+            os.path.join(temp_dir, "test1.parquet"),
+            os.path.join(nested_dir1, "test2.parquet"),
+            os.path.join(nested_dir2, "test3.parquet"),
         ]
         non_parquet_files = [
-            os.path.join(temp_dir, 'test.txt'),
-            os.path.join(nested_dir1, 'test.csv')
+            os.path.join(temp_dir, "test.txt"),
+            os.path.join(nested_dir1, "test.csv"),
         ]
 
         # Create the files
         for file_path in parquet_files + non_parquet_files:
-            open(file_path, 'w').close()
+            open(file_path, "w").close()
 
         # Mock the logger
-        with mock.patch('logging.getLogger') as mock_get_logger:
+        with mock.patch("logging.getLogger") as mock_get_logger:
             mock_logger = mock.Mock()
             mock_get_logger.return_value = mock_logger
 
@@ -95,8 +101,11 @@ def test_list_parquet_files_nested_directory():
             result = list_parquet_files(temp_dir)
 
             # Assert that all parquet files are found, including those in subdirectories
-            assert set(result) == set(parquet_files), "Function should find all .parquet files in nested directories"
+            assert set(result) == set(
+                parquet_files
+            ), "Function should find all .parquet files in nested directories"
             assert len(result) == 3, "Should find exactly 3 parquet files"  # noqa: PLR2004
+
 
 def test_list_parquet_files_invalid_path():
     """
@@ -104,19 +113,20 @@ def test_list_parquet_files_invalid_path():
     Assumes the function returns an empty list instead of raising an error.
     """
     # Mock the logger
-    with mock.patch('logging.getLogger') as mock_get_logger:
+    with mock.patch("logging.getLogger") as mock_get_logger:
         mock_logger = mock.Mock()
         mock_get_logger.return_value = mock_logger
         # Check that an empty list is returned for an invalid path
-        result = list_parquet_files('/path/that/does/not/exist')
+        result = list_parquet_files("/path/that/does/not/exist")
         assert result == [], "Function should return an empty list for an invalid path"
 
 
 @pytest.fixture
 def sample_dataframes():
-    df1 = pd.DataFrame({'A': [1, 2], 'B': [3, 4]})
-    df2 = pd.DataFrame({'A': [5, 6], 'B': [7, 8]})
+    df1 = pd.DataFrame({"A": [1, 2], "B": [3, 4]})
+    df2 = pd.DataFrame({"A": [5, 6], "B": [7, 8]})
     return [df1, df2]
+
 
 @pytest.fixture
 def mock_parquet_files(tmp_path, sample_dataframes):
@@ -127,6 +137,7 @@ def mock_parquet_files(tmp_path, sample_dataframes):
         file_paths.append(str(file_path))
     return file_paths
 
+
 def test_merge_datasets(mock_parquet_files, sample_dataframes):
     expected_df = pd.concat(sample_dataframes)
     actual_df = merge_datasets(mock_parquet_files)
@@ -136,10 +147,13 @@ def test_merge_datasets(mock_parquet_files, sample_dataframes):
 
 @pytest.fixture
 def input_df_create_idx():
-    return pd.DataFrame({
-        "stationcode": ["A", "B", "A"],
-        "duedate": ["2023-11-22", "2023-11-23", "2023-11-22"]
-    })
+    return pd.DataFrame(
+        {
+            "stationcode": ["A", "B", "A"],
+            "duedate": ["2023-11-22", "2023-11-23", "2023-11-22"],
+        }
+    )
+
 
 def test_create_idx(input_df_create_idx):
     # Call the function
@@ -150,11 +164,13 @@ def test_create_idx(input_df_create_idx):
     assert "idx" in result_df.columns
 
     # 2. Check if the index is created correctly
-    expected_df = pd.DataFrame({
-        "idx": ["A1700611200", "B1700697600", "A1700611200"],
-        "stationcode": ["A", "B", "A"],
-        "duedate": ["2023-11-22", "2023-11-23", "2023-11-22"]
-    })
+    expected_df = pd.DataFrame(
+        {
+            "idx": ["A1700611200", "B1700697600", "A1700611200"],
+            "stationcode": ["A", "B", "A"],
+            "duedate": ["2023-11-22", "2023-11-23", "2023-11-22"],
+        }
+    )
     expected_df["duedate"] = pd.to_datetime(expected_df["duedate"])
     pd.testing.assert_frame_equal(result_df, expected_df)
 
@@ -164,12 +180,10 @@ def test_create_idx(input_df_create_idx):
 
 @pytest.fixture
 def input_df_drop_unused_columns():
-    return pd.DataFrame({
-        "col1": [1, 2, 3],
-        "col2": [4, 5, 6],
-        "col3": [7, 8, 9],
-        "col4": [10, 11, 12]
-    })
+    return pd.DataFrame(
+        {"col1": [1, 2, 3], "col2": [4, 5, 6], "col3": [7, 8, 9], "col4": [10, 11, 12]}
+    )
+
 
 def test_drop_unused_columns(input_df_drop_unused_columns):
     # Define columns to remove
@@ -193,9 +207,8 @@ def test_drop_unused_columns(input_df_drop_unused_columns):
 
 @pytest.fixture
 def input_df_set_date_format():
-    return pd.DataFrame({
-        "duedate": ["2023-11-22 12:34:56", "2023-12-25 09:10:11"]
-    })
+    return pd.DataFrame({"duedate": ["2023-11-22 12:34:56", "2023-12-25 09:10:11"]})
+
 
 def test_set_date_format(input_df_set_date_format):
     # Call the function
@@ -206,19 +219,22 @@ def test_set_date_format(input_df_set_date_format):
     assert pd.api.types.is_datetime64_any_dtype(result_df["duedate"])
 
     # 2. Check if the datetime values are correct
-    expected_dates = pd.Series(pd.to_datetime(["2023-11-22 12:34:56", "2023-12-25 09:10:11"]), name="duedate")
+    expected_dates = pd.Series(
+        pd.to_datetime(["2023-11-22 12:34:56", "2023-12-25 09:10:11"]), name="duedate"
+    )
     pd.testing.assert_series_equal(result_df["duedate"], expected_dates)
 
 
 @pytest.fixture
 def input_df_add_datetime_col():
-    return pd.DataFrame({
-        "duedate": pd.to_datetime(["2023-11-22", "2023-12-25"])
-    })
+    return pd.DataFrame({"duedate": pd.to_datetime(["2023-11-22", "2023-12-25"])})
+
 
 def test_add_datetime_col(input_df_add_datetime_col):
     # Call the function
-    result_df = add_datetime_col(input_df_add_datetime_col.copy())  # Avoid modifying the original fixture
+    result_df = add_datetime_col(
+        input_df_add_datetime_col.copy()
+    )  # Avoid modifying the original fixture
 
     # Assertions
     # 1. Check if the new 'date' column exists
@@ -228,18 +244,23 @@ def test_add_datetime_col(input_df_add_datetime_col):
     # assert pd.api.types.is_datetime64_any_dtype(result_df["date"])
 
     # 3. Check if the dates are extracted correctly
-    expected_dates = pd.DataFrame({"date": pd.to_datetime(["2023-11-22", "2023-12-25"])})
+    expected_dates = pd.DataFrame(
+        {"date": pd.to_datetime(["2023-11-22", "2023-12-25"])}
+    )
     expected_dates["date"] = expected_dates["date"].dt.date
     pd.testing.assert_series_equal(result_df["date"], expected_dates["date"])
 
 
 @pytest.fixture
 def input_df_update_val():
-    return pd.DataFrame({
-        "col1": ["OUI", "NON", "OUI"],
-        "col2": ["NON", "OUI", "NON"],
-        "col3": [1, 2, 3]
-    })
+    return pd.DataFrame(
+        {
+            "col1": ["OUI", "NON", "OUI"],
+            "col2": ["NON", "OUI", "NON"],
+            "col3": [1, 2, 3],
+        }
+    )
+
 
 def test_update_values_bool_columns(input_df_update_val):
     # Define boolean columns

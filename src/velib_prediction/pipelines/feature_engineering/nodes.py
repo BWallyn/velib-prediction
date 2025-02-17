@@ -18,7 +18,10 @@ from velib_prediction.pipelines.feature_engineering.dataclasses import (
 # ==== FUNCTIONS ====
 # ===================
 
-def split_train_test(df: pd.DataFrame, feat_date: str, delta_days: int) -> tuple[pd.DataFrame, pd.DataFrame]:
+
+def split_train_test(
+    df: pd.DataFrame, feat_date: str, delta_days: int
+) -> tuple[pd.DataFrame, pd.DataFrame]:
     """Split the dataset into train and test sets.
 
     Args:
@@ -58,16 +61,24 @@ def get_holidays() -> pd.DataFrame:
     # Drop duplicates between same zones and dates
     df_holidays.drop_duplicates(subset=["Zones", "Date de début"], inplace=True)
     # Change types
-    df_holidays["Date de début"] = pd.to_datetime(df_holidays["Date de début"].str[:10], format="%Y-%m-%d")
-    df_holidays["Date de fin"] = pd.to_datetime(df_holidays["Date de fin"].str[:10], format="%Y-%m-%d")
-    df_holidays.rename(columns={"Date de début": "date_begin", "Date de fin": "date_end"}, inplace=True)
+    df_holidays["Date de début"] = pd.to_datetime(
+        df_holidays["Date de début"].str[:10], format="%Y-%m-%d"
+    )
+    df_holidays["Date de fin"] = pd.to_datetime(
+        df_holidays["Date de fin"].str[:10], format="%Y-%m-%d"
+    )
+    df_holidays.rename(
+        columns={"Date de début": "date_begin", "Date de fin": "date_end"}, inplace=True
+    )
     # df_holidays["Date de début"] = df_holidays["Date de début"].dt.date
     # Select only after 2020
     df_holidays = df_holidays[df_holidays["date_end"] >= datetime.datetime(2020, 1, 1)]
     return df_holidays
 
 
-def add_holidays_period(df: pd.DataFrame, df_holidays: pd.DataFrame, feat_date: str, zone: str="Zone A") -> pd.DataFrame:
+def add_holidays_period(
+    df: pd.DataFrame, df_holidays: pd.DataFrame, feat_date: str, zone: str = "Zone A"
+) -> pd.DataFrame:
     """Add the holidays periods to the dataset
 
     Args:
@@ -88,12 +99,19 @@ def add_holidays_period(df: pd.DataFrame, df_holidays: pd.DataFrame, feat_date: 
     df = df.reset_index(drop=True)
     # Merge closest holiday date
     merged_df = pd.merge_asof(
-        df, df_holidays_zone[["date_begin", "date_end", "Description"]], left_on=feat_date, right_on='date_begin', direction='backward'
+        df,
+        df_holidays_zone[["date_begin", "date_end", "Description"]],
+        left_on=feat_date,
+        right_on="date_begin",
+        direction="backward",
     )
     # Set the right index as they are lost during merge asof
     merged_df.index = df.index
     # Filter out rows where the Date is before the begining or after the 'end' date
-    merged_df = merged_df[(merged_df[feat_date] >= merged_df['date_begin']) & (merged_df[feat_date] <= merged_df['date_end'])]
+    merged_df = merged_df[
+        (merged_df[feat_date] >= merged_df["date_begin"])
+        & (merged_df[feat_date] <= merged_df["date_end"])
+    ]
     merged_df.drop(columns=["date_begin", "date_end"], inplace=True)
     merged_df.rename(columns={"Description": f"Description_{zone_name}"}, inplace=True)
     # Select rows without holidays
@@ -128,11 +146,11 @@ def extract_date_features(df: pd.DataFrame, feat_date: str) -> pd.DataFrame:
     Returns
         df: dataset with features extracted from the date
     """
-    df[feat_date] = pd.to_datetime(df[feat_date], format='%Y%m%d')
-    df[f'{feat_date}_year'] = df[feat_date].dt.year
-    df[f'{feat_date}_month'] = df[feat_date].dt.month
-    df[f'{feat_date}_day'] = df[feat_date].dt.day
-    df[f'{feat_date}_weekday'] = df[feat_date].dt.weekday
+    df[feat_date] = pd.to_datetime(df[feat_date], format="%Y%m%d")
+    df[f"{feat_date}_year"] = df[feat_date].dt.year
+    df[f"{feat_date}_month"] = df[feat_date].dt.month
+    df[f"{feat_date}_day"] = df[feat_date].dt.day
+    df[f"{feat_date}_weekday"] = df[feat_date].dt.weekday
     df = get_weekend(df, feat_date=feat_date)
     return df
 

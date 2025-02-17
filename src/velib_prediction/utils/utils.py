@@ -9,6 +9,7 @@ import pandas as pd
 # ==== FUNCTIONS ====
 # ===================
 
+
 def rename_columns(df: pd.DataFrame, dict_to_rename: dict[str, str]) -> pd.DataFrame:
     """Rename columns of dataset
 

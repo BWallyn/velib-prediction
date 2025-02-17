@@ -7,6 +7,7 @@ Kedro recommends using `pytest` framework, more info about it can be found
 in the official documentation:
 https://docs.pytest.org/en/latest/getting-started.html
 """
+
 import logging
 
 import pandas as pd
@@ -23,12 +24,17 @@ from velib_prediction.pipelines.train_model.pipeline import (
 def sample_dataframe_train():
     return pd.read_parquet("tests/data/df_train.parquet")
 
-def test_data_science_pipeline(caplog, sample_dataframe_train: pd.DataFrame):    # Note: caplog is passed as an argument
+
+def test_data_science_pipeline(
+    caplog, sample_dataframe_train: pd.DataFrame
+):  # Note: caplog is passed as an argument
     # Arrange pipeline
     pipeline = (
         create_tm_pipeline()
         .from_nodes("train_model.Rename_target_column")
-        .to_nodes("train_model.Select_columns_train", "train_model.Select_columns_valid")
+        .to_nodes(
+            "train_model.Select_columns_train", "train_model.Select_columns_valid"
+        )
     )
 
     # Arrange data catalog
@@ -64,7 +70,9 @@ def test_data_science_pipeline(caplog, sample_dataframe_train: pd.DataFrame):   
     catalog.add_feed_dict(
         {
             "df_training_feat_engineered": dummy_data["df_train_prepared"],
-            "params:train_model.dict_rename_target": dummy_parameters["dict_rename_target"],
+            "params:train_model.dict_rename_target": dummy_parameters[
+                "dict_rename_target"
+            ],
             "params:train_model.feat_date": dummy_parameters["feat_date"],
             "params:train_model.n_hours": dummy_parameters["n_hours"],
             "params:train_model.feat_target": dummy_parameters["feat_target"],
@@ -73,7 +81,9 @@ def test_data_science_pipeline(caplog, sample_dataframe_train: pd.DataFrame):   
     )
 
     # Arrange the log testing setup
-    caplog.set_level(logging.DEBUG, logger="kedro") # Ensure all logs produced by Kedro are captured
+    caplog.set_level(
+        logging.DEBUG, logger="kedro"
+    )  # Ensure all logs produced by Kedro are captured
     successful_run_msg = "Pipeline execution completed successfully."
 
     # Act
