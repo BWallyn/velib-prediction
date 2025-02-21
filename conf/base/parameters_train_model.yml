@@ -6,7 +6,7 @@
 
 train_model.dict_rename_target: {"numbikesavailable": "target"}
 
-train_model.lags_to_try: [1]
+train_model.lags_to_try: [1, 16]
 
 train_model.feat_id: "stationcode"
 
