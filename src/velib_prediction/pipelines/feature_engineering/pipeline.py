@@ -7,7 +7,6 @@ from kedro.pipeline import Pipeline, node, pipeline
 
 from velib_prediction.pipelines.feature_engineering.nodes import (
     # add_holidays_period,
-    drop_columns,
     extract_date_features,
     get_holidays,
     split_train_test,
@@ -22,25 +21,29 @@ def create_pipeline(**kwargs) -> Pipeline:
                 func=get_holidays,
                 inputs=None,
                 outputs="df_holidays",
-                name="download_holiday_dates"
+                name="download_holiday_dates",
             ),
             node(
                 func=split_train_test,
-                inputs=["df_with_bool_cols_upd", "params:feat_date", "params:delta_days"],
+                inputs=[
+                    "df_with_bool_cols_upd",
+                    "params:feat_date",
+                    "params:delta_days",
+                ],
                 outputs=["df_train", "df_test"],
-                name="split_train_test"
+                name="split_train_test",
             ),
             node(
                 func=extract_date_features,
                 inputs=["df_train", "params:feat_date"],
                 outputs="df_training_date",
-                name="Add_date_feat_train"
+                name="Add_date_feat_train",
             ),
             node(
                 func=extract_date_features,
                 inputs=["df_test", "params:feat_date"],
                 outputs="df_test_date",
-                name="Add_date_feat_test"
+                name="Add_date_feat_test",
             ),
             # TODO fix holidays merge
             # node(
@@ -100,5 +103,5 @@ def create_pipeline(**kwargs) -> Pipeline:
         ],
         inputs=["df_with_bool_cols_upd"],
         outputs=["df_training_feat_engineered", "df_test_feat_engineered"],
-        namespace="feature_engineering"
+        namespace="feature_engineering",
     )

@@ -35,19 +35,19 @@ def create_pipeline(**kwargs) -> Pipeline:
                 func=create_idx,
                 inputs="df_raw",
                 outputs="df_w_idx",
-                name="add_index_to_dataset"
+                name="add_index_to_dataset",
             ),
             node(
                 func=drop_unused_columns,
                 inputs=["df_w_idx", "params:cols_to_remove"],
                 outputs="df_wtht_unused_cols",
-                name="remove_unused_cols"
+                name="remove_unused_cols",
             ),
             node(
                 func=set_date_format,
                 inputs="df_wtht_unused_cols",
                 outputs="df_date_set",
-                name="set_date_format"
+                name="set_date_format",
             ),
             node(
                 func=add_datetime_col,
@@ -59,10 +59,10 @@ def create_pipeline(**kwargs) -> Pipeline:
                 func=update_values_bool_columns,
                 inputs=["df_date_added", "params:boolean_columns"],
                 outputs="df_with_bool_cols_upd",
-                name="reset_values_in_boolean_columns"
-            )
+                name="reset_values_in_boolean_columns",
+            ),
         ],
         inputs=None,
         outputs=["df_with_bool_cols_upd", "df_raw"],
-        namespace="data_engineering"
+        namespace="data_engineering",
     )

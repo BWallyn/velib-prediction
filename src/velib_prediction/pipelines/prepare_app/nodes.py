@@ -15,6 +15,7 @@ from catboost import CatBoostRegressor
 # ==== FUNCTIONS ====
 # ===================
 
+
 def extract_lat_lon(df: pd.DataFrame) -> pd.DataFrame:
     """Extract the latitude and longitude from the coordinates column.
 
@@ -24,7 +25,7 @@ def extract_lat_lon(df: pd.DataFrame) -> pd.DataFrame:
         (pd.DataFrame): Output DataFrame containing latitude and longitude
     """
     # Split into lat and lon
-    df[['lat', 'lon']] = pd.DataFrame(df['coordonnees_geo'].tolist())
+    df[["lat", "lon"]] = pd.DataFrame(df["coordonnees_geo"].tolist())
     # Drop the geocoordinates
     return df.drop("coordonnees_geo", axis=1)
 
@@ -51,10 +52,14 @@ def extract_geo_points_by_station(gdf: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
     Returns:
         (gpd.GeoDataFrame): Output DataFrame
     """
-    return gdf.drop_duplicates(subset=["stationcode"])[["stationcode", "name", "geometry"]]
+    return gdf.drop_duplicates(subset=["stationcode"])[
+        ["stationcode", "name", "geometry"]
+    ]
 
 
-def add_geographical_info(df: pd.DataFrame, location_stations: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
+def add_geographical_info(
+    df: pd.DataFrame, location_stations: gpd.GeoDataFrame
+) -> gpd.GeoDataFrame:
     """Add geographical information of the Velib stations to the DataFrame.
 
     Args:
@@ -79,7 +84,9 @@ def _model_predict(model: CatBoostRegressor, df: pd.DataFrame) -> np.array:
     return np.round(model.predict(df[model.feature_names_]), 0)
 
 
-def prepare_data_to_plot_predictions(model: CatBoostRegressor, df_training: pd.DataFrame, df_test: pd.DataFrame) -> pd.DataFrame:
+def prepare_data_to_plot_predictions(
+    model: CatBoostRegressor, df_training: pd.DataFrame, df_test: pd.DataFrame
+) -> pd.DataFrame:
     """Prepare data to plot predictions.
 
     Args:

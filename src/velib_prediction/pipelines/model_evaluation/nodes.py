@@ -20,6 +20,7 @@ logger = logging.getLogger(__name__)
 # ==== FUNCTIONS ====
 # ===================
 
+
 def model_predict(model: CatBoostRegressor, df: pd.DataFrame) -> np.array:
     """Predict the target using the trained model.
 
@@ -30,5 +31,3 @@ def model_predict(model: CatBoostRegressor, df: pd.DataFrame) -> np.array:
         (np.array): Predictions
     """
     return model.predict(df[model.feature_names_])
-
-

@@ -28,13 +28,13 @@ def create_pipeline(**kwargs) -> Pipeline:
                 func=convert_to_geojson,
                 inputs="df_w_lat_lon",
                 outputs="gdf_with_coordinates",
-                name="Convert_to_geodataframe"
+                name="Convert_to_geodataframe",
             ),
             node(
                 func=extract_geo_points_by_station,
                 inputs="gdf_with_coordinates",
                 outputs="list_coordinates",
-                name="Extract_list_of_station_coordinates"
+                name="Extract_list_of_station_coordinates",
             ),
             node(
                 func=add_geographical_info,
@@ -53,9 +53,15 @@ def create_pipeline(**kwargs) -> Pipeline:
                 inputs=["model_velib", "df_training_sorted", "df_test_sorted"],
                 outputs="df_pred_to_plot",
                 name="Prepare_data_to_plot_predictions",
-            )
+            ),
         ],
-        inputs=["df_raw", "df_training_feat_engineered", "df_training_sorted", "df_test_sorted", "model_velib"],
+        inputs=[
+            "df_raw",
+            "df_training_feat_engineered",
+            "df_training_sorted",
+            "df_test_sorted",
+            "model_velib",
+        ],
         outputs=["df_w_lat_lon", "df_train_with_coordinates", "df_pred_to_plot"],
-        namespace="prepare_app"
+        namespace="prepare_app",
     )
