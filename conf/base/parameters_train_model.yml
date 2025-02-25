@@ -12,7 +12,7 @@ train_model.feat_id: "stationcode"
 
 train_model.feat_date: "duedate"
 
-train_model.n_hours: 24
+train_model.n_hours: 12
 
 train_model.feat_target: "target"
 
@@ -63,7 +63,7 @@ train_model.catboost_parameters: {
 train_model.search_params: {
   "iterations": {
     "min": 100,
-    "max": 500,
+    "max": 1000,
     "sampling_type": "int",
   },
   "depth": {
@@ -78,4 +78,4 @@ train_model.search_params: {
   },
 }
 
-train_model.n_trials: 10
+train_model.n_trials: 25
