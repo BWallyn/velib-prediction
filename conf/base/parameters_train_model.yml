@@ -12,7 +12,7 @@ train_model.feat_id: "stationcode"
 
 train_model.feat_date: "duedate"
 
-train_model.n_hours: 12
+train_model.n_hours: 24
 
 train_model.feat_target: "target"
 
